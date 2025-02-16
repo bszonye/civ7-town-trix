@@ -96,15 +96,18 @@ export class ProductionChooserItem extends FxsChooserItem {
         rightColumn.classList.value = 'flex-auto relative flex flex-col items-end justify-center';
         const statsContainer = document.createElement('div');
         statsContainer.classList.value = 'flex items-center';
+        // statsContainer.style.setProperty(...DEBUG_GRAY);
         this.secondaryDetailsElement.classList.value = 'invisible flex';
         statsContainer.appendChild(this.secondaryDetailsElement);
         this.agelessContainer.classList.value = 'hidden flex items-center';
         this.agelessContainer.innerHTML = '<img src="fs://game/city_ageless.png" class="size-6"/>';
         statsContainer.appendChild(this.agelessContainer);
         this.costContainer.classList.value = 'flex items-center';
+        // this.costContainer.style.setProperty(...DEBUG_GRAY);
         this.costAmountElement.classList.value = 'font-title text-base mr-1';
         this.costContainer.appendChild(this.costAmountElement);
         this.costIconElement.classList.value = 'size-8 bg-contain bg-center bg-no-repeat -m-1';
+        // this.costIconElement.style.setProperty(...DEBUG_RED);
         this.costContainer.appendChild(this.costIconElement);
         rightColumn.appendChild(statsContainer);
         rightColumn.appendChild(this.costContainer);

@@ -135,7 +135,7 @@ export const GetCurrentBestTotalYieldForConstructible = (city, constructibleType
 };
 export const GetSecondaryDetailsHTML = (items) => {
     return items.reduce((acc, { icon, value }) => {
-        return acc + `<div class="flex items-center m-1"><img src="${icon}" class="size-6" />${value}</div>`;
+        return acc + `<div class="flex items-center mx-1"><img src="${icon}" class="size-6" />${value}</div>`;
     }, "");
 };
 /**
