@@ -143,10 +143,12 @@ export class ProductionChooserItem extends FxsChooserItem {
                 this.updateCostIconElement();
                 break;
             case 'data-cost':
-                const cost = newValue ? parseInt(newValue) : 0;
-                const showCost = isNaN(cost) || cost < 0;
-                this.costContainer.classList.toggle('hidden', showCost);
-                this.costAmountElement.textContent = newValue;
+                {
+                    const cost = newValue ? parseInt(newValue) : 0;
+                    const showCost = isNaN(cost) || cost < 0;
+                    this.costContainer.classList.toggle('hidden', showCost);
+                    this.costAmountElement.textContent = newValue;
+                }
                 break;
             case 'data-error':
                 if (newValue) {
@@ -159,8 +161,10 @@ export class ProductionChooserItem extends FxsChooserItem {
                 }
                 break;
             case 'data-is-ageless':
-                const isAgeless = newValue === 'true';
-                this.agelessContainer.classList.toggle('hidden', !isAgeless);
+                {
+                    const isAgeless = newValue === 'true';
+                    this.agelessContainer.classList.toggle('hidden', !isAgeless);
+                }
                 break;
             case 'data-secondary-details': {
                 if (newValue) {
