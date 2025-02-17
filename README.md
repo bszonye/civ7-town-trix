@@ -1,2 +1,2 @@
-# civ7-town-trix
-Town Trix mod for Civilization VII
+# Town Hall
+better town & city tools for Civilization VII
