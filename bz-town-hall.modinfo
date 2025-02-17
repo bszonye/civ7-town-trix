@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Mod id="bz-town-trix" version="1"
+<Mod id="bz-town-hall" version="1"
     xmlns="ModInfo">
     <Properties>
-        <Name>LOC_MOD_BZ_TOWN_TRIX_NAME</Name>
-        <Description>LOC_MOD_BZ_TOWN_TRIX_DESCRIPTION</Description>
+        <Name>LOC_MOD_BZ_TOWN_HALL_NAME</Name>
+        <Description>LOC_MOD_BZ_TOWN_HALL_DESCRIPTION</Description>
         <Authors>beezany</Authors>
         <Package>Mod</Package>
         <AffectsSavedGames>0</AffectsSavedGames>
@@ -17,7 +17,7 @@
         </Criteria>
     </ActionCriteria>
     <ActionGroups>
-        <ActionGroup id="bz-town-trix-ui" scope="game" criteria="always">
+        <ActionGroup id="bz-town-hall-ui" scope="game" criteria="always">
             <Actions>
                 <ImportFiles>
                     <Item>ui/interface-modes/support-city-decoration.js</Item>
