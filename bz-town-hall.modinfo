@@ -18,6 +18,9 @@
     </ActionCriteria>
     <ActionGroups>
         <ActionGroup id="bz-town-hall-ui" scope="game" criteria="always">
+            <Properties>
+                <LoadOrder>1000</LoadOrder>
+            </Properties>
             <Actions>
                 <ImportFiles>
                     <Item>ui/interface-modes/support-city-decoration.js</Item>
