@@ -180,7 +180,7 @@ class BuildingPlacementManagerClass {
         // Base Yields
         placementPlotData.changeDetails.forEach((changeDetails) => {
             switch (changeDetails.sourceType) {
-                case YieldSourceTypes.BASE:
+                case YieldSourceTypes.BASE: {
                     const yieldDefinition = GameInfo.Yields.lookup(changeDetails.yieldType);
                     if (!yieldDefinition) {
                         break;
@@ -193,12 +193,13 @@ class BuildingPlacementManagerClass {
                         iconURL: UI.getIconURL(yieldDefinition.YieldType, 'YIELD')
                     });
                     break;
+                }
             }
         });
         // Worker Yields
         placementPlotData.changeDetails.forEach((changeDetails) => {
             switch (changeDetails.sourceType) {
-                case YieldSourceTypes.WORKERS:
+                case YieldSourceTypes.WORKERS: {
                     const yieldDefinition = GameInfo.Yields.lookup(changeDetails.yieldType);
                     if (!yieldDefinition) {
                         break;
@@ -211,13 +212,14 @@ class BuildingPlacementManagerClass {
                         iconURL: UI.getIconURL(yieldDefinition.YieldType, 'YIELD')
                     });
                     break;
+                }
             }
         });
         // Warehouse Bonuses
         let warehouseBonuses = new Map();
         placementPlotData.changeDetails.forEach((changeDetails) => {
             switch (changeDetails.sourceType) {
-                case YieldSourceTypes.WAREHOUSE:
+                case YieldSourceTypes.WAREHOUSE: {
                     const warehouseBonus = warehouseBonuses.get(changeDetails.yieldType);
                     if (warehouseBonus) {
                         warehouseBonuses.set(changeDetails.yieldType, warehouseBonus + changeDetails.change);
@@ -226,6 +228,7 @@ class BuildingPlacementManagerClass {
                         warehouseBonuses.set(changeDetails.yieldType, changeDetails.change);
                     }
                     break;
+                }
             }
         });
         warehouseBonuses.forEach((change, yieldType) => {
@@ -253,7 +256,7 @@ class BuildingPlacementManagerClass {
         const yieldChangeInfo = [];
         placementPlotData.changeDetails.forEach((changeDetails) => {
             switch (changeDetails.sourceType) {
-                case YieldSourceTypes.ADJACENCY:
+                case YieldSourceTypes.ADJACENCY: {
                     const yieldDefinition = GameInfo.Yields.lookup(changeDetails.yieldType);
                     if (!yieldDefinition) {
                         break;
@@ -280,6 +283,7 @@ class BuildingPlacementManagerClass {
                         });
                         break;
                     }
+                }
             }
         });
         return yieldChangeInfo;
@@ -526,7 +530,7 @@ class BuildingPlacementManagerClass {
         }
         let bestYieldChanges = [];
         let bestYieldChangesTotal = 0;
-        for (const placement of constructiblePlacementData?.placements) {
+        for (const placement of constructiblePlacementData?.placements ?? []) {
             let yieldChangesTotal = 0;
             for (const change of placement.yieldChanges) {
                 yieldChangesTotal += change;

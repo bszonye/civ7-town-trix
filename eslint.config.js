@@ -24,6 +24,8 @@ export default [
                 CombatTypes: "readonly",
                 Constructibles: "readonly",
                 Controls: "readonly",
+                CustomEvent: "readonly",
+                DirectionTypes: "readonly",
                 DistrictTypes: "readonly",
                 Districts: "readonly",
                 Game: "readonly",
@@ -32,6 +34,9 @@ export default [
                 GameplayMap: "readonly",
                 GrowthTypes: "readonly",
                 IndependentRelationship: "readonly",
+                Input: "readonly",
+                InputActionStatuses: "readonly",
+                InputContext: "readonly",
                 Loading: "readonly",
                 Locale: "readonly",
                 MapCities: "readonly",
@@ -50,10 +55,13 @@ export default [
                 Units: "readonly",
                 Visibility: "readonly",
                 WorldUI: "readonly",
+                YieldSourceTypes: "readonly",
                 YieldTypes: "readonly",
                 console: "readonly",
                 document: "readonly",
                 engine: "readonly",
+                waitForLayout: "readonly",
+                window: "readonly",
             }
         }
 
