@@ -1,2 +1,2 @@
-# Town Hall
-better town & city tools for Civilization VII
+# City Hall
+better city & town tools for Civilization VII
