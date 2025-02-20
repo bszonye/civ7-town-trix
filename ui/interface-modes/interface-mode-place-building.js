@@ -20,9 +20,10 @@ import NavTray from '/core/ui/navigation-tray/model-navigation-tray.js';
 import FocusManager from '/core/ui/input/focus-manager.js';
 var HighlightColors;
 (function (HighlightColors) {
-    HighlightColors[HighlightColors["okay"] = 3355505406] = "okay";
-    HighlightColors[HighlightColors["good"] = 3357402549] = "good";
-    HighlightColors[HighlightColors["best"] = 3360534819] = "best";
+    HighlightColors[HighlightColors["okay"] = 0xc800f2fe] = "okay";
+    HighlightColors[HighlightColors["good"] = 0xc81de5b5] = "good";
+    HighlightColors[HighlightColors["best"] = 0xc84db123] = "best";
+    HighlightColors[HighlightColors["unique"] = 0xc8e699bf] = "unique";
 })(HighlightColors || (HighlightColors = {}));
 /**
  * Handler for INTERFACEMODE_PLACE_BUILDING.
@@ -120,6 +121,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         //Darken all plots not in the city
         WorldUI.pushRegionColorFilter(selectedCity.getPurchasedPlots(), {}, this.OUTER_REGION_OVERLAY_FILTER);
         this.plotOverlay = overlay.addPlotOverlay();
+        this.plotOverlay.addPlots(BuildingPlacementManager.uniquePlots, { fillColor: HighlightColors.unique });
         this.plotOverlay.addPlots(BuildingPlacementManager.urbanPlots, { fillColor: HighlightColors.best });
         this.plotOverlay.addPlots(BuildingPlacementManager.developedPlots, { fillColor: HighlightColors.okay });
         this.plotOverlay.addPlots(BuildingPlacementManager.expandablePlots, { fillColor: HighlightColors.good });
@@ -172,12 +174,12 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     }
     proposePlot(plot, accept, reject) {
         const plotIndex = GameplayMap.getIndexFromLocation(plot);
-        //Urban plots and undeveloped plots are ready to accept the building placement
-        if (BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
+        // Unique, urban, and undeveloped plots are ready to accept the building placement
+        if (BuildingPlacementManager.uniquePlots.find(p => p == plotIndex) || BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
             accept();
             Audio.playSound('data-audio-city-production-placement-activate', 'city-actions');
         }
-        //Building over a developed plot requires confirmation to replace the improvement on that plot
+        // Building over a developed plot requires confirmation to replace the improvement on that plot
         else if (BuildingPlacementManager.developedPlots.find(p => p == plotIndex)) {
             const acceptCallback = () => {
                 accept();

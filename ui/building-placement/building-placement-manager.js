@@ -47,6 +47,9 @@ class BuildingPlacementManagerClass {
     get currentConstructible() {
         return this._currentConstructible;
     }
+    get uniquePlots() {
+        return this._uniquePlots;
+    }
     get urbanPlots() {
         return this._urbanPlots;
     }
@@ -108,11 +111,31 @@ class BuildingPlacementManagerClass {
         }
         this._currentConstructible = constructible;
         this.isRepairing = operationResult.RepairDamaged;
-        operationResult.Plots?.forEach(plot => this._urbanPlots.push(plot));
+        const getUniqueTrait = (id) => {
+            // get a building's unique TraitType, if any
+            const building = Constructibles.getByComponentID(id);
+            if (!building) return undefined;
+            const cdef = GameInfo.Constructibles.lookup(building.type);
+            if (!cdef) return undefined;
+            const bdef = GameInfo.Buildings.lookup(cdef.ConstructibleType);
+            if (!bdef) return undefined;
+            return bdef?.TraitType;
+        }
+        operationResult.Plots?.forEach(p => {
+            // identify plots with unique buildings
+            const loc = GameplayMap.getLocationFromIndex(p);
+            const ids = MapConstructibles.getConstructibles(loc.x, loc.y);
+            const unique = ids.find(b => getUniqueTrait(b));
+            if (unique) {
+                this._uniquePlots.push(p)
+            } else {
+                this._urbanPlots.push(p)
+            }
+        });
         operationResult.ExpandUrbanPlots?.forEach(p => {
-            const location = GameplayMap.getLocationFromIndex(p);
-            const city = MapCities.getCity(location.x, location.y);
-            if (city && MapCities.getDistrict(location.x, location.y) != null) {
+            const loc = GameplayMap.getLocationFromIndex(p);
+            const city = MapCities.getCity(loc.x, loc.y);
+            if (city && MapCities.getDistrict(loc.x, loc.y) != null) {
                 this._developedPlots.push(p);
             }
             else {
@@ -129,18 +152,21 @@ class BuildingPlacementManagerClass {
         window.dispatchEvent(new BuildingPlacementConstructibleChangedEvent());
     }
     isPlotIndexSelectable(plotIndex) {
-        return this.urbanPlots.find((index) => { return index == plotIndex; }) != undefined ||
+        return this.uniquePlots.find((index) => { return index == plotIndex; }) != undefined ||
+            this.urbanPlots.find((index) => { return index == plotIndex; }) != undefined ||
             this.developedPlots.find((index) => { return index == plotIndex; }) != undefined ||
             this.expandablePlots.find((index) => { return index == plotIndex; }) != undefined;
     }
     constructor() {
         this._cityID = null;
         this._currentConstructible = null;
-        //Plots that are already developed and have buildings placed on them
+        // Plots that already have a unique building
+        this._uniquePlots = [];
+        // Plots that are already developed and have buildings placed on them
         this._urbanPlots = [];
-        //Plots that have already been developed/improved (i.e. improved through city growth)
+        // Plots that have already been developed/improved (i.e. improved through city growth)
         this._developedPlots = [];
-        //Plots that have not yet been developed
+        // Plots that have not yet been developed
         this._expandablePlots = [];
         this._hoveredPlotIndex = null;
         this._selectedPlotIndex = null;
@@ -353,15 +379,16 @@ class BuildingPlacementManagerClass {
     reset() {
         this._cityID = null;
         this._currentConstructible = null;
-        this._expandablePlots = [];
+        this._uniquePlots = [];
         this._urbanPlots = [];
         this._developedPlots = [];
+        this._expandablePlots = [];
         this.hoveredPlotIndex = null;
         this.selectedPlotIndex = null;
         this.isRepairing = false;
     }
     isValidPlacementPlot(plotIndex) {
-        if (BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.developedPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
+        if (BuildingPlacementManager.uniquePlots.find(p => p == plotIndex) || BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.developedPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
             return true;
         }
         return false;
