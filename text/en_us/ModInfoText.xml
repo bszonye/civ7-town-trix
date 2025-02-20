@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Database>
     <EnglishText>
-        <Row Tag="LOC_MOD_BZ_TOWN_HALL_NAME">
-            <Text>Town Hall</Text>
+        <Row Tag="LOC_MOD_BZ_CITY_HALL_NAME">
+            <Text>City Hall</Text>
         </Row>
-        <Row Tag="LOC_MOD_BZ_TOWN_HALL_DESCRIPTION">
-            <Text>better town and city tools</Text>
+        <Row Tag="LOC_MOD_BZ_CITY_HALL_DESCRIPTION">
+            <Text>better city and town tools</Text>
         </Row>
     </EnglishText>
 </Database>
