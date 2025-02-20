@@ -14,6 +14,6 @@ added color to the city & town interface:
 
 ## unique building guides
 highlighted unique districts in the building placement lens.  all
-districts with unique building appear in Culture purple, to help you
+districts with a unique building appear in Culture purple, to help you
 find them again when placing the second building (and to help you avoid
 placing non-unique buildings there by mistake).
