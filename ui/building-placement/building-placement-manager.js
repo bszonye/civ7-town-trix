@@ -133,7 +133,6 @@ class BuildingPlacementManagerClass {
         // is the new building part of a unique quarter?
         const btype = GameInfo.Buildings.lookup(constructible.ConstructibleType);
         const newUB = btype?.TraitType;  // for example: TRAIT_ROME
-        console.warn(`TRIX btype=${btype} newUB=${newUB}`);
         // get the civilization's unique quarter
         const city = Cities.get(cityID);
         const player = Players.get(city.owner);
@@ -575,65 +574,58 @@ class BuildingPlacementManagerClass {
         });
         return cumulativeData;
     }
-    findExistingUniqueBuilding(uniqueQuarterDef, includeQueue=true) {
-        if (!this.cityID || ComponentID.isInvalid(this.cityID)) {
-            console.error("building-placement-manager - Invalid cityID passed into findExistingUniqueBuilding");
-            return -1;
-        }
-        const city = Cities.get(this.cityID);
-        if (!city) {
-            console.error(`building-placement-manager - Invalid city found for id ${this.cityID}`);
-            return -1;
-        }
-        const constructibles = city.Constructibles;
-        if (!constructibles) {
-            console.error(`building-placement-manager - Invalid construcibles found for id ${this.cityID}`);
-            return -1;
-        }
+    findExistingUniqueBuilding(uniqueQuarterDef) {
+        // a building can appear in three places:
+        // - Game.CityCommands.canStart (in-progress buildings)
+        // - city.BuildQueue (production queue)
+        // - city.Constructibles (finished buildings)
         const uniqueBuildings = new Set([
             uniqueQuarterDef.BuildingType1,
             uniqueQuarterDef.BuildingType2,
         ]);
-        for (const constructibleID of constructibles.getIds()) {
-            const constructible = Constructibles.getByComponentID(constructibleID);
-            if (!constructible) {
-                console.error(`building-placement-manager - Invalid construcible found for id ${constructibleID.toString()}`);
-                return -1;
-            }
-            const constructibleDef = GameInfo.Constructibles.lookup(constructible.type);
-            if (!constructibleDef) {
-                console.error(`building-placement-manager - Invalid constructibleDef found for type ${constructible.type}`);
-                return -1;
-            }
-            if (uniqueBuildings.has(constructibleDef.ConstructibleType)) {
-                return GameplayMap.getIndexFromLocation(constructible.location);
-            }
+        const cityID = this.cityID;
+        const city = cityID && ComponentID.isValid(cityID) && Cities.get(cityID);
+        if (!city) {
+            console.error(`bpm: invalid cityID=${this.cityID}`);
+            return -1;
         }
-        // TODO: clean up
-        // check in-progress buildings
-        for (const building of uniqueBuildings) {
-            console.warn(`TRIX building=${JSON.stringify(building)}`);
-            const typeInfo = GameInfo.Types.lookup(building);
-            console.warn(`TRIX typeInfo=${JSON.stringify(typeInfo)}`);
+        // check for a unique building in progress
+        for (const ub of uniqueBuildings) {
+            const typeInfo = GameInfo.Types.lookup(ub);
             const args = { ConstructibleType: typeInfo.Hash };
-            const result = Game.CityCommands.canStart(city.id, CityCommandTypes.PURCHASE, args, false);
-            console.warn(`TRIX result=${JSON.stringify(result)}`);
+            const result = Game.CityCommands.canStart(
+                city.id, CityCommandTypes.PURCHASE, args, false);
             if (result.InProgress && result.Plots) {
                 return result.Plots[0];
             }
         }
-        // TODO: this doesn't need to be optional
-        if (includeQueue) {
-            const queue = city.BuildQueue?.getQueue();
-            for (const q of queue) {
-                if (!q.constructibleType) continue;
-                const cdef = GameInfo.Constructibles.lookup(q.constructibleType);
-                if (cdef.ConstructibleType == uniqueQuarterDef.BuildingType1 ||
-                    cdef.ConstructibleType == uniqueQuarterDef.BuildingType2) {
-                    return GameplayMap.getIndexFromLocation(q.location);
-                }
+        // check the production queue
+        const queue = city.BuildQueue?.getQueue();
+        for (const q of queue) {
+            if (q.constructibleType == -1) continue;
+            const ctype = GameInfo.Constructibles.lookup(q.constructibleType);
+            if (uniqueBuildings.has(ctype?.ConstructibleType)) {
+                return GameplayMap.getIndexFromLocation(q.location);
             }
         }
+        // check the finished buildings
+        const constructibles = city.Constructibles ?? [];
+        for (const id of constructibles.getIds()) {
+            const constructible = Constructibles.getByComponentID(id);  // instance
+            if (!constructible) {
+                console.error(`bpm: invalid construcible id=${id.toString()}`);
+                return -1;
+            }
+            const ctype = GameInfo.Constructibles.lookup(constructible.type);  // type
+            if (!ctype) {
+                console.error(`bpm: invalid constructible type=${constructible.type}`);
+                return -1;
+            }
+            if (uniqueBuildings.has(ctype.ConstructibleType)) {
+                return GameplayMap.getIndexFromLocation(constructible.location);
+            }
+        }
+        // not found
         return -1;
     }
     getBestYieldForConstructible(cityID, constructibleDef) {
