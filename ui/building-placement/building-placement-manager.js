@@ -605,6 +605,7 @@ class BuildingPlacementManagerClass {
                 return GameplayMap.getIndexFromLocation(constructible.location);
             }
         }
+        // TODO: clean up
         // check in-progress buildings
         for (const building of uniqueBuildings) {
             console.warn(`TRIX building=${JSON.stringify(building)}`);
@@ -617,6 +618,7 @@ class BuildingPlacementManagerClass {
                 return result.Plots[0];
             }
         }
+        // TODO: this doesn't need to be optional
         if (includeQueue) {
             const queue = city.BuildQueue?.getQueue();
             for (const q of queue) {
