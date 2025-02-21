@@ -30,6 +30,24 @@ const directionNames = new Map([
     [DirectionTypes.DIRECTION_SOUTHWEST, "LOC_WORLD_DIRECTION_SOUTHWEST"],
     [DirectionTypes.DIRECTION_WEST, "LOC_WORLD_DIRECTION_WEST"]
 ]);
+function buildingsTagged(tag) {
+    return new Set(GameInfo.TypeTags.filter(e => e.Tag == tag).map(e => e.Type));
+}
+// building tag helpers
+let agelessTypes = null;
+function getAgelessTypes() {
+    if (agelessTypes == null) {
+        agelessTypes = buildingsTagged("AGELESS");
+    }
+    return agelessTypes;
+}
+let slotlessTypes = null;
+function getSlotlessTypes() {
+    if (slotlessTypes == null) {
+        slotlessTypes = buildingsTagged("IGNORE_DISTRICT_PLACEMENT_CAP");
+    }
+    return slotlessTypes;
+}
 class BuildingPlacementManagerClass {
     get cityID() {
         return this._cityID;
@@ -47,8 +65,8 @@ class BuildingPlacementManagerClass {
     get currentConstructible() {
         return this._currentConstructible;
     }
-    get uniquePlots() {
-        return this._uniquePlots;
+    get reservedPlots() {
+        return this._reservedPlots;
     }
     get urbanPlots() {
         return this._urbanPlots;
@@ -111,34 +129,77 @@ class BuildingPlacementManagerClass {
         }
         this._currentConstructible = constructible;
         this.isRepairing = operationResult.RepairDamaged;
-        const getUniqueTrait = (id) => {
-            // get a building's unique TraitType, if any
-            const building = Constructibles.getByComponentID(id);
-            if (!building) return undefined;
-            const cdef = GameInfo.Constructibles.lookup(building.type);
-            if (!cdef) return undefined;
-            const bdef = GameInfo.Buildings.lookup(cdef.ConstructibleType);
-            if (!bdef) return undefined;
-            return bdef?.TraitType;
-        }
-        operationResult.Plots?.forEach(p => {
-            // identify plots with unique buildings
+        // is the new building part of a unique quarter?
+        const btype = GameInfo.Buildings.lookup(constructible.ConstructibleType);
+        const newUB = btype?.TraitType;  // for example: TRAIT_ROME
+        // get the civilization's unique quarter
+        const city = Cities.get(cityID);
+        const player = Players.get(city.owner);
+        const civ = GameInfo.Civilizations.lookup(player.civilizationType);
+        const civTraits = GameInfo.CivilizationTraits
+            .filter(trait => trait.CivilizationType === civ.CivilizationType)
+            .map(trait => trait.TraitType);
+        const civUQ = GameInfo.UniqueQuarters.find(uq => civTraits.includes(uq.TraitType));
+        // find a partial unique quarter, if any
+        const partialUQ = this.findExistingUniqueBuilding(civUQ);  // -1 if not found
+        // check whether a district can make a unique quarter
+        const hasUQBlocker = (p) => {
             const loc = GameplayMap.getLocationFromIndex(p);
             const ids = MapConstructibles.getConstructibles(loc.x, loc.y);
-            const unique = ids.find(b => getUniqueTrait(b));
-            if (unique) {
-                this._uniquePlots.push(p)
+            // get building slots, ignoring walls
+            const slots = ids.map(id => Constructibles.getByComponentID(id))
+                .map(c => GameInfo.Constructibles.lookup(c.type))
+                .filter(c => !getSlotlessTypes().has(c.ConstructibleType));
+            // ageless buildings are blockers
+            if (slots.find(c => getAgelessTypes().has(c.ConstructibleType))) return true;
+            // current-age buildings are blockers
+            const current = Game.age;
+            if (slots.find(c => Database.makeHash(c.Age ?? "") == current)) return true;
+            // otherwise, this district can still make a unique quarter
+            return false;
+        };
+        // check whether placement is UQ-compatible
+        const isUQCompatible = (p) => {
+            // repairs and walls are always compatible with UQs
+            if (this.isRepairing) return true;
+            if (getSlotlessTypes().has(btype?.ConstructibleType)) return true;
+            // unique district selected
+            if (p == partialUQ) {
+                // good: a unique building here finishes the UQ
+                if (newUB) return true;
+                // bad: non-unique building in a unique district
+                return false;
+            }
+            // new unique building NOT on a partial UQ
+            if (newUB) {
+                // bad: there's a partial UQ somewhere else
+                if (partialUQ != -1) return false;
+                // bad: this would create a non-unique quarter
+                if (hasUQBlocker(p)) return false;
+            }
+            return true;
+        };
+        // evaluate existing districts
+        operationResult.Plots?.forEach(p => {
+            if (isUQCompatible(p)) {
+                this._urbanPlots.push(p);
             } else {
-                this._urbanPlots.push(p)
+                this._reservedPlots.push(p);
             }
         });
+        // evaluate rural and undeveloped tiles
         operationResult.ExpandUrbanPlots?.forEach(p => {
             const loc = GameplayMap.getLocationFromIndex(p);
             const city = MapCities.getCity(loc.x, loc.y);
-            if (city && MapCities.getDistrict(loc.x, loc.y) != null) {
+            if (newUB && partialUQ != -1) {
+                // new UB belongs in the partial UQ, not here
+                this._reservedPlots.push(p);
+            } else if (city && MapCities.getDistrict(loc.x, loc.y) != null) {
+                // rural tile: ok, will move citizen
                 this._developedPlots.push(p);
             }
             else {
+                // undeveloped tile: good
                 this._expandablePlots.push(p);
             }
         });
@@ -152,7 +213,7 @@ class BuildingPlacementManagerClass {
         window.dispatchEvent(new BuildingPlacementConstructibleChangedEvent());
     }
     isPlotIndexSelectable(plotIndex) {
-        return this.uniquePlots.find((index) => { return index == plotIndex; }) != undefined ||
+        return this.reservedPlots.find((index) => { return index == plotIndex; }) != undefined ||
             this.urbanPlots.find((index) => { return index == plotIndex; }) != undefined ||
             this.developedPlots.find((index) => { return index == plotIndex; }) != undefined ||
             this.expandablePlots.find((index) => { return index == plotIndex; }) != undefined;
@@ -160,8 +221,8 @@ class BuildingPlacementManagerClass {
     constructor() {
         this._cityID = null;
         this._currentConstructible = null;
-        // Plots that already have a unique building
-        this._uniquePlots = [];
+        // Plots that would block a unique quarter
+        this._reservedPlots = [];
         // Plots that are already developed and have buildings placed on them
         this._urbanPlots = [];
         // Plots that have already been developed/improved (i.e. improved through city growth)
@@ -379,7 +440,7 @@ class BuildingPlacementManagerClass {
     reset() {
         this._cityID = null;
         this._currentConstructible = null;
-        this._uniquePlots = [];
+        this._reservedPlots = [];
         this._urbanPlots = [];
         this._developedPlots = [];
         this._expandablePlots = [];
@@ -388,7 +449,7 @@ class BuildingPlacementManagerClass {
         this.isRepairing = false;
     }
     isValidPlacementPlot(plotIndex) {
-        if (BuildingPlacementManager.uniquePlots.find(p => p == plotIndex) || BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.developedPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
+        if (BuildingPlacementManager.reservedPlots.find(p => p == plotIndex) || BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.developedPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
             return true;
         }
         return false;
@@ -508,35 +569,57 @@ class BuildingPlacementManagerClass {
         return cumulativeData;
     }
     findExistingUniqueBuilding(uniqueQuarterDef) {
-        if (!this.cityID || ComponentID.isInvalid(this.cityID)) {
-            console.error("building-placement-manager - Invalid cityID passed into findExistingUniqueBuilding");
-            return -1;
-        }
-        const city = Cities.get(this.cityID);
+        // a building can appear in three places:
+        // - Game.CityCommands.canStart (in-progress buildings)
+        // - city.BuildQueue (production queue)
+        // - city.Constructibles (finished buildings)
+        const uniqueBuildings = new Set([
+            uniqueQuarterDef.BuildingType1,
+            uniqueQuarterDef.BuildingType2,
+        ]);
+        const cityID = this.cityID;
+        const city = cityID && ComponentID.isValid(cityID) && Cities.get(cityID);
         if (!city) {
-            console.error(`building-placement-manager - Invalid city found for id ${this.cityID}`);
+            console.error(`bpm: invalid cityID=${this.cityID}`);
             return -1;
         }
-        const constructibles = city.Constructibles;
-        if (!constructibles) {
-            console.error(`building-placement-manager - Invalid construcibles found for id ${this.cityID}`);
-            return -1;
+        // check for a unique building in progress
+        for (const ub of uniqueBuildings) {
+            const typeInfo = GameInfo.Types.lookup(ub);
+            const args = { ConstructibleType: typeInfo.Hash };
+            const result = Game.CityCommands.canStart(
+                city.id, CityCommandTypes.PURCHASE, args, false);
+            if (result.InProgress && result.Plots) {
+                return result.Plots[0];
+            }
         }
-        for (const constructibleID of constructibles.getIds()) {
-            const constructible = Constructibles.getByComponentID(constructibleID);
+        // check the production queue
+        const queue = city.BuildQueue?.getQueue();
+        for (const q of queue) {
+            if (q.constructibleType == -1) continue;
+            const ctype = GameInfo.Constructibles.lookup(q.constructibleType);
+            if (uniqueBuildings.has(ctype?.ConstructibleType)) {
+                return GameplayMap.getIndexFromLocation(q.location);
+            }
+        }
+        // check the finished buildings
+        const constructibles = city.Constructibles ?? [];
+        for (const id of constructibles.getIds()) {
+            const constructible = Constructibles.getByComponentID(id);  // instance
             if (!constructible) {
-                console.error(`building-placement-manager - Invalid construcible found for id ${constructibleID.toString()}`);
+                console.error(`bpm: invalid construcible id=${id.toString()}`);
                 return -1;
             }
-            const constructibleDef = GameInfo.Constructibles.lookup(constructible.type);
-            if (!constructibleDef) {
-                console.error(`building-placement-manager - Invalid constructibleDef found for type ${constructible.type}`);
+            const ctype = GameInfo.Constructibles.lookup(constructible.type);  // type
+            if (!ctype) {
+                console.error(`bpm: invalid constructible type=${constructible.type}`);
                 return -1;
             }
-            if (constructibleDef.ConstructibleType == uniqueQuarterDef.BuildingType1 || constructibleDef.ConstructibleType == uniqueQuarterDef.BuildingType2) {
+            if (uniqueBuildings.has(ctype.ConstructibleType)) {
                 return GameplayMap.getIndexFromLocation(constructible.location);
             }
         }
+        // not found
         return -1;
     }
     getBestYieldForConstructible(cityID, constructibleDef) {
