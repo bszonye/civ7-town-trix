@@ -129,9 +129,11 @@ class BuildingPlacementManagerClass {
         }
         this._currentConstructible = constructible;
         this.isRepairing = operationResult.RepairDamaged;
+        // TODO: streamline this for this.isReparing case
         // is the new building part of a unique quarter?
         const btype = GameInfo.Buildings.lookup(constructible.ConstructibleType);
         const newUB = btype?.TraitType;  // for example: TRAIT_ROME
+        console.warn(`TRIX btype=${btype} newUB=${newUB}`);
         // get the civilization's unique quarter
         const city = Cities.get(cityID);
         const player = Players.get(city.owner);
@@ -163,7 +165,9 @@ class BuildingPlacementManagerClass {
         }
         // evaluate existing districts
         operationResult.Plots?.forEach(p => {
-            if (getSlotlessTypes().has(btype.ConstructibleType)) {
+            if (this.isRepairing) {
+                this._urbanPlots.push(p);  // good
+            } else if (getSlotlessTypes().has(btype?.ConstructibleType)) {
                 // walls never conflict with unique quarters
                 this._urbanPlots.push(p);  // good
             } else if (p == partialUQ) {

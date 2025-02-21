@@ -23,7 +23,7 @@ var HighlightColors;
     HighlightColors[HighlightColors["okay"] = 0xc800f2fe] = "okay";
     HighlightColors[HighlightColors["good"] = 0xc81de5b5] = "good";
     HighlightColors[HighlightColors["best"] = 0xc84db123] = "best";
-    HighlightColors[HighlightColors["worst"] = 0xc80033aa] = "worst";
+    HighlightColors[HighlightColors["worst"] = 0xc80055cc] = "worst";
 })(HighlightColors || (HighlightColors = {}));
 /**
  * Handler for INTERFACEMODE_PLACE_BUILDING.
