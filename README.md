@@ -24,6 +24,10 @@ including:
 the interface now recognizes unique buildings in progress and in the
 production queue, to help you plan both buildings at the same time.
 
+## bug fixes
+adjacency arrows now appear every time you place a building.  previously
+they would only appear the very first time.
+
 ## compatibility with other mods
 known interactions:
 

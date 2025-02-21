@@ -28,11 +28,11 @@ class WorkerYieldsLensLayer {
     initLayer() {
         this.yieldSpriteGrid.setVisible(false);
         this.adjacenciesSpriteGrid.setVisible(false);
-        window.addEventListener(BuildingPlacementHoveredPlotChangedEventName, this.buildingPlacementPlotChangedListener);
     }
     applyLayer() {
         this.realizeBuidlingPlacementSprites();
         this.yieldSpriteGrid.setVisible(true);
+        window.addEventListener(BuildingPlacementHoveredPlotChangedEventName, this.buildingPlacementPlotChangedListener);
     }
     removeLayer() {
         this.yieldSpriteGrid.clear();
