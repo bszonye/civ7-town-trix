@@ -47,8 +47,8 @@ class BuildingPlacementManagerClass {
     get currentConstructible() {
         return this._currentConstructible;
     }
-    get uniquePlots() {
-        return this._uniquePlots;
+    get reservedPlots() {
+        return this._reservedPlots;
     }
     get urbanPlots() {
         return this._urbanPlots;
@@ -111,34 +111,78 @@ class BuildingPlacementManagerClass {
         }
         this._currentConstructible = constructible;
         this.isRepairing = operationResult.RepairDamaged;
-        const getUniqueTrait = (id) => {
-            // get a building's unique TraitType, if any
-            const building = Constructibles.getByComponentID(id);
-            if (!building) return undefined;
-            const cdef = GameInfo.Constructibles.lookup(building.type);
-            if (!cdef) return undefined;
-            const bdef = GameInfo.Buildings.lookup(cdef.ConstructibleType);
-            if (!bdef) return undefined;
-            return bdef?.TraitType;
+        // is the new building part of a unique quarter?
+        const btype = GameInfo.Buildings.lookup(constructible.ConstructibleType);
+        const newUB = btype?.TraitType;  // for example: TRAIT_ROME
+        // get the civilization's unique quarter
+        const city = Cities.get(cityID);
+        const player = Players.get(city.owner);
+        const civ = GameInfo.Civilizations.lookup(player.civilizationType);
+        const civTraits = GameInfo.CivilizationTraits
+            .filter(trait => trait.CivilizationType === civ.CivilizationType)
+            .map(trait => trait.TraitType);
+        const civUQ = GameInfo.UniqueQuarters.find(uq => civTraits.includes(uq.TraitType));
+        // find a partial unique quarter, if any
+        const partialUQ = this.findExistingUniqueBuilding(civUQ);  // -1 if not found
+        // count open slots in a district
+        const isTypeTagged = (constructible, tag) => {
+            const ctype = constructible.ConstructibleType;
+            return GameInfo.TypeTags.find(e => e.Type == ctype && e.Tag == tag);
         }
-        operationResult.Plots?.forEach(p => {
-            // identify plots with unique buildings
+        const isBlocked = (p) => {
+            // is a unique quarter blocked by a non-obsolete building?
             const loc = GameplayMap.getLocationFromIndex(p);
             const ids = MapConstructibles.getConstructibles(loc.x, loc.y);
-            const unique = ids.find(b => getUniqueTrait(b));
-            if (unique) {
-                this._uniquePlots.push(p)
+            // get building slots, ignoring walls
+            const slots = ids.map(id => Constructibles.getByComponentID(id))
+                .map(c => GameInfo.Constructibles.lookup(c.type))
+                .filter(c => !isTypeTagged(c, "IGNORE_DISTRICT_PLACEMENT_CAP"));
+            // ageless buildings are blockers
+            if (slots.find(c => isTypeTagged(c, "AGELESS"))) return true;
+            // current-age buildings are blockers
+            const current = Game.age;
+            if (slots.find(c => Database.makeHash(c.Age ?? "") == current)) return true;
+            return false;
+        }
+        // evaluate existing districts
+        operationResult.Plots?.forEach(p => {
+            if (p == partialUQ) {
+                // unique building here: plot reserved for UQ partner
+                if (newUB) {
+                    this._urbanPlots.push(p);  // good
+                } else {
+                    this._reservedPlots.push(p);
+                }
+            } else if (newUB) {
+                // new unique building NOT on a partial UQ
+                if (partialUQ != -1) {
+                    // new UB belongs in the partial UQ, not here
+                    this._reservedPlots.push(p);
+                } else if (isBlocked(p)) {
+                    // no room for the matching UB
+                    this._reservedPlots.push(p);
+                } else {
+                    // existing district with room: best
+                    this._urbanPlots.push(p);
+                }
             } else {
-                this._urbanPlots.push(p)
+                // existing district: best
+                this._urbanPlots.push(p);
             }
         });
+        // evaluate rural and undeveloped tiles
         operationResult.ExpandUrbanPlots?.forEach(p => {
             const loc = GameplayMap.getLocationFromIndex(p);
             const city = MapCities.getCity(loc.x, loc.y);
-            if (city && MapCities.getDistrict(loc.x, loc.y) != null) {
+            if (newUB && partialUQ != -1) {
+                // new UB belongs in the partial UQ, not here
+                this._reservedPlots.push(p);
+            } else if (city && MapCities.getDistrict(loc.x, loc.y) != null) {
+                // rural tile: ok, will move citizen
                 this._developedPlots.push(p);
             }
             else {
+                // undeveloped tile: good
                 this._expandablePlots.push(p);
             }
         });
@@ -152,7 +196,7 @@ class BuildingPlacementManagerClass {
         window.dispatchEvent(new BuildingPlacementConstructibleChangedEvent());
     }
     isPlotIndexSelectable(plotIndex) {
-        return this.uniquePlots.find((index) => { return index == plotIndex; }) != undefined ||
+        return this.reservedPlots.find((index) => { return index == plotIndex; }) != undefined ||
             this.urbanPlots.find((index) => { return index == plotIndex; }) != undefined ||
             this.developedPlots.find((index) => { return index == plotIndex; }) != undefined ||
             this.expandablePlots.find((index) => { return index == plotIndex; }) != undefined;
@@ -160,8 +204,8 @@ class BuildingPlacementManagerClass {
     constructor() {
         this._cityID = null;
         this._currentConstructible = null;
-        // Plots that already have a unique building
-        this._uniquePlots = [];
+        // Plots that would block a unique quarter
+        this._reservedPlots = [];
         // Plots that are already developed and have buildings placed on them
         this._urbanPlots = [];
         // Plots that have already been developed/improved (i.e. improved through city growth)
@@ -379,7 +423,7 @@ class BuildingPlacementManagerClass {
     reset() {
         this._cityID = null;
         this._currentConstructible = null;
-        this._uniquePlots = [];
+        this._reservedPlots = [];
         this._urbanPlots = [];
         this._developedPlots = [];
         this._expandablePlots = [];
@@ -388,7 +432,7 @@ class BuildingPlacementManagerClass {
         this.isRepairing = false;
     }
     isValidPlacementPlot(plotIndex) {
-        if (BuildingPlacementManager.uniquePlots.find(p => p == plotIndex) || BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.developedPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
+        if (BuildingPlacementManager.reservedPlots.find(p => p == plotIndex) || BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.developedPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
             return true;
         }
         return false;

@@ -60,7 +60,7 @@ class WorkerYieldsLensLayer {
             console.error("building-placement-layer: No valid Yields object attached to city with city ID: " + ComponentID.toLogString(BuildingPlacementManager.cityID));
             return;
         }
-        const validPlots = BuildingPlacementManager.expandablePlots.concat(BuildingPlacementManager.developedPlots.concat(BuildingPlacementManager.urbanPlots.concat(BuildingPlacementManager.uniquePlots)));
+        const validPlots = BuildingPlacementManager.expandablePlots.concat(BuildingPlacementManager.developedPlots.concat(BuildingPlacementManager.urbanPlots.concat(BuildingPlacementManager.reservedPlots)));
         for (let i = 0; i < validPlots.length; i++) {
             const plotYieldGainPills = [];
             const plotYieldLossPills = [];

@@ -25,6 +25,7 @@ export default [
                 Constructibles: "readonly",
                 Controls: "readonly",
                 CustomEvent: "readonly",
+                Database: "readonly",
                 DirectionTypes: "readonly",
                 DistrictTypes: "readonly",
                 Districts: "readonly",
