@@ -129,7 +129,6 @@ class BuildingPlacementManagerClass {
         }
         this._currentConstructible = constructible;
         this.isRepairing = operationResult.RepairDamaged;
-        // TODO: streamline this for this.isReparing case
         // is the new building part of a unique quarter?
         const btype = GameInfo.Buildings.lookup(constructible.ConstructibleType);
         const newUB = btype?.TraitType;  // for example: TRAIT_ROME
@@ -143,8 +142,8 @@ class BuildingPlacementManagerClass {
         const civUQ = GameInfo.UniqueQuarters.find(uq => civTraits.includes(uq.TraitType));
         // find a partial unique quarter, if any
         const partialUQ = this.findExistingUniqueBuilding(civUQ);  // -1 if not found
-        // is a unique quarter blocked by a non-obsolete building?
-        const isBlocked = (p) => {
+        // check whether a district can make a unique quarter
+        const hasUQBlocker = (p) => {
             const loc = GameplayMap.getLocationFromIndex(p);
             const ids = MapConstructibles.getConstructibles(loc.x, loc.y);
             // get building slots, ignoring walls
@@ -152,45 +151,40 @@ class BuildingPlacementManagerClass {
                 .map(c => GameInfo.Constructibles.lookup(c.type))
                 .filter(c => !getSlotlessTypes().has(c.ConstructibleType));
             // ageless buildings are blockers
-            if (slots.find(c => getAgelessTypes().has(c.ConstructibleType))) {
-                return true
-            }
+            if (slots.find(c => getAgelessTypes().has(c.ConstructibleType))) return true;
             // current-age buildings are blockers
             const current = Game.age;
-            if (slots.find(c => Database.makeHash(c.Age ?? "") == current)) {
-                return true;
-            }
+            if (slots.find(c => Database.makeHash(c.Age ?? "") == current)) return true;
+            // otherwise, this district can still make a unique quarter
             return false;
-        }
+        };
+        // check whether placement is UQ-compatible
+        const isUQCompatible = (p) => {
+            // repairs and walls are always compatible with UQs
+            if (this.isRepairing) return true;
+            if (getSlotlessTypes().has(btype?.ConstructibleType)) return true;
+            // unique district selected
+            if (p == partialUQ) {
+                // good: a unique building here finishes the UQ
+                if (newUB) return true;
+                // bad: non-unique building in a unique district
+                return false;
+            }
+            // new unique building NOT on a partial UQ
+            if (newUB) {
+                // bad: there's a partial UQ somewhere else
+                if (partialUQ != -1) return false;
+                // bad: this would create a non-unique quarter
+                if (hasUQBlocker(p)) return false;
+            }
+            return true;
+        };
         // evaluate existing districts
         operationResult.Plots?.forEach(p => {
-            if (this.isRepairing) {
-                this._urbanPlots.push(p);  // good
-            } else if (getSlotlessTypes().has(btype?.ConstructibleType)) {
-                // walls never conflict with unique quarters
-                this._urbanPlots.push(p);  // good
-            } else if (p == partialUQ) {
-                // unique building here: plot reserved for UQ partner
-                if (newUB) {
-                    this._urbanPlots.push(p);  // good
-                } else {
-                    this._reservedPlots.push(p);
-                }
-            } else if (newUB) {
-                // new unique building NOT on a partial UQ
-                if (partialUQ != -1) {
-                    // new UB belongs in the partial UQ, not here
-                    this._reservedPlots.push(p);
-                } else if (isBlocked(p)) {
-                    // no room for the matching UB
-                    this._reservedPlots.push(p);
-                } else {
-                    // existing district with room: best
-                    this._urbanPlots.push(p);
-                }
-            } else {
-                // existing district: best
+            if (isUQCompatible(p)) {
                 this._urbanPlots.push(p);
+            } else {
+                this._reservedPlots.push(p);
             }
         });
         // evaluate rural and undeveloped tiles
