@@ -143,12 +143,14 @@ class BuildingPlacementManagerClass {
         // find a partial unique quarter, if any
         const partialUQ = this.findExistingUniqueBuilding(civUQ);  // -1 if not found
         // check whether a district can make a unique quarter
+        // TODO: account for potential blockers in queue / in progress
         const hasUQBlocker = (p) => {
             const loc = GameplayMap.getLocationFromIndex(p);
             const ids = MapConstructibles.getConstructibles(loc.x, loc.y);
             // get building slots, ignoring walls
             const slots = ids.map(id => Constructibles.getByComponentID(id))
                 .map(c => GameInfo.Constructibles.lookup(c.type))
+                .filter(c => c.ConstructibleClass == "BUILDING")
                 .filter(c => !getSlotlessTypes().has(c.ConstructibleType));
             // ageless buildings are blockers
             if (slots.find(c => getAgelessTypes().has(c.ConstructibleType))) return true;
@@ -191,8 +193,9 @@ class BuildingPlacementManagerClass {
         operationResult.ExpandUrbanPlots?.forEach(p => {
             const loc = GameplayMap.getLocationFromIndex(p);
             const city = MapCities.getCity(loc.x, loc.y);
-            if (newUB && partialUQ != -1) {
-                // new UB belongs in the partial UQ, not here
+            // still need to check UQ compatibility outside of districts
+            if (!isUQCompatible(p)) {
+                // placement clashes with a unique quarter in queue
                 this._reservedPlots.push(p);
             } else if (city && MapCities.getDistrict(loc.x, loc.y) != null) {
                 // rural tile: ok, will move citizen
@@ -574,9 +577,11 @@ class BuildingPlacementManagerClass {
         // - city.BuildQueue (production queue)
         // - city.Constructibles (finished buildings)
         const uniqueBuildings = new Set([
-            uniqueQuarterDef.BuildingType1,
-            uniqueQuarterDef.BuildingType2,
-        ]);
+            uniqueQuarterDef?.BuildingType1,
+            uniqueQuarterDef?.BuildingType2,
+        ].filter(e => e));  // eliminate empty/null/undefined buildings
+        if (!uniqueBuildings.size) return -1;  // no unique quarter
+        // get city info
         const cityID = this.cityID;
         const city = cityID && ComponentID.isValid(cityID) && Cities.get(cityID);
         if (!city) {
