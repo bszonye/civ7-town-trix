@@ -577,9 +577,11 @@ class BuildingPlacementManagerClass {
         // - city.BuildQueue (production queue)
         // - city.Constructibles (finished buildings)
         const uniqueBuildings = new Set([
-            uniqueQuarterDef.BuildingType1,
-            uniqueQuarterDef.BuildingType2,
-        ]);
+            uniqueQuarterDef?.BuildingType1,
+            uniqueQuarterDef?.BuildingType2,
+        ].filter(e => e));  // eliminate empty/null/undefined buildings
+        if (!uniqueBuildings.size) return -1;  // no unique quarter
+        // get city info
         const cityID = this.cityID;
         const city = cityID && ComponentID.isValid(cityID) && Cities.get(cityID);
         if (!city) {
