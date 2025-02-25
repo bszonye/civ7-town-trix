@@ -2,10 +2,10 @@ import { ProductionPanelCategory } from '/base-standard/ui/production-chooser/pr
 import { AdvisorUtilities } from '/base-standard/ui/tutorial/tutorial-support.js';
 import { FxsChooserItem } from '/core/ui/components/fxs-chooser-item.js';
 
-const DEBUG_GRAY = ["background-color", "rgba(141, 151, 166, 0.5)"];
-const DEBUG_RED = ["background-color", "rgba(150, 57, 57, .35)"];
-const DEBUG_GREEN = ["background-color", "rgba(57, 150, 57, .35)"];
-const DEBUG_BLUE = ["background-color", "rgba(57, 57, 150, .35)"];
+const _DEBUG_GRAY = ["background-color", "rgba(141, 151, 166, 0.5)"];
+const _DEBUG_RED = ["background-color", "rgba(150, 57, 57, .35)"];
+const _DEBUG_GREEN = ["background-color", "rgba(57, 150, 57, .35)"];
+const _DEBUG_BLUE = ["background-color", "rgba(57, 57, 150, .35)"];
 
 const categoryTooltipStyleMap = {
     [ProductionPanelCategory.BUILDINGS]: 'production-constructible-tooltip',
@@ -79,7 +79,7 @@ export class ProductionChooserItem extends FxsChooserItem {
     }
     render() {
         this.Root.classList.add('text-xs', 'leading-tight');
-        this.container.classList.add('flex', 'justify-start', 'items-center', 'p-1', 'font-title');
+        this.container.classList.add('flex', 'justify-start', 'items-center', 'p-1');
         this.iconElement.classList.add('size-12', 'bg-contain', 'bg-center', 'bg-no-repeat');
         this.container.appendChild(this.iconElement);
         const infoContainer = document.createElement('div');
@@ -96,18 +96,18 @@ export class ProductionChooserItem extends FxsChooserItem {
         rightColumn.classList.value = 'flex-auto relative flex flex-col items-end justify-center';
         const statsContainer = document.createElement('div');
         statsContainer.classList.value = 'flex items-center';
-        // statsContainer.style.setProperty(...DEBUG_GRAY);
+        // statsContainer.style.setProperty(..._DEBUG_GRAY);
         this.secondaryDetailsElement.classList.value = 'invisible flex';
         statsContainer.appendChild(this.secondaryDetailsElement);
         this.agelessContainer.classList.value = 'hidden flex items-center';
         this.agelessContainer.innerHTML = '<img src="fs://game/city_ageless.png" class="size-6"/>';
         statsContainer.appendChild(this.agelessContainer);
         this.costContainer.classList.value = 'flex items-center';
-        // this.costContainer.style.setProperty(...DEBUG_GRAY);
+        // this.costContainer.style.setProperty(..._DEBUG_GRAY);
         this.costAmountElement.classList.value = 'font-title text-base mr-1';
         this.costContainer.appendChild(this.costAmountElement);
         this.costIconElement.classList.value = 'size-8 bg-contain bg-center bg-no-repeat -m-1';
-        // this.costIconElement.style.setProperty(...DEBUG_RED);
+        // this.costIconElement.style.setProperty(..._DEBUG_RED);
         this.costContainer.appendChild(this.costIconElement);
         rightColumn.appendChild(statsContainer);
         rightColumn.appendChild(this.costContainer);

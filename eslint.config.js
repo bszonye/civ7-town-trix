@@ -8,7 +8,7 @@ export default [
             "no-unused-vars": [
                 "warn",
                 {
-                    "varsIgnorePattern": "DEBUG",
+                    "varsIgnorePattern": "^_",
                     "argsIgnorePattern": "^_",
                 }
             ]
@@ -16,6 +16,7 @@ export default [
         languageOptions: {
             globals: {
                 AdvisorySubjectTypes: "readonly",
+                Camera: "readonly",
                 Cities: "readonly",
                 CityCommandTypes: "readonly",
                 CityOperationTypes: "readonly",
@@ -34,6 +35,7 @@ export default [
                 GameInfo: "readonly",
                 GameplayMap: "readonly",
                 GrowthTypes: "readonly",
+                HTMLElement: "readonly",
                 IndependentRelationship: "readonly",
                 Input: "readonly",
                 InputActionStatuses: "readonly",
