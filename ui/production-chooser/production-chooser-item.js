@@ -79,7 +79,7 @@ export class ProductionChooserItem extends FxsChooserItem {
     }
     render() {
         this.Root.classList.add('text-xs', 'leading-tight');
-        this.container.classList.add('flex', 'justify-start', 'items-center', 'p-1', 'font-title');
+        this.container.classList.add('flex', 'justify-start', 'items-center', 'p-1');
         this.iconElement.classList.add('size-12', 'bg-contain', 'bg-center', 'bg-no-repeat');
         this.container.appendChild(this.iconElement);
         const infoContainer = document.createElement('div');
