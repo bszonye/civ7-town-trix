@@ -36,9 +36,9 @@ const cityDetailTabItems = [
     {
         id: cityDetailTabID.overview,
         icon: {
-            default: UI.getIconBLP("CITY_SETTLEMENT"),
-            hover: UI.getIconBLP("CITY_SETTLEMENT_HI"),
-            focus: UI.getIconBLP("CITY_SETTLEMENT_HI")
+            default: UI.getIconBLP("CITY_BUILDINGS"),
+            hover: UI.getIconBLP("CITY_BUILDINGS_HI"),
+            focus: UI.getIconBLP("CITY_BUILDINGS_HI")
         },
         iconClass: "size-16",
         headerText: "LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB"
@@ -56,9 +56,9 @@ const cityDetailTabItems = [
     {
         id: cityDetailTabID.buildings,
         icon: {
-            default: UI.getIconBLP("CITY_BUILDINGS"),
-            hover: UI.getIconBLP("CITY_BUILDINGS_HI"),
-            focus: UI.getIconBLP("CITY_BUILDINGS_HI")
+            default: UI.getIconBLP("CITY_SETTLEMENT"),
+            hover: UI.getIconBLP("CITY_SETTLEMENT_HI"),
+            focus: UI.getIconBLP("CITY_SETTLEMENT_HI")
         },
         iconClass: "size-16",
         headerText: "LOC_UI_CITY_DETAILS_BUILDINGS_TAB"
@@ -323,11 +323,11 @@ class PanelCityDetails extends Panel {
         slot.id = cityDetailTabID.overview;
         slot.innerHTML = `
         <fxs-scrollable class="w-128">
-            <div class="connections-container flex flex-col items-center m-1">
-                <p class="font-title ml-4 mb-2 uppercase text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS"></p>
-                <div class="flex justify-center w-96">
-                    <div class="connected-cities-container flex-1 flex flex-col items-center mx-1"></div>
-                    <div class="connected-towns-container flex-1 flex flex-col items-center mx-1"></div>
+            <div class="connections-container flex flex-col items-center mt-2">
+                <p class="font-title uppercase text-base text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS"></p>
+                <div class="flex justify-center w-84 text-sm">
+                    <div class="connected-cities-container flex-1 flex flex-col items-center mr-0\\.5"></div>
+                    <div class="connected-towns-container flex-1 flex flex-col items-center ml-0\\.5"></div>
                 </div>
             </div>
         </fxs-scrollable>
@@ -477,6 +477,11 @@ class PanelCityDetails extends Panel {
             this.connectedTownsContainer,
             'LOC_BZ_UI_CITY_DETAILS_TOWNS',
             CityDetails.connectedTowns);
+        if (overviewHasFocus) {
+            FocusManager.setFocus(this.overviewSlot);
+        }
+        // Flag so we can give the overview back focus after updating
+        const growthHasFocus = this.overviewSlot.contains(FocusManager.getFocus());
         // Growth
         if (CityDetails.isTown) {
             this.specialistContainer.classList.add('hidden');
@@ -524,7 +529,7 @@ class PanelCityDetails extends Panel {
             this.happinessIcon.setAttribute("data-icon-id", "YIELD_HAPPINESS");
         }
         this.happinessPerTurn.textContent = Locale.compose("LOC_UI_CITY_DETAILS_YIELD_ONE_DECIMAL", CityDetails.happinessPerTurn);
-        if (overviewHasFocus) {
+        if (growthHasFocus) {
             FocusManager.setFocus(this.overviewSlot);
         }
         // Flag so we can give the constructibles back focus after updating
@@ -577,13 +582,14 @@ class PanelCityDetails extends Panel {
         container.innerHTML = "";
         // TODO: styling
         const eHead = document.createElement("div");
+        eHead.classList.value = "font-title uppercase my-2";
         eHead.setAttribute("data-l10n-id", Locale.compose(head, list.length));
         container.appendChild(eHead);
         const names = list.map(i => Locale.compose(i.name));
         names.sort((a, b) => a.localeCompare(b));
         for (const name of names) {
             const eName = document.createElement("div");
-            eName.setAttribute("data-l10n-id", name);
+            eName.textContent = name;
             container.appendChild(eName);
         }
     }
