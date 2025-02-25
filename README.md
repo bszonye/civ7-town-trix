@@ -1,4 +1,4 @@
-# City Hall 1.2.0
+# City Hall 1.2.1
 better city & town tools for Civilization VII
 
 ## improved production chooser

@@ -31,7 +31,6 @@ const BZ_DIVIDER = `\
     <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
 </div>
 `
-console.warn(`TRIX ${BZ_DIVIDER}`);
 var cityDetailTabID;
 (function (cityDetailTabID) {
     cityDetailTabID["overview"] = "city-details-tab-overview";

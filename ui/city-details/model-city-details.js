@@ -60,7 +60,6 @@ class CityDetailsModel {
             this.ruralCitizens = city.ruralPopulation - city.pendingPopulation;
             this.urbanCitizens = city.urbanPopulation;
             this.specialistCitizens = city.population - city.urbanPopulation - city.ruralPopulation;
-            console.warn(`TRIX ${Object.keys(city)}`);
             this.currentCitizens = city.population;  // also used by Citizen Growth
             // connected settlements
             this.setConnections(city);
