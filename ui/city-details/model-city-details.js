@@ -21,6 +21,9 @@ class CityDetailsModel {
         this.connectedTowns = [];
         this.specialistPerTile = 0;
         this.currentCitizens = 0;
+        this.urbanCitizens = 0;
+        this.ruralCitizens = 0;
+        this.specialistCitizens = 0;
         this.turnsToNextCitizen = 0;
         this.happinessPerTurn = 0;
         this.hasUnrest = false;
@@ -55,6 +58,8 @@ class CityDetailsModel {
             this.setConnections(city);
             // Citizen Growth
             this.currentCitizens = city.population;
+            this.urbanCitizens = city.urbanPopulation;
+            this.ruralCitizens = city.ruralPopulation;
             const cityYields = city.Yields;
             if (!cityYields) {
                 console.error(`model-city-details: Failed to get city.Yields for ID ${selectedCityID}`);

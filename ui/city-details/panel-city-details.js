@@ -25,6 +25,13 @@ export class CityDetailsClosedEvent extends CustomEvent {
         super(CityDetailsClosedEventName, { bubbles: false });
     }
 }
+const BZ_DIVIDER = `\
+<div class="flex w-96 self-center">
+    <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
+    <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
+</div>
+`
+console.warn(`TRIX ${BZ_DIVIDER}`);
 var cityDetailTabID;
 (function (cityDetailTabID) {
     cityDetailTabID["overview"] = "city-details-tab-overview";
@@ -323,6 +330,9 @@ class PanelCityDetails extends Panel {
         slot.id = cityDetailTabID.overview;
         slot.innerHTML = `
         <fxs-scrollable class="w-128">
+            <div class="population-container flex flex-col items-center mt-2">
+            </div>
+            ${BZ_DIVIDER}
             <div class="connections-container flex flex-col items-center mt-2">
                 <p class="font-title uppercase text-base text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS"></p>
                 <div class="flex justify-center w-84 text-sm">
@@ -454,7 +464,7 @@ class PanelCityDetails extends Panel {
         slot.innerHTML = `
 			<fxs-scrollable class="yields-scrollable">
 				<div class="yields-container w-128"></div>
-			</div>
+			</fxs-scrollable>
 		`;
         this.slotGroup.appendChild(slot);
     }
@@ -585,7 +595,7 @@ class PanelCityDetails extends Panel {
         container.innerHTML = "";
         // TODO: styling
         const eHead = document.createElement("div");
-        eHead.classList.value = "font-title uppercase my-2";
+        eHead.classList.value = "font-title uppercase my-1";
         eHead.setAttribute("data-l10n-id", Locale.compose(head, list.length));
         container.appendChild(eHead);
         const names = list.map(i => Locale.compose(i.name));
@@ -723,7 +733,7 @@ class PanelCityDetails extends Panel {
     }
     addDistrictData(districtData) {
         const mainDiv = document.createElement("div");
-        mainDiv.classList.add("flex", "flex-col", "ml-4", "my-1");
+        mainDiv.classList.add("flex", "flex-col", "ml-4");
         if (districtData.name && districtData.description) {
             const uniqueQuarterContainer = document.createElement("div");
             uniqueQuarterContainer.classList.add("flex", "pl-6");
@@ -737,7 +747,7 @@ class PanelCityDetails extends Panel {
             uniqueQuarterTextContainer.classList.add("flex", "flex-col", "flex-auto", "pr-1");
             uniqueQuarterContainer.appendChild(uniqueQuarterTextContainer);
             const districtName = document.createElement("div");
-            districtName.classList.add("my-1", "font-title", "uppercase", "text-sm");
+            districtName.classList.add("my-1", "font-title", "uppercase", "text-xs");
             districtName.innerHTML = districtData.name;
             uniqueQuarterTextContainer.appendChild(districtName);
             const districtDescription = document.createElement("div");
@@ -767,7 +777,7 @@ class PanelCityDetails extends Panel {
         nameContainer.classList.add("flex", "ml-2", "center");
         rightContainer.appendChild(nameContainer);
         const name = document.createElement("div");
-        name.classList.add("mr-2", "font-title", "uppercase", "text-sm");
+        name.classList.add("mr-2", "font-title", "uppercase", "text-xs");
         name.textContent = Locale.compose(constructibleData.name);
         nameContainer.appendChild(name);
         if (constructibleData.damaged) {
@@ -785,12 +795,12 @@ class PanelCityDetails extends Panel {
             for (const [_yieldType, yieldData] of constructibleData.yieldMap) {
                 if (yieldData.icon && yieldData.iconContext) {
                     const yieldEntry = document.createElement("div");
-                    yieldEntry.classList.add("flex");
+                    yieldEntry.classList.add("flex", "mx-1");
                     yieldContainer.appendChild(yieldEntry);
                     const yieldIcon = document.createElement("fxs-icon");
                     yieldIcon.setAttribute("data-icon-context", yieldData.iconContext);
                     yieldIcon.setAttribute("data-icon-id", yieldData.icon);
-                    yieldIcon.classList.add("ml-2", "size-6");
+                    yieldIcon.classList.add("size-6");
                     yieldEntry.appendChild(yieldIcon);
                     const yieldValue = document.createElement("div");
                     yieldValue.classList.add("text-xs", "self-center");
@@ -809,12 +819,12 @@ class PanelCityDetails extends Panel {
             for (const [_maintenanceType, maintenanceData] of constructibleData.maintenanceMap) {
                 if (maintenanceData.icon && maintenanceData.iconContext) {
                     const maintenanceEntry = document.createElement("div");
-                    maintenanceEntry.classList.add("flex");
+                    maintenanceEntry.classList.add("flex", "mx-1");
                     maintenanceContainer.appendChild(maintenanceEntry);
                     const maintenanceIcon = document.createElement("fxs-icon");
                     maintenanceIcon.setAttribute("data-icon-context", maintenanceData.iconContext);
                     maintenanceIcon.setAttribute("data-icon-id", maintenanceData.icon);
-                    maintenanceIcon.classList.add("ml-2", "size-6");
+                    maintenanceIcon.classList.add("size-6");
                     maintenanceEntry.appendChild(maintenanceIcon);
                     const maintenanceValue = document.createElement("div");
                     maintenanceValue.classList.add("text-xs", "self-center", "text-negative-light");
@@ -876,9 +886,9 @@ class PanelCityDetails extends Panel {
         const dividerDiv = document.createElement("div");
         dividerDiv.classList.add("flex", "w-96", "self-center");
         dividerDiv.innerHTML = `
-			<div class="w-1\\/2 h-2 bg-cover bg-no-repeat city-details-half-divider"></div>
-			<div class="w-1\\/2 h-2 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
-		`;
+            <div class="w-1\\/2 -my-1 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
+            <div class="w-1\\/2 -my-1 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
+        `;
         return dividerDiv;
     }
 }
