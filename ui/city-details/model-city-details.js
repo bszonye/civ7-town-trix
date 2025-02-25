@@ -98,6 +98,7 @@ class CityDetailsModel {
                     location: constructible.location,
                     type: constructibleDefinition.ConstructibleType,
                     name: constructibleDefinition.Name,
+                    population: constructibleDefinition.Population,
                     damaged: constructible.damaged,
                     icon: constructibleDefinition.ConstructibleType,
                     iconContext: constructibleDefinition.ConstructibleClass
@@ -151,6 +152,16 @@ class CityDetailsModel {
                         console.error(`model-city-details: Failed to add ${constructibleDefinition.Name} of class ${constructibleDefinition.ConstructibleClass} to constructible lists!`);
                 }
             }
+            // sort buildings by population (walls last)
+            for (const district of this.buildings) {
+                district.constructibleData.sort((a, b) =>
+                    b.population - a.population);
+            }
+            // sort improvements and wonders by name
+            this.improvements.sort((a, b) =>
+                Locale.compose(a.name ?? '').localeCompare(Locale.compose(b.name ?? '')));
+            this.wonders.sort((a, b) =>
+                Locale.compose(a.name ?? '').localeCompare(Locale.compose(b.name ?? '')));
             // Yields Breakdown
             this.yields = [];
             const yields = cityYields.getYields();
@@ -369,6 +380,7 @@ class CityDetailsModel {
         return;
     }
     getUniqueQuarterDefinition() {
+        // TODO: find unique quarters from previous ages?
         const localPlayer = Players.get(GameContext.localPlayerID);
         if (!localPlayer) {
             console.error(`model-city-details: getUniqueQuarterDefinition() failed to find localPlayerID ${GameContext.localPlayerID}`);

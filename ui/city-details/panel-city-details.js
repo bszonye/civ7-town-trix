@@ -426,20 +426,20 @@ class PanelCityDetails extends Panel {
 		<fxs-scrollable>
 			<div class="flex flex-col w-128">
 				<div class="buildings-category flex m-1">
-					<fxs-icon class="size-16 m-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
+					<fxs-icon class="size-12 m-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
 					<div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
 				</div>
-				<div class="buildings-list flex-col m-1"></div>
+				<div class="buildings-list flex-col mx-1"></div>
 				<div class="improvements-category flex m-1">
-					<fxs-icon class="size-16 m-1" data-icon-id="CITY_IMPROVEMENTS_LIST"></fxs-icon>
+					<fxs-icon class="size-12 m-1" data-icon-id="CITY_IMPROVEMENTS_LIST"></fxs-icon>
 					<div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_IMPROVEMENTS"></div>
 				</div>
-				<div class="improvements-list flex-col m-1"></div>
+				<div class="improvements-list flex-col mx-1"></div>
 				<div class="wonders-category flex m-1">
-					<fxs-icon class="size-16 m-1" data-icon-id="CITY_WONDERS_LIST"></fxs-icon>
+					<fxs-icon class="size-12 m-1" data-icon-id="CITY_WONDERS_LIST"></fxs-icon>
 					<div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_WONDERS"></div>
 				</div>
-				<div class="wonders-list flex-col m-1"></div>
+				<div class="wonders-list flex-col mx-1"></div>
 			</div>
 		</fxs-scrollable>
 		`;
@@ -534,6 +534,7 @@ class PanelCityDetails extends Panel {
         }
         // Flag so we can give the constructibles back focus after updating
         const constructiblesHaveFocus = this.constructibleSlot.contains(FocusManager.getFocus());
+        // TODO: make each section collapsible
         // Buildings
         const shouldShowBuildings = CityDetails.buildings.length > 0;
         this.buildingsCategory.classList.toggle("hidden", !shouldShowBuildings);
@@ -548,15 +549,14 @@ class PanelCityDetails extends Panel {
         this.improvementsList.innerHTML = "";
         for (const improvement of CityDetails.improvements) {
             this.improvementsList.appendChild(this.addConstructibleData(improvement));
-            this.improvementsList.appendChild(this.createDivider());
         }
+        this.improvementsList.appendChild(this.createDivider());
         // Wonders
         const shouldShowWonders = CityDetails.wonders.length > 0;
         this.wondersCategory.classList.toggle("hidden", !shouldShowWonders);
         this.wondersList.innerHTML = "";
         for (const wonder of CityDetails.wonders) {
             this.wondersList.appendChild(this.addConstructibleData(wonder));
-            this.wondersList.appendChild(this.createDivider());
         }
         if (constructiblesHaveFocus) {
             FocusManager.setFocus(this.constructibleSlot);
@@ -720,7 +720,7 @@ class PanelCityDetails extends Panel {
     }
     addDistrictData(districtData) {
         const mainDiv = document.createElement("div");
-        mainDiv.classList.add("flex", "flex-col", "ml-4");
+        mainDiv.classList.add("flex", "flex-col", "ml-4", "my-1");
         if (districtData.name && districtData.description) {
             const uniqueQuarterContainer = document.createElement("div");
             uniqueQuarterContainer.classList.add("flex", "pl-6");
@@ -734,11 +734,11 @@ class PanelCityDetails extends Panel {
             uniqueQuarterTextContainer.classList.add("flex", "flex-col", "flex-auto", "pr-1");
             uniqueQuarterContainer.appendChild(uniqueQuarterTextContainer);
             const districtName = document.createElement("div");
-            districtName.classList.add("mb-1", "font-title", "uppercase");
+            districtName.classList.add("my-1", "font-title", "uppercase", "text-sm");
             districtName.innerHTML = districtData.name;
             uniqueQuarterTextContainer.appendChild(districtName);
             const districtDescription = document.createElement("div");
-            districtDescription.classList.add("mb-1");
+            districtDescription.classList.add("text-xs", "leading-normal", "max-w-96");
             districtDescription.innerHTML = districtData.description;
             uniqueQuarterTextContainer.appendChild(districtDescription);
         }
@@ -752,7 +752,7 @@ class PanelCityDetails extends Panel {
         mainDiv.classList.add("constructible-entry", "flex", "flex-col");
         mainDiv.setAttribute("tabindex", "-1");
         const topDiv = document.createElement("div");
-        topDiv.classList.add("constructible-entry-highlight", "flex", "ml-6", "mt-1", "mb-1", "pointer-events-none");
+        topDiv.classList.add("constructible-entry-highlight", "flex", "ml-6", "my-1", "pointer-events-none", "items-center");
         const icon = document.createElement("fxs-icon");
         icon.classList.add("size-12");
         icon.setAttribute("data-icon-context", constructibleData.iconContext);
@@ -764,17 +764,20 @@ class PanelCityDetails extends Panel {
         nameContainer.classList.add("flex", "ml-2", "center");
         rightContainer.appendChild(nameContainer);
         const name = document.createElement("div");
-        name.classList.add("mr-2", "font-title", "uppercase");
+        name.classList.add("mr-2", "font-title", "uppercase", "text-sm");
         name.textContent = Locale.compose(constructibleData.name);
         nameContainer.appendChild(name);
         if (constructibleData.damaged) {
             const damagedText = document.createElement("div");
-            damagedText.classList.add("uppercase", "text-negative");
+            damagedText.classList.add("uppercase", "text-negative", "text-xs");
             damagedText.textContent = "LOC_UI_CITY_DETAILS_BUILDING_DAMAGED";
             nameContainer.appendChild(damagedText);
         }
+        const yieldAdjustContainer = document.createElement("div");
+        yieldAdjustContainer.classList.add("flex", "justify-between", "w-96");
+        const yieldContainer = document.createElement("div");
+        const maintenanceContainer = document.createElement("div");
         if (constructibleData.yieldMap) {
-            const yieldContainer = document.createElement("div");
             yieldContainer.classList.add("flex", "flex-wrap", "max-w-96");
             for (const [_yieldType, yieldData] of constructibleData.yieldMap) {
                 if (yieldData.icon && yieldData.iconContext) {
@@ -787,19 +790,19 @@ class PanelCityDetails extends Panel {
                     yieldIcon.classList.add("ml-2", "size-6");
                     yieldEntry.appendChild(yieldIcon);
                     const yieldValue = document.createElement("div");
-                    yieldValue.classList.add("text-sm", "self-center");
+                    yieldValue.classList.add("text-xs", "self-center");
                     yieldValue.textContent = Locale.compose("LOC_UI_CITY_DETAILS_YIELD_ONE_DECIMAL", yieldData.value);
                     yieldEntry.appendChild(yieldValue);
                 }
             }
-            rightContainer.appendChild(yieldContainer);
         }
+        yieldAdjustContainer.appendChild(yieldContainer);
         if (constructibleData.maintenanceMap) {
-            const maintenanceContainer = document.createElement("div");
-            maintenanceContainer.classList.add("flex", "pl-2");
-            const maintenanceText = document.createElement("div");
-            maintenanceText.textContent = Locale.compose("LOC_UI_PRODUCTION_BUILDING_MAINTENANCE");
-            maintenanceContainer.appendChild(maintenanceText);
+            maintenanceContainer.classList.add("flex");
+            // const maintenanceText = document.createElement("div");
+            // maintenanceText.classList.add("text-xs");
+            // maintenanceText.textContent = Locale.compose("LOC_UI_PRODUCTION_BUILDING_MAINTENANCE");
+            // maintenanceContainer.appendChild(maintenanceText);
             for (const [_maintenanceType, maintenanceData] of constructibleData.maintenanceMap) {
                 if (maintenanceData.icon && maintenanceData.iconContext) {
                     const maintenanceEntry = document.createElement("div");
@@ -811,13 +814,14 @@ class PanelCityDetails extends Panel {
                     maintenanceIcon.classList.add("ml-2", "size-6");
                     maintenanceEntry.appendChild(maintenanceIcon);
                     const maintenanceValue = document.createElement("div");
-                    maintenanceValue.classList.add("text-sm", "self-center", "text-negative-light");
+                    maintenanceValue.classList.add("text-xs", "self-center", "text-negative-light");
                     maintenanceValue.textContent = Locale.compose("LOC_UI_CITY_DETAILS_YIELD_ONE_DECIMAL", maintenanceData.value);
                     maintenanceEntry.appendChild(maintenanceValue);
                 }
             }
-            rightContainer.appendChild(maintenanceContainer);
         }
+        yieldAdjustContainer.appendChild(maintenanceContainer);
+        rightContainer.appendChild(yieldAdjustContainer);
         mainDiv.setAttribute("data-constructible-data", JSON.stringify(constructibleData));
         mainDiv.addEventListener("mouseover", this.mouseOverBuildingListener);
         mainDiv.addEventListener("mouseout", this.mouseOutBuildingListener);
@@ -869,8 +873,8 @@ class PanelCityDetails extends Panel {
         const dividerDiv = document.createElement("div");
         dividerDiv.classList.add("flex", "w-96", "self-center");
         dividerDiv.innerHTML = `
-			<div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
-			<div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
+			<div class="w-1\\/2 h-2 bg-cover bg-no-repeat city-details-half-divider"></div>
+			<div class="w-1\\/2 h-2 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
 		`;
         return dividerDiv;
     }
