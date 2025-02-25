@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+    <EnglishText>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB">
+            <Text>Overview</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS">
+            <Text>Connections</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES">
+            <Text>{1_number}[icon:YIELD_CITIES] {1_number: plural 1?City; other?Cities;}</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS">
+            <Text>{1_number}[icon:YIELD_TOWNS] {1_number: plural 1?Town; other?Towns;}</Text>
+        </Row>
+    </EnglishText>
+</Database>
