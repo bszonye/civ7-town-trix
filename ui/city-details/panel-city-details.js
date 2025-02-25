@@ -579,10 +579,12 @@ class PanelCityDetails extends Panel {
         const eHead = document.createElement("div");
         eHead.setAttribute("data-l10n-id", Locale.compose(head, list.length));
         container.appendChild(eHead);
-        for (const item of list) {
-            const eItem = document.createElement("div");
-            eItem.textContent = Locale.compose(item.name);
-            container.appendChild(eItem);
+        const names = list.map(i => Locale.compose(i.name));
+        names.sort((a, b) => a.localeCompare(b));
+        for (const name of names) {
+            const eName = document.createElement("div");
+            eName.setAttribute("data-l10n-id", name);
+            container.appendChild(eName);
         }
     }
     addConnectedToEntry(cityName, amount) {
