@@ -424,18 +424,18 @@ class PanelCityDetails extends Panel {
         slot.id = cityDetailTabID.buildings;
         slot.innerHTML = `
 		<fxs-scrollable>
-			<div class="flex flex-col w-128">
-				<div class="buildings-category flex m-1">
+			<div class="flex flex-col w-128 mb-2">
+				<div class="buildings-category flex mt-1 mx-1">
 					<fxs-icon class="size-12 m-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
 					<div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
 				</div>
-				<div class="buildings-list flex-col mx-1"></div>
-				<div class="improvements-category flex m-1">
+				<div class="buildings-list flex-col -mt-1 mx-1"></div>
+				<div class="improvements-category flex mt-1 mx-1">
 					<fxs-icon class="size-12 m-1" data-icon-id="CITY_IMPROVEMENTS_LIST"></fxs-icon>
 					<div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_IMPROVEMENTS"></div>
 				</div>
 				<div class="improvements-list flex-col mx-1"></div>
-				<div class="wonders-category flex m-1">
+				<div class="wonders-category flex mt-1 mx-1">
 					<fxs-icon class="size-12 m-1" data-icon-id="CITY_WONDERS_LIST"></fxs-icon>
 					<div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_WONDERS"></div>
 				</div>
@@ -550,13 +550,16 @@ class PanelCityDetails extends Panel {
         for (const improvement of CityDetails.improvements) {
             this.improvementsList.appendChild(this.addConstructibleData(improvement));
         }
-        this.improvementsList.appendChild(this.createDivider());
         // Wonders
         const shouldShowWonders = CityDetails.wonders.length > 0;
         this.wondersCategory.classList.toggle("hidden", !shouldShowWonders);
         this.wondersList.innerHTML = "";
         for (const wonder of CityDetails.wonders) {
             this.wondersList.appendChild(this.addConstructibleData(wonder));
+        }
+        // separate improvements & wonders if we have both
+        if (shouldShowImprovements && shouldShowWonders) {
+            this.improvementsList.appendChild(this.createDivider());
         }
         if (constructiblesHaveFocus) {
             FocusManager.setFocus(this.constructibleSlot);
