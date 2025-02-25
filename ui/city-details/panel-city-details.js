@@ -156,6 +156,16 @@ class PanelCityDetails extends Panel {
         this.nextCityButton.addEventListener('action-activate', this.onNextCityButtonListener);
         this.prevCityButton.addEventListener('action-activate', this.onPrevCityButtonListener);
         this.overviewSlot = MustGetElement(`#${cityDetailTabID.overview}`);
+        this.populationGrowingContainer = MustGetElement(".population-growing-container", this.Root);
+        this.populationGrowingCount = MustGetElement(".population-growing", this.Root);
+        this.populationRuralContainer = MustGetElement(".population-rural-container", this.Root);
+        this.populationRuralCount = MustGetElement(".population-rural", this.Root);
+        this.populationUrbanContainer = MustGetElement(".population-urban-container", this.Root);
+        this.populationUrbanCount = MustGetElement(".population-urban", this.Root);
+        this.populationSpecialistContainer = MustGetElement(".population-specialist-container", this.Root);
+        this.populationSpecialistCount = MustGetElement(".population-specialist", this.Root);
+        this.populationTotalContainer = MustGetElement(".population-total-container", this.Root);
+        this.populationTotalCount = MustGetElement(".population-total", this.Root);
         this.connectedCitiesContainer = MustGetElement(".connected-cities-container", this.Root);
         this.connectedTownsContainer = MustGetElement(".connected-towns-container", this.Root);
         this.growthSlot = MustGetElement(`#${cityDetailTabID.growth}`);
@@ -330,14 +340,35 @@ class PanelCityDetails extends Panel {
         slot.id = cityDetailTabID.overview;
         slot.innerHTML = `
         <fxs-scrollable class="w-128">
-            <div class="population-container flex flex-col items-center mt-2">
+            <div class="population-container flex flex-col mt-2 ml-6">
+                <p class="font-title uppercase text-base text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION"></p>
+                <div class="population-growing-container flex justify-between w-80 text-sm">
+                    <div data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING"></div>
+                    <div class="population-growing"></div>
+                </div>
+                <div class="population-rural-container flex justify-between w-80 text-sm">
+                    <div data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL"></div>
+                    <div class="population-rural"></div>
+                </div>
+                <div class="population-urban-container flex justify-between w-80 text-sm">
+                    <div data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN"></div>
+                    <div class="population-urban"></div>
+                </div>
+                <div class="population-specialist-container flex justify-between w-80 text-sm">
+                    <div data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST"></div>
+                    <div class="population-specialist"></div>
+                </div>
+                <div class="population-total-container flex justify-between w-80 uppercase text-sm text-gradient-secondary">
+                    <div class="font-title uppercase leading-normal" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL"></div>
+                    <div class="population-total"></div>
+                </div>
             </div>
             ${BZ_DIVIDER}
-            <div class="connections-container flex flex-col items-center mt-2">
+            <div class="connections-container flex flex-col ml-6">
                 <p class="font-title uppercase text-base text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS"></p>
-                <div class="flex justify-center w-84 text-sm">
-                    <div class="connected-cities-container flex-1 flex flex-col items-center mr-0\\.5"></div>
-                    <div class="connected-towns-container flex-1 flex flex-col items-center ml-0\\.5"></div>
+                <div class="flex justify-center w-80 text-sm">
+                    <div class="connected-cities-container flex-1 flex flex-col"></div>
+                    <div class="connected-towns-container flex-1 flex flex-col ml-2"></div>
                 </div>
             </div>
         </fxs-scrollable>
@@ -478,6 +509,17 @@ class PanelCityDetails extends Panel {
         // Flag so we can give the overview back focus after updating
         const overviewHasFocus = this.overviewSlot.contains(FocusManager.getFocus());
         // Overview
+        // population
+        this.populationGrowingContainer.classList.toggle("hidden", !CityDetails.growingCitizens);
+        this.populationGrowingCount.textContent = Locale.compose(CityDetails.growingCitizens.toString());
+        this.populationRuralContainer.classList.toggle("hidden", !CityDetails.ruralCitizens);
+        this.populationRuralCount.textContent = Locale.compose(CityDetails.ruralCitizens.toString());
+        this.populationUrbanContainer.classList.toggle("hidden", !CityDetails.urbanCitizens);
+        this.populationUrbanCount.textContent = Locale.compose(CityDetails.urbanCitizens.toString());
+        this.populationSpecialistContainer.classList.toggle("hidden", !CityDetails.specialistCitizens);
+        this.populationSpecialistCount.textContent = Locale.compose(CityDetails.specialistCitizens.toString());
+        this.populationTotalContainer.classList.toggle("hidden", !CityDetails.currentCitizens);
+        this.populationTotalCount.textContent = Locale.compose(CityDetails.currentCitizens.toString());
         // connections
         this.addConnectionsList(
             this.connectedCitiesContainer,

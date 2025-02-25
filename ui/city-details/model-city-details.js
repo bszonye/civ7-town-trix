@@ -17,13 +17,14 @@ class CityDetailsModel {
     }
     constructor() {
         this.isTown = false;
+        this.growingCitizens = 0;
+        this.ruralCitizens = 0;
+        this.urbanCitizens = 0;
+        this.specialistCitizens = 0;
         this.connectedCities = [];
         this.connectedTowns = [];
         this.specialistPerTile = 0;
         this.currentCitizens = 0;
-        this.urbanCitizens = 0;
-        this.ruralCitizens = 0;
-        this.specialistCitizens = 0;
         this.turnsToNextCitizen = 0;
         this.happinessPerTurn = 0;
         this.hasUnrest = false;
@@ -54,12 +55,16 @@ class CityDetailsModel {
                 return;
             }
             this.isTown = city.isTown;
+            // population
+            this.growingCitizens = city.pendingPopulation;
+            this.ruralCitizens = city.ruralPopulation - city.pendingPopulation;
+            this.urbanCitizens = city.urbanPopulation;
+            this.specialistCitizens = city.population - city.urbanPopulation - city.ruralPopulation;
+            console.warn(`TRIX ${Object.keys(city)}`);
+            this.currentCitizens = city.population;  // also used by Citizen Growth
             // connected settlements
             this.setConnections(city);
             // Citizen Growth
-            this.currentCitizens = city.population;
-            this.urbanCitizens = city.urbanPopulation;
-            this.ruralCitizens = city.ruralPopulation;
             const cityYields = city.Yields;
             if (!cityYields) {
                 console.error(`model-city-details: Failed to get city.Yields for ID ${selectedCityID}`);
@@ -259,6 +264,10 @@ class CityDetailsModel {
         this.updateGate.call('onCitySelectionChanged');
     }
     reset() {
+        this.growingCitizens = 0;
+        this.ruralCitizens = 0;
+        this.urbanCitizens = 0;
+        this.specialistCitizens = 0;
         this.specialistPerTile = 0;
         this.currentCitizens = 0;
         this.turnsToNextCitizen = 0;

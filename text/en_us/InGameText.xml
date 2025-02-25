@@ -4,6 +4,24 @@
         <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB">
             <Text>Overview</Text>
         </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION">
+            <Text>Population</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING">
+            <Text>Growing</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL">
+            <Text>Rural</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN">
+            <Text>Urban</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST">
+            <Text>Specialist</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL">
+            <Text>Total</Text>
+        </Row>
         <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS">
             <Text>Connections</Text>
         </Row>
