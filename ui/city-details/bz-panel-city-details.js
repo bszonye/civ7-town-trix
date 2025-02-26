@@ -4,11 +4,10 @@ import NavTray from "/core/ui/navigation-tray/model-navigation-tray.js";
 import { MustGetElement } from "/core/ui/utilities/utilities-dom.js";
 import FocusManager from '/core/ui/input/focus-manager.js';
 // TODO: clean up all console debug junk
-const BZ_DIVIDER = `\
-<div class="flex w-96 self-center">
-    <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
-    <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
-</div>
+const BZ_DIVIDER_STYLE = "flex w-96 self-center";
+const BZ_DIVIDER_LINE = `\
+<div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
+<div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
 `
 // TODO: move overview tab here
 // TODO: make a new buildings tab and hide the original
@@ -94,7 +93,6 @@ class bzPanelCityDetails {
         // wrap render method to extend it
         const panel_render = proto.render;
         proto.render = function(...args) {
-            this.bzPanel.beforeRender();
             const rv = panel_render.apply(this, args);
             this.bzPanel.afterRender();
             return rv;
@@ -105,8 +103,11 @@ class bzPanelCityDetails {
             return this.bzPanel.renderYieldsSlot();
         }
     }
-    beforeAttach() {
-    }
+    // empty decorators
+    beforeAttach() { }
+    afterDetach() { }
+    onAttributeChanged(_name, _prev, _next) { }
+    // attach new & replaced tabs to the panel
     afterAttach() {
         window.addEventListener(bzUpdateCityDetailsEventName, this.updateOverviewListener);
         window.addEventListener(UpdateCityDetailsEventName, this.updateConstructiblesListener);
@@ -139,9 +140,7 @@ class bzPanelCityDetails {
         window.removeEventListener(bzUpdateCityDetailsEventName, this.updateOverviewListener);
         window.removeEventListener(UpdateCityDetailsEventName, this.updateConstructiblesListener);
     }
-    afterDetach() { }
-    onAttributeChanged(_name, _prev, _next) { }
-    beforeRender() { }
+    // render new & replaced tabs
     afterRender() {
         this.panel.tabBar.setAttribute("tab-items", JSON.stringify(cityDetailTabItems));
         this.renderOverviewSlot();
@@ -178,7 +177,7 @@ class bzPanelCityDetails {
                     <div class="population-total mx-2"></div>
                 </div>
             </div>
-            ${BZ_DIVIDER}
+            <div class="${BZ_DIVIDER_STYLE} -my-1">${BZ_DIVIDER_LINE}</div>
             <div class="connections-container flex flex-col ml-4">
                 <p class="font-title uppercase text-base leading-normal text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS"></p>
                 <div class="flex flex-col w-128">
@@ -219,6 +218,7 @@ class bzPanelCityDetails {
         `;
         this.panel.slotGroup.appendChild(slot);
     }
+    // fixes a mismatched tag in the base-standard function
     renderYieldsSlot() {
         const slot = document.createElement("fxs-vslot");
         slot.classList.add("pr-4");
@@ -233,10 +233,12 @@ class bzPanelCityDetails {
         `;
         this.panel.slotGroup.appendChild(slot);
     }
+    // update data model from both sources
     update() {
         this.updateOverview();
         this.updateConstructibles();
     }
+    // update data model for new tab slot
     updateOverview() {
         // Flag so we can give the overview back focus after updating
         const overviewHasFocus = this.overviewSlot.contains(FocusManager.getFocus());
@@ -265,6 +267,22 @@ class bzPanelCityDetails {
             FocusManager.setFocus(this.overviewSlot);
         }
     }
+    addConnectionsList(container, head, list) {
+        container.innerHTML = "";
+        const eHead = document.createElement("div");
+        eHead.classList.value = "font-title uppercase leading-normal";
+        eHead.setAttribute("data-l10n-id", Locale.compose(head, list.length));
+        container.appendChild(eHead);
+        const names = list.map(i => Locale.compose(i.name));
+        names.sort((a, b) => a.localeCompare(b));
+        for (const name of names) {
+            const eName = document.createElement("div");
+            eName.classList.add("ml-4");
+            eName.textContent = name;
+            container.appendChild(eName);
+        }
+    }
+    // update data model for alternate Constructibles tab slot
     updateConstructibles() {
         // Flag so we can give the constructibles back focus after updating
         const constructiblesHaveFocus = this.constructibleSlot.contains(FocusManager.getFocus());
@@ -301,21 +319,6 @@ class bzPanelCityDetails {
         }
         if (constructiblesHaveFocus) {
             FocusManager.setFocus(this.constructibleSlot);
-        }
-    }
-    addConnectionsList(container, head, list) {
-        container.innerHTML = "";
-        const eHead = document.createElement("div");
-        eHead.classList.value = "font-title uppercase leading-normal";
-        eHead.setAttribute("data-l10n-id", Locale.compose(head, list.length));
-        container.appendChild(eHead);
-        const names = list.map(i => Locale.compose(i.name));
-        names.sort((a, b) => a.localeCompare(b));
-        for (const name of names) {
-            const eName = document.createElement("div");
-            eName.classList.add("ml-4");
-            eName.textContent = name;
-            container.appendChild(eName);
         }
     }
     addDistrictData(districtData) {
@@ -434,11 +437,8 @@ class bzPanelCityDetails {
     }
     createDivider() {
         const dividerDiv = document.createElement("div");
-        dividerDiv.classList.add("flex", "w-96", "self-center");
-        dividerDiv.innerHTML = `
-            <div class="w-1\\/2 -my-1 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
-            <div class="w-1\\/2 -my-1 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
-        `;
+        dividerDiv.classList.value = BZ_DIVIDER_STYLE;
+        dividerDiv.innerHTML = BZ_DIVIDER_LINE;
         return dividerDiv;
     }
 }

@@ -23,14 +23,14 @@ class bzCityDetailsModel {
         this.connectedTowns = [];
         // update callback
         this.updateGate = new UpdateGate(() => {
-            const selectedCityID = UI.Player.getHeadSelectedCity();
-            if (!selectedCityID || ComponentID.isInvalid(selectedCityID)) {
+            const cityID = UI.Player.getHeadSelectedCity();
+            if (!cityID || ComponentID.isInvalid(cityID)) {
                 this.reset();
                 return;
             }
-            const city = Cities.get(selectedCityID);
+            const city = Cities.get(cityID);
             if (!city) {
-                console.error(`TRIX: Failed to get city=${selectedCityID}`);
+                console.error(`bz-city-details-model: Failed to get city=${cityID}`);
                 return;
             }
             this.updateOverview(city);
@@ -90,7 +90,6 @@ class bzCityDetailsModel {
                 if ('population' in item) continue;
                 const ctype = GameInfo.Constructibles.lookup(item.type);
                 item.population = ctype.Population;
-                console.warn(`TRIX item=${JSON.stringify(item)}`);
             }
             data.sort((a, b) => b.population - a.population);
         }
