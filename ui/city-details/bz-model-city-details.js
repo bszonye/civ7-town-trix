@@ -6,8 +6,6 @@ class bzUpdateCityDetailsEvent extends CustomEvent {
         super(bzUpdateCityDetailsEventName, { bubbles: false });
     }
 }
-
-// TODO: clean up all console debug junk
 class bzCityDetailsModel {
     set updateCallback(callback) {
         this.onUpdate = callback;

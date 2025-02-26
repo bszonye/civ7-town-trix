@@ -3,15 +3,14 @@ import CityDetails, { UpdateCityDetailsEventName } from "/base-standard/ui/city-
 import NavTray from "/core/ui/navigation-tray/model-navigation-tray.js";
 import { MustGetElement } from "/core/ui/utilities/utilities-dom.js";
 import FocusManager from '/core/ui/input/focus-manager.js';
-// TODO: clean up all console debug junk
+
 const BZ_DIVIDER_STYLE = "flex w-96 self-center";
 const BZ_DIVIDER_LINE = `\
 <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
 <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
 `
-// TODO: move overview tab here
-// TODO: make a new buildings tab and hide the original
-// TODO: modifiy the original tab defs instead of overriding them?
+const BZ_DIVIDER = `<div class="${BZ_DIVIDER_STYLE}">${BZ_DIVIDER_LINE}</div>`
+
 var cityDetailTabID;
 (function (cityDetailTabID) {
     cityDetailTabID["overview"] = "city-details-tab-overview";
@@ -177,7 +176,7 @@ class bzPanelCityDetails {
                     <div class="population-total mx-2"></div>
                 </div>
             </div>
-            <div class="${BZ_DIVIDER_STYLE} -my-1">${BZ_DIVIDER_LINE}</div>
+            ${BZ_DIVIDER}
             <div class="connections-container flex flex-col ml-4">
                 <p class="font-title uppercase text-base leading-normal text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS"></p>
                 <div class="flex flex-col w-128">
@@ -297,7 +296,7 @@ class bzPanelCityDetails {
         this.buildingsList.innerHTML = "";
         for (const building of buildings) {
             this.buildingsList.appendChild(this.addDistrictData(building));
-            this.buildingsList.appendChild(this.createDivider());
+            this.buildingsList.appendChild(this.createDivider("-my-1"));
         }
         // Improvements
         const shouldShowImprovements = improvements.length > 0;
@@ -435,9 +434,10 @@ class bzPanelCityDetails {
         mainDiv.appendChild(topDiv);
         return mainDiv;
     }
-    createDivider() {
+    createDivider(...style) {
         const dividerDiv = document.createElement("div");
         dividerDiv.classList.value = BZ_DIVIDER_STYLE;
+        if (style.length) dividerDiv.classList.add(...style);
         dividerDiv.innerHTML = BZ_DIVIDER_LINE;
         return dividerDiv;
     }
