@@ -1,4 +1,5 @@
 import bzCityDetails, { bzUpdateCityDetailsEventName } from "/bz-city-hall/ui/city-details/bz-model-city-details.js";
+import CityDetails, { UpdateCityDetailsEventName } from "/base-standard/ui/city-details/model-city-details.js";
 import NavTray from "/core/ui/navigation-tray/model-navigation-tray.js";
 import { MustGetElement } from "/core/ui/utilities/utilities-dom.js";
 import FocusManager from '/core/ui/input/focus-manager.js';
@@ -71,7 +72,8 @@ class bzPanelCityDetails {
         panel.bzPanel = this;
         this.patch(this.panel);
         // listen for model updates
-        this.updateCityDetailersListener = this.update.bind(this);
+        this.updateOverviewListener = this.updateOverview.bind(this);
+        this.updateConstructiblesListener = this.updateConstructibles.bind(this);
         // redirect from panel
         this.panel.onFocus = () => {
             NavTray.clear();
@@ -106,7 +108,8 @@ class bzPanelCityDetails {
     beforeAttach() {
     }
     afterAttach() {
-        window.addEventListener(bzUpdateCityDetailsEventName, this.updateCityDetailersListener);
+        window.addEventListener(bzUpdateCityDetailsEventName, this.updateOverviewListener);
+        window.addEventListener(UpdateCityDetailsEventName, this.updateConstructiblesListener);
         const root = this.panel.Root;
         // overview
         this.overviewSlot = MustGetElement(`#${cityDetailTabID.overview}`);
@@ -133,7 +136,8 @@ class bzPanelCityDetails {
         this.update();
     }
     beforeDetach() {
-        window.removeEventListener(bzUpdateCityDetailsEventName, this.updateCityDetailersListener);
+        window.removeEventListener(bzUpdateCityDetailsEventName, this.updateOverviewListener);
+        window.removeEventListener(UpdateCityDetailsEventName, this.updateConstructiblesListener);
     }
     afterDetach() { }
     onAttributeChanged(_name, _prev, _next) { }
@@ -187,7 +191,6 @@ class bzPanelCityDetails {
         this.panel.slotGroup.appendChild(slot);
     }
     renderConstructiblesSlot() {
-        console.warn(`TRIX bz.renderConstructiblesSlot`);
         const slot = document.createElement("fxs-vslot");
         slot.classList.add("pr-4");
         slot.setAttribute("data-navrule-left", "stop");
@@ -214,7 +217,6 @@ class bzPanelCityDetails {
             </div>
         </fxs-scrollable>
         `;
-        console.warn(`TRIX bz.renderConstructiblesSlot ${JSON.stringify(slot.innerHTML)}`);
         this.panel.slotGroup.appendChild(slot);
     }
     renderYieldsSlot() {
@@ -264,32 +266,28 @@ class bzPanelCityDetails {
         }
     }
     updateConstructibles() {
-        console.warn(`TRIX bz.updateConstructibles`);
-        console.warn(`TRIX VIEW b=${bzCityDetails.buildings.length}`);
-        console.warn(`TRIX VIEW i=${bzCityDetails.improvements.length}`);
-        console.warn(`TRIX VIEW w=${bzCityDetails.wonders.length}`);
         // Flag so we can give the constructibles back focus after updating
         const constructiblesHaveFocus = this.constructibleSlot.contains(FocusManager.getFocus());
         // Buildings
-        const shouldShowBuildings = bzCityDetails.buildings.length > 0;
+        const shouldShowBuildings = CityDetails.buildings.length > 0;
         this.buildingsCategory.classList.toggle("hidden", !shouldShowBuildings);
         this.buildingsList.innerHTML = "";
-        for (const building of bzCityDetails.buildings) {
+        for (const building of CityDetails.buildings) {
             this.buildingsList.appendChild(this.addDistrictData(building));
             this.buildingsList.appendChild(this.createDivider());
         }
         // Improvements
-        const shouldShowImprovements = bzCityDetails.improvements.length > 0;
+        const shouldShowImprovements = CityDetails.improvements.length > 0;
         this.improvementsCategory.classList.toggle("hidden", !shouldShowImprovements);
         this.improvementsList.innerHTML = "";
-        for (const improvement of bzCityDetails.improvements) {
+        for (const improvement of CityDetails.improvements) {
             this.improvementsList.appendChild(this.addConstructibleData(improvement));
         }
         // Wonders
-        const shouldShowWonders = bzCityDetails.wonders.length > 0;
+        const shouldShowWonders = CityDetails.wonders.length > 0;
         this.wondersCategory.classList.toggle("hidden", !shouldShowWonders);
         this.wondersList.innerHTML = "";
-        for (const wonder of bzCityDetails.wonders) {
+        for (const wonder of CityDetails.wonders) {
             this.wondersList.appendChild(this.addConstructibleData(wonder));
         }
         // separate improvements & wonders if we have both

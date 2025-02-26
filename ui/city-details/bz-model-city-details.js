@@ -100,7 +100,6 @@ class bzCityDetailsModel {
         this.improvements = [];
         this.wonders = [];
         for (const constructibleID of constructibles.getIds()) {
-            console.warn(`TRIX MODEL`);
             const constructible = Constructibles.getByComponentID(constructibleID);
             if (!constructible) {
                 return;
@@ -136,8 +135,6 @@ class bzCityDetailsModel {
                     constructibleData.maintenanceMap.set(yieldDefinition.YieldType, maintenanceYieldData);
                 }
             }
-            console.warn(`TRIX MODEL ${JSON.stringify(constructibleData)}`);
-            console.warn(`TRIX MODEL ${constructibleDefinition.ConstructibleClass}`);
             switch (constructibleDefinition.ConstructibleClass) {
                 case "BUILDING": {
                     // Look for existing district data at this constructibles location
@@ -170,7 +167,6 @@ class bzCityDetailsModel {
                     console.error(`model-city-details: Failed to add ${constructibleDefinition.Name} of class ${constructibleDefinition.ConstructibleClass} to constructible lists!`);
             }
         }
-        console.warn(`TRIX b=${this.buildings.length}`);
         // sort buildings by population (walls last)
         // TODO: move this to the the bz-model
         for (const district of this.buildings) {
