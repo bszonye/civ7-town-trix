@@ -16,14 +16,7 @@ class CityDetailsModel {
         this.onUpdate = callback;
     }
     constructor() {
-        console.warn(`TRIX CityDetailsModel.constructor`);
         this.isTown = false;
-        this.growingCitizens = 0;
-        this.ruralCitizens = 0;
-        this.urbanCitizens = 0;
-        this.specialistCitizens = 0;
-        this.connectedCities = [];
-        this.connectedTowns = [];
         this.specialistPerTile = 0;
         this.currentCitizens = 0;
         this.turnsToNextCitizen = 0;
@@ -56,15 +49,8 @@ class CityDetailsModel {
                 return;
             }
             this.isTown = city.isTown;
-            // population
-            this.growingCitizens = city.pendingPopulation;
-            this.ruralCitizens = city.ruralPopulation - city.pendingPopulation;
-            this.urbanCitizens = city.urbanPopulation;
-            this.specialistCitizens = city.population - city.urbanPopulation - city.ruralPopulation;
-            this.currentCitizens = city.population;  // also used by Citizen Growth
-            // connected settlements
-            this.setConnections(city);
             // Citizen Growth
+            this.currentCitizens = city.population;
             const cityYields = city.Yields;
             if (!cityYields) {
                 console.error(`model-city-details: Failed to get city.Yields for ID ${selectedCityID}`);
@@ -108,7 +94,6 @@ class CityDetailsModel {
                     location: constructible.location,
                     type: constructibleDefinition.ConstructibleType,
                     name: constructibleDefinition.Name,
-                    population: constructibleDefinition.Population,
                     damaged: constructible.damaged,
                     icon: constructibleDefinition.ConstructibleType,
                     iconContext: constructibleDefinition.ConstructibleClass
@@ -131,7 +116,7 @@ class CityDetailsModel {
                     }
                 }
                 switch (constructibleDefinition.ConstructibleClass) {
-                    case "BUILDING": {
+                    case "BUILDING":
                         // Look for existing district data at this constructibles location
                         let districtData = this.buildings.find((data) => {
                             return data.location.x == constructible.location.x && data.location.y == constructible.location.y;
@@ -151,7 +136,6 @@ class CityDetailsModel {
                             this.buildings.push(districtData);
                         }
                         break;
-                    }
                     case "IMPROVEMENT":
                         this.improvements.push(constructibleData);
                         break;
@@ -162,16 +146,6 @@ class CityDetailsModel {
                         console.error(`model-city-details: Failed to add ${constructibleDefinition.Name} of class ${constructibleDefinition.ConstructibleClass} to constructible lists!`);
                 }
             }
-            // sort buildings by population (walls last)
-            for (const district of this.buildings) {
-                district.constructibleData.sort((a, b) =>
-                    b.population - a.population);
-            }
-            // sort improvements and wonders by name
-            this.improvements.sort((a, b) =>
-                Locale.compose(a.name ?? '').localeCompare(Locale.compose(b.name ?? '')));
-            this.wonders.sort((a, b) =>
-                Locale.compose(a.name ?? '').localeCompare(Locale.compose(b.name ?? '')));
             // Yields Breakdown
             this.yields = [];
             const yields = cityYields.getYields();
@@ -261,15 +235,9 @@ class CityDetailsModel {
         engine.on('CitySelectionChanged', this.onCitySelectionChanged, this);
     }
     onCitySelectionChanged() {
-        console.warn(`TRIX CityDetailsModel.onCitySelectionChanged`);
         this.updateGate.call('onCitySelectionChanged');
     }
     reset() {
-        console.warn(`TRIX CityDetailsModel.reset`);
-        this.growingCitizens = 0;
-        this.ruralCitizens = 0;
-        this.urbanCitizens = 0;
-        this.specialistCitizens = 0;
         this.specialistPerTile = 0;
         this.currentCitizens = 0;
         this.turnsToNextCitizen = 0;
@@ -284,20 +252,6 @@ class CityDetailsModel {
             this.onUpdate(this);
         }
         window.dispatchEvent(new UpdateCityDetailsEvent());
-    }
-    setConnections(city) {
-        const ids = city?.getConnectedCities();
-        const total = ids?.length;
-        if (!total) return null;
-        const connections = ids.map(id => Cities.get(id));
-        const cities = [];
-        const towns = [];
-        for (const connection of connections) {
-            if (connection.isTown) towns.push(connection);
-            else cities.push(connection);
-        }
-        this.connectedCities = cities;
-        this.connectedTowns = towns;
     }
     buildSendingFoodData(selectedSettlement) {
         const sendingFoodData = [];
@@ -396,7 +350,6 @@ class CityDetailsModel {
         return;
     }
     getUniqueQuarterDefinition() {
-        // TODO: find unique quarters from previous ages?
         const localPlayer = Players.get(GameContext.localPlayerID);
         if (!localPlayer) {
             console.error(`model-city-details: getUniqueQuarterDefinition() failed to find localPlayerID ${GameContext.localPlayerID}`);
