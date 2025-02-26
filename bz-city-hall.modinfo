@@ -34,6 +34,8 @@
                     <Item>ui/production-chooser/production-chooser-unique-quarter.js</Item>
                 </ImportFiles>
                 <UIScripts>
+                    <Item>ui/city-details/bz-model-city-details.js</Item>
+                    <Item>ui/city-details/bz-panel-city-details.js</Item>
                 </UIScripts>
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>

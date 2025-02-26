@@ -16,6 +16,7 @@ class CityDetailsModel {
         this.onUpdate = callback;
     }
     constructor() {
+        console.warn(`TRIX CityDetailsModel.constructor`);
         this.isTown = false;
         this.growingCitizens = 0;
         this.ruralCitizens = 0;
@@ -260,9 +261,11 @@ class CityDetailsModel {
         engine.on('CitySelectionChanged', this.onCitySelectionChanged, this);
     }
     onCitySelectionChanged() {
+        console.warn(`TRIX CityDetailsModel.onCitySelectionChanged`);
         this.updateGate.call('onCitySelectionChanged');
     }
     reset() {
+        console.warn(`TRIX CityDetailsModel.reset`);
         this.growingCitizens = 0;
         this.ruralCitizens = 0;
         this.urbanCitizens = 0;

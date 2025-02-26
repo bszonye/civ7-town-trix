@@ -33,7 +33,6 @@ const BZ_DIVIDER = `\
 `
 var cityDetailTabID;
 (function (cityDetailTabID) {
-    cityDetailTabID["overview"] = "city-details-tab-overview";
     cityDetailTabID["growth"] = "city-details-tab-growth";
     cityDetailTabID["buildings"] = "city-details-tab-buildings";
     cityDetailTabID["yields"] = "city-details-tab-yields";
@@ -117,10 +116,10 @@ class PanelCityDetails extends Panel {
             NavTray.clear();
             NavTray.addOrUpdateGenericBack();
             this.tabBar.setAttribute("selected-tab-index", "0");
-            this.slotGroup.setAttribute("selected-slot", cityDetailTabID.overview);
-            const overviewSlot = this.Root.querySelector(`#${cityDetailTabID.overview}`);
-            if (overviewSlot) {
-                FocusManager.setFocus(overviewSlot);
+            this.slotGroup.setAttribute("selected-slot", cityDetailTabID.growth);
+            const growthSlot = this.Root.querySelector(`#${cityDetailTabID.growth}`);
+            if (growthSlot) {
+                FocusManager.setFocus(growthSlot);
             }
         };
         this.onShowCityDetailsEvent = (event) => {
@@ -155,18 +154,6 @@ class PanelCityDetails extends Panel {
         this.nextCityButton.addEventListener('action-activate', this.onNextCityButtonListener);
         this.prevCityButton.addEventListener('action-activate', this.onPrevCityButtonListener);
         this.overviewSlot = MustGetElement(`#${cityDetailTabID.overview}`);
-        this.populationGrowingContainer = MustGetElement(".population-growing-container", this.Root);
-        this.populationGrowingCount = MustGetElement(".population-growing", this.Root);
-        this.populationRuralContainer = MustGetElement(".population-rural-container", this.Root);
-        this.populationRuralCount = MustGetElement(".population-rural", this.Root);
-        this.populationUrbanContainer = MustGetElement(".population-urban-container", this.Root);
-        this.populationUrbanCount = MustGetElement(".population-urban", this.Root);
-        this.populationSpecialistContainer = MustGetElement(".population-specialist-container", this.Root);
-        this.populationSpecialistCount = MustGetElement(".population-specialist", this.Root);
-        this.populationTotalContainer = MustGetElement(".population-total-container", this.Root);
-        this.populationTotalCount = MustGetElement(".population-total", this.Root);
-        this.connectedCitiesContainer = MustGetElement(".connected-cities-container", this.Root);
-        this.connectedTownsContainer = MustGetElement(".connected-towns-container", this.Root);
         this.growthSlot = MustGetElement(`#${cityDetailTabID.growth}`);
         this.specialistContainer = MustGetElement(".specialist-container", this.Root);
         this.specialistText = MustGetElement(".specialist-text", this.Root);
@@ -499,41 +486,16 @@ class PanelCityDetails extends Panel {
         this.slotGroup.appendChild(slot);
     }
     update() {
+        console.warn(`TRIX PanelCityDetails.update`);
         if (CityDetails.isTown) {
             this.headerElement.setAttribute("title", "LOC_UI_TOWN_DETAILS_HEADER");
         }
         else {
             this.headerElement.setAttribute("title", "LOC_UI_CITY_DETAILS_HEADER");
         }
-        // Flag so we can give the overview back focus after updating
-        const overviewHasFocus = this.overviewSlot.contains(FocusManager.getFocus());
-        // Overview
-        // population
-        this.populationGrowingContainer.classList.toggle("hidden", !CityDetails.growingCitizens);
-        this.populationGrowingCount.textContent = Locale.compose(CityDetails.growingCitizens.toString());
-        this.populationRuralContainer.classList.toggle("hidden", !CityDetails.ruralCitizens);
-        this.populationRuralCount.textContent = Locale.compose(CityDetails.ruralCitizens.toString());
-        this.populationUrbanContainer.classList.toggle("hidden", !CityDetails.urbanCitizens);
-        this.populationUrbanCount.textContent = Locale.compose(CityDetails.urbanCitizens.toString());
-        this.populationSpecialistContainer.classList.toggle("hidden", !CityDetails.specialistCitizens);
-        this.populationSpecialistCount.textContent = Locale.compose(CityDetails.specialistCitizens.toString());
-        this.populationTotalContainer.classList.toggle("hidden", !CityDetails.currentCitizens);
-        this.populationTotalCount.textContent = Locale.compose(CityDetails.currentCitizens.toString());
-        // connections
-        this.addConnectionsList(
-            this.connectedCitiesContainer,
-            'LOC_BZ_UI_CITY_DETAILS_CITIES',
-            CityDetails.connectedCities);
-        this.addConnectionsList(
-            this.connectedTownsContainer,
-            'LOC_BZ_UI_CITY_DETAILS_TOWNS',
-            CityDetails.connectedTowns);
-        if (overviewHasFocus) {
-            FocusManager.setFocus(this.overviewSlot);
-        }
-        // Flag so we can give the overview back focus after updating
-        const growthHasFocus = this.overviewSlot.contains(FocusManager.getFocus());
-        // Growth
+        // Citizen Growth
+        // Flag so we can give the growth back focus after updating
+        const growthHasFocus = this.growthSlot.contains(FocusManager.getFocus());
         if (CityDetails.isTown) {
             this.specialistContainer.classList.add('hidden');
         }
