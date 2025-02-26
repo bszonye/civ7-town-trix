@@ -87,7 +87,7 @@ class bzCityDetailsModel {
             for (const item of data) {
                 if ('population' in item) continue;
                 const ctype = GameInfo.Constructibles.lookup(item.type);
-                item.population = ctype.Population;
+                item.population = ctype?.Population ?? 0;
             }
             data.sort((a, b) => b.population - a.population);
         }

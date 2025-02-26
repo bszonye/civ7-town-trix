@@ -13,53 +13,33 @@ const BZ_DIVIDER = `<div class="${BZ_DIVIDER_STYLE}">${BZ_DIVIDER_LINE}</div>`
 
 var cityDetailTabID;
 (function (cityDetailTabID) {
+    // only need to define the ones we're using in the decorator
     cityDetailTabID["overview"] = "city-details-tab-overview";
-    cityDetailTabID["growth"] = "city-details-tab-growth";
     cityDetailTabID["constructibles"] = "city-details-tab-constructibles";
+    // cityDetailTabID["growth"] = "city-details-tab-growth";
+    cityDetailTabID["buildings"] = "city-details-tab-buildings";
     cityDetailTabID["yields"] = "city-details-tab-yields";
 })(cityDetailTabID || (cityDetailTabID = {}));
-const cityDetailTabItems = [
-    {
-        id: cityDetailTabID.overview,
-        icon: {
-            default: UI.getIconBLP("CITY_BUILDINGS"),
-            hover: UI.getIconBLP("CITY_BUILDINGS_HI"),
-            focus: UI.getIconBLP("CITY_BUILDINGS_HI")
-        },
-        iconClass: "size-16",
-        headerText: "LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB"
+const BZ_TAB_OVERVIEW = {
+    id: cityDetailTabID.overview,
+    icon: {
+        default: UI.getIconBLP("CITY_BUILDINGS"),
+        hover: UI.getIconBLP("CITY_BUILDINGS_HI"),
+        focus: UI.getIconBLP("CITY_BUILDINGS_HI")
     },
-    {
-        id: cityDetailTabID.growth,
-        icon: {
-            default: UI.getIconBLP("CITY_CITIZENS"),
-            hover: UI.getIconBLP("CITY_CITIZENS_HI"),
-            focus: UI.getIconBLP("CITY_CITIZENS_HI")
-        },
-        iconClass: "size-16",
-        headerText: "LOC_UI_CITY_DETAILS_GROWTH_TAB"
+    iconClass: "size-16",
+    headerText: "LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB"
+};
+const BZ_TAB_CONSTRUCTIBLES = {
+    id: cityDetailTabID.constructibles,
+    icon: {
+        default: UI.getIconBLP("CITY_SETTLEMENT"),
+        hover: UI.getIconBLP("CITY_SETTLEMENT_HI"),
+        focus: UI.getIconBLP("CITY_SETTLEMENT_HI")
     },
-    {
-        id: cityDetailTabID.constructibles,
-        icon: {
-            default: UI.getIconBLP("CITY_SETTLEMENT"),
-            hover: UI.getIconBLP("CITY_SETTLEMENT_HI"),
-            focus: UI.getIconBLP("CITY_SETTLEMENT_HI")
-        },
-        iconClass: "size-16",
-        headerText: "LOC_UI_CITY_DETAILS_BUILDINGS_TAB"
-    },
-    {
-        id: cityDetailTabID.yields,
-        icon: {
-            default: UI.getIconBLP("CITY_YIELDS"),
-            hover: UI.getIconBLP("CITY_YIELDS_HI"),
-            focus: UI.getIconBLP("CITY_YIELDS_HI")
-        },
-        iconClass: "size-16",
-        headerText: "LOC_UI_CITY_DETAILS_YIELDS_TAB"
-    }
-];
+    iconClass: "size-16",
+    headerText: "LOC_UI_CITY_DETAILS_BUILDINGS_TAB"
+};
 // PanelCityDetails decorator
 class bzPanelCityDetails {
     static panel_prototype;
@@ -68,7 +48,7 @@ class bzPanelCityDetails {
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
-        this.patch(this.panel);
+        this.patchPrototypes(this.panel);
         // listen for model updates
         this.updateOverviewListener = this.updateOverview.bind(this);
         this.updateConstructiblesListener = this.updateConstructibles.bind(this);
@@ -84,7 +64,7 @@ class bzPanelCityDetails {
             }
         };
     }
-    patch(panel) {
+    patchPrototypes(panel) {
         const panel_prototype = Object.getPrototypeOf(panel);
         if (bzPanelCityDetails.panel_prototype == panel_prototype) return;
         // patch PanelCityDetails methods
@@ -101,6 +81,19 @@ class bzPanelCityDetails {
         proto.renderYieldsSlot = function() {
             return this.bzPanel.renderYieldsSlot();
         }
+    }
+    patchTabSlots() {
+        const tabsJSON = this.panel.tabBar.getAttribute("tab-items");
+        const tabs = JSON.parse(tabsJSON);
+        // replace city-detail-tabs-buildings
+        tabs.forEach((tab, index) => {
+            if (tab.id == cityDetailTabID.buildings) {
+                tabs[index] = BZ_TAB_CONSTRUCTIBLES;
+            }
+        });
+        // add Overview tab
+        tabs.unshift(BZ_TAB_OVERVIEW);
+        this.panel.tabBar.setAttribute("tab-items", JSON.stringify(tabs));
     }
     // empty decorators
     beforeAttach() { }
@@ -141,7 +134,7 @@ class bzPanelCityDetails {
     }
     // render new & replaced tabs
     afterRender() {
-        this.panel.tabBar.setAttribute("tab-items", JSON.stringify(cityDetailTabItems));
+        this.patchTabSlots();
         this.renderOverviewSlot();
         this.renderConstructiblesSlot();
     }
