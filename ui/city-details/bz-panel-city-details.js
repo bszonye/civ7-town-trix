@@ -268,26 +268,31 @@ class bzPanelCityDetails {
     updateConstructibles() {
         // Flag so we can give the constructibles back focus after updating
         const constructiblesHaveFocus = this.constructibleSlot.contains(FocusManager.getFocus());
+        // sort the data from CityDetails
+        const buildings = CityDetails.buildings;
+        const improvements = CityDetails.improvements;
+        const wonders = CityDetails.wonders;
+        bzCityDetails.sortConstructibles(buildings, improvements, wonders);
         // Buildings
-        const shouldShowBuildings = CityDetails.buildings.length > 0;
+        const shouldShowBuildings = buildings.length > 0;
         this.buildingsCategory.classList.toggle("hidden", !shouldShowBuildings);
         this.buildingsList.innerHTML = "";
-        for (const building of CityDetails.buildings) {
+        for (const building of buildings) {
             this.buildingsList.appendChild(this.addDistrictData(building));
             this.buildingsList.appendChild(this.createDivider());
         }
         // Improvements
-        const shouldShowImprovements = CityDetails.improvements.length > 0;
+        const shouldShowImprovements = improvements.length > 0;
         this.improvementsCategory.classList.toggle("hidden", !shouldShowImprovements);
         this.improvementsList.innerHTML = "";
-        for (const improvement of CityDetails.improvements) {
+        for (const improvement of improvements) {
             this.improvementsList.appendChild(this.addConstructibleData(improvement));
         }
         // Wonders
-        const shouldShowWonders = CityDetails.wonders.length > 0;
+        const shouldShowWonders = wonders.length > 0;
         this.wondersCategory.classList.toggle("hidden", !shouldShowWonders);
         this.wondersList.innerHTML = "";
-        for (const wonder of CityDetails.wonders) {
+        for (const wonder of wonders) {
             this.wondersList.appendChild(this.addConstructibleData(wonder));
         }
         // separate improvements & wonders if we have both
