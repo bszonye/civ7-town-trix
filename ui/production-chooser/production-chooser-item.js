@@ -7,6 +7,11 @@ const _DEBUG_RED = ["background-color", "rgba(150, 57, 57, .35)"];
 const _DEBUG_GREEN = ["background-color", "rgba(57, 150, 57, .35)"];
 const _DEBUG_BLUE = ["background-color", "rgba(57, 57, 150, .35)"];
 
+const BZ_WARNING_BLACK = "#000000";
+const _BZ_WARNING_RED = "#3a0806";  // danger
+const BZ_WARNING_AMBER = "#cea92f";  // caution
+const _BZ_WARNING_BRONZE = "#604639";  // note
+
 const categoryTooltipStyleMap = {
     [ProductionPanelCategory.BUILDINGS]: 'production-constructible-tooltip',
     [ProductionPanelCategory.UNITS]: 'production-unit-tooltip',
@@ -18,6 +23,7 @@ export const UpdateProductionChooserItem = (element, data, isPurchase) => {
     element.dataset.type = data.type;
     element.dataset.category = data.category;
     element.dataset.isPurchase = isPurchase.toString();
+    element.dataset.isRepair = data.repair ? 'true' : 'false';
     element.dataset.isAgeless = data.ageless ? 'true' : 'false';
     if (data.secondaryDetails) {
         element.dataset.secondaryDetails = data.secondaryDetails;
@@ -65,6 +71,9 @@ export class ProductionChooserItem extends FxsChooserItem {
     // #endregion
     get isPurchase() {
         return this.Root.getAttribute('data-is-purchase') === 'true';
+    }
+    get isRepair() {
+        return this.Root.getAttribute('data-is-repair') === 'true';
     }
     onInitialize() {
         super.onInitialize();
@@ -160,6 +169,25 @@ export class ProductionChooserItem extends FxsChooserItem {
                     this.errorTextElement.classList.add('hidden');
                 }
                 break;
+            case 'data-is-repair':
+                {
+                    const isRepair = newValue === 'true';
+                    const name = this.itemNameElement;
+                    const classes = [
+                        "font-bold", "leading-relaxed", "rounded-full",
+                        "px-2\\.5", "-ml-1"
+                    ];
+                    if (isRepair) {
+                        name.classList.add(...classes);
+                        name.style.setProperty("background-color", BZ_WARNING_AMBER);
+                        name.style.setProperty("color", BZ_WARNING_BLACK);
+                    } else {
+                        name.classList.remove(...classes);
+                        name.style.removeProperty("background-color");
+                        name.style.removeProperty("color");
+                    }
+                }
+                break;
             case 'data-is-ageless':
                 {
                     const isAgeless = newValue === 'true';
@@ -199,6 +227,7 @@ Controls.define('production-chooser-item', {
         { name: 'data-category' },
         { name: 'data-name' },
         { name: 'data-type' },
+        { name: 'data-is-repair' },
         { name: 'data-cost' },
         { name: 'data-prereq' },
         { name: 'data-description' },

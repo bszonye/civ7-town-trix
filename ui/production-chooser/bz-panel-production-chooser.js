@@ -1,3 +1,5 @@
+// decorate ProductionChooserScreen to fix the sticky repair bug
+// (updates the production list after selecting the repair)
 export class bzProductionChooserScreen {
     constructor(panel) {
         this.panel = panel;
@@ -13,5 +15,4 @@ export class bzProductionChooserScreen {
         engine.off('ConstructibleChanged', this.panel.onConstructibleAddedToMap, this.panel);
     }
 }
-
 Controls.decorate('panel-production-chooser', (val) => new bzProductionChooserScreen(val));
