@@ -39,6 +39,8 @@
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>
                     <Item>text/ru_RU/InGameText.xml</Item>
+                    <Item>text/zh_Hans_CN/InGameText.xml</Item>
+                    <Item>text/zh_Hant_HK/InGameText.xml</Item>
                 </UpdateText>
             </Actions>
         </ActionGroup>
@@ -46,5 +48,6 @@
     <LocalizedText>
         <File>text/en_us/ModInfoText.xml</File>
         <File>text/ru_RU/ModInfoText.xml</File>
+        <File>text/zh_Hans_CN/ModInfoText.xml</File>
     </LocalizedText>
 </Mod>
