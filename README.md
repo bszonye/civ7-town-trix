@@ -4,11 +4,11 @@ better city & town tools for Civilization VII
 ## improved production list and city details
 new and improved features:
 
-- compact redesign for the production list and building breakdown.
-- yellow highlighting for damaged buildings so you don't miss repairs.
-- better sorting for improvements, wonders, and walls.
-- simpler icons for agelesss buildings and maintenance costs.
-- a new Overview tab showing demographics and connected settlements.
+- compact redesign for the production list and building breakdown
+- yellow highlighting for damaged buildings so you don't miss repairs
+- better sorting for improvements, wonders, and walls
+- simpler icons for agelesss buildings and maintenance costs
+- a new Overview tab showing demographics and connected settlements
 
 ## better population visibility
 colorful settlement tiles including:
