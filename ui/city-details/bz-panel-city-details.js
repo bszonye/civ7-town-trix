@@ -10,6 +10,10 @@ const BZ_DIVIDER_LINE = `\
 <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
 `
 const BZ_DIVIDER = `<div class="${BZ_DIVIDER_STYLE}">${BZ_DIVIDER_LINE}</div>`
+const BZ_WARNING_BLACK = "#000000";
+const _BZ_WARNING_RED = "#3a0806";  // danger
+const BZ_WARNING_AMBER = "#cea92f";  // caution
+const _BZ_WARNING_BRONZE = "#604639";  // note
 
 var cityDetailTabID;
 (function (cityDetailTabID) {
@@ -362,16 +366,21 @@ class bzPanelCityDetails {
         name.classList.add("mr-2", "font-title", "uppercase", "text-xs");
         name.textContent = Locale.compose(constructibleData.name);
         nameContainer.appendChild(name);
-        if (constructibleData.damaged) {
-            const damagedText = document.createElement("div");
-            damagedText.classList.add("uppercase", "text-negative", "text-xs");
-            damagedText.textContent = "LOC_UI_CITY_DETAILS_BUILDING_DAMAGED";
-            nameContainer.appendChild(damagedText);
-        }
         const yieldAdjustContainer = document.createElement("div");
         yieldAdjustContainer.classList.add("flex", "justify-between", "w-96");
         const yieldContainer = document.createElement("div");
         const maintenanceContainer = document.createElement("div");
+        if (constructibleData.damaged) {
+            const damagedText = document.createElement("div");
+            // display warning in a yellow capsule
+            // ml-1.5 sets the round end slightly over the margin
+            damagedText.classList.value = "uppercase text-xs leading-tight mt-1 ml-1\\.5 px-2 rounded-full";
+            damagedText.style.setProperty("background-color", BZ_WARNING_AMBER);
+            damagedText.style.setProperty("color", BZ_WARNING_BLACK);
+            damagedText.setAttribute("data-l10n-id",
+                "LOC_UI_CITY_DETAILS_BUILDING_DAMAGED");
+            yieldContainer.appendChild(damagedText);
+        }
         if (constructibleData.yieldMap) {
             yieldContainer.classList.add("flex", "flex-wrap", "max-w-96");
             for (const [_yieldType, yieldData] of constructibleData.yieldMap) {
