@@ -24,8 +24,6 @@
             <Actions>
                 <ImportFiles>
                     <Item>ui/building-placement/building-placement-manager.js</Item>
-                    <Item>ui/city-details/model-city-details.js</Item>
-                    <Item>ui/city-details/panel-city-details.js</Item>
                     <Item>ui/interface-modes/interface-mode-place-building.js</Item>
                     <Item>ui/interface-modes/support-city-decoration.js</Item>
                     <Item>ui/lenses/layer/building-placement-layer.js</Item>
@@ -34,14 +32,19 @@
                     <Item>ui/production-chooser/production-chooser-unique-quarter.js</Item>
                 </ImportFiles>
                 <UIScripts>
+                    <Item>ui/city-details/bz-model-city-details.js</Item>
+                    <Item>ui/city-details/bz-panel-city-details.js</Item>
+                    <Item>ui/production-chooser/bz-panel-production-chooser.js</Item>
                 </UIScripts>
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>
+                    <Item>text/ru_RU/InGameText.xml</Item>
                 </UpdateText>
             </Actions>
         </ActionGroup>
     </ActionGroups>
     <LocalizedText>
         <File>text/en_us/ModInfoText.xml</File>
+        <File>text/ru_RU/ModInfoText.xml</File>
     </LocalizedText>
 </Mod>

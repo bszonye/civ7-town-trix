@@ -1,21 +1,25 @@
-# City Hall 1.2.0
+# City Hall 1.3.0
 better city & town tools for Civilization VII
 
-## improved production chooser
-reorganizes the production list to improve readability and to show more
-items.  building yields now appear directly next to the *ageless* icon.
+## improved production list and city details
+new and improved features:
+
+- compact redesign for the production list and building breakdown
+- yellow highlighting for damaged buildings so you don't miss repairs
+- better sorting for improvements, wonders, and walls
+- simpler icons for agelesss buildings and maintenance costs
+- a new Overview tab showing demographics and connected settlements
 
 ## better population visibility
-adds color to the city & town interface:
+colorful settlement tiles including:
 
 - green hexes for rural improvements
 - blue hexes for urban districts
 - a purple hex for the city center
 
-## unique quarter helper
-guides unique quarter construction in the building interface.  orange
-hexes indicate any tile placement that would block a unique quarter,
-including:
+## unique quarter assistant
+guides unique building construction in the building interface, with
+orange hexes to warn you before blocking a unique quarter by:
 
 - placing unique buildings on different tiles
 - completing a non-unique quarter with a unique building
@@ -24,15 +28,9 @@ including:
 the interface now recognizes unique buildings in progress and in the
 production queue, to help you plan both buildings at the same time.
 
-## more city details
-adds an Overview tab to the City Details panel, showing population
-demographics and connected settlements.  also reorganizes the Building
-Breakdown tab for readability and compactness, like the production
-chooser.
-
 ## bug fixes
-adjacency arrows now appear every time you place a building.  previously
-they would only appear the very first time.
+fixed base game bugs so that adjacency arrows appear reliably and
+repairs clear from the production list when you build them.
 
 ## compatibility with other mods
 known interactions:
@@ -42,5 +40,8 @@ known interactions:
   mods are installed, MM's production list replaces the City Hall
   version.
 - **KayleeR's Misc UI Modifications: compatible.**  when both mods are
-  installed, the unique quarter assistant in City Hall replaces the
-  similar feature in KayleeR's mod.
+  installed, City Hall features replace some parts of KayleeR's mod
+  related to the production list and building placement.
+
+## localization
+Russian translation by Webrok. thank you!

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+    <LocalizedText>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="ru_RU">
+            <Text>Обзор</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION" Language="ru_RU">
+            <Text>Население</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING" Language="ru_RU">
+            <Text>Свободное</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL" Language="ru_RU">
+            <Text>Деревенское</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN" Language="ru_RU">
+            <Text>Городское</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST" Language="ru_RU">
+            <Text>Специалисты</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL" Language="ru_RU">
+            <Text>Всего</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS" Language="ru_RU">
+            <Text>Соединения</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES" Language="ru_RU">
+            <Text>С[icon:YIELD_CITIES] Городами: {1_number}</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS" Language="ru_RU">
+            <Text>С[icon:YIELD_TOWNS] Городками: {1_number}</Text>
+        </Row>
+    </LocalizedText>
+</Database>

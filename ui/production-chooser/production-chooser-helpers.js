@@ -168,7 +168,8 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
             const category = getConstructibleClassPanelCategory(constructible.ConstructibleClass);
             if (possibleLocations.length > 0 && !isBuildingAlreadyQueued && !operationResult.InsufficientFunds) {
                 let name = Locale.compose('LOC_UI_PRODUCTION_NAME', constructible.Name);
-                if (operationResult.RepairDamaged && constructible.Repairable) {
+                const repair = (operationResult.RepairDamaged && constructible.Repairable);
+                if (repair) {
                     name = Locale.compose('LOC_UI_PRODUCTION_REPAIR_NAME', constructible.Name);
                 }
                 else if (operationResult.MoveToNewLocation) {
@@ -179,6 +180,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                 const item = {
                     name,
                     type: constructible.ConstructibleType,
+                    repair: !!repair,
                     cost,
                     category,
                     ageless,
@@ -212,6 +214,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                     return {
                         name: constructible.Name,
                         type: constructible.ConstructibleType,
+                        repair: false,
                         cost,
                         turns,
                         category,
@@ -235,6 +238,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                     turns: -1,
                     name: constructible.Name,
                     type: constructible.ConstructibleType,
+                    repair: false,
                     showTurns: false,
                     showCost: false,
                     insufficientFunds: false,
@@ -289,6 +293,7 @@ const getProjectItems = (city, isPurchase) => {
                     name: project.Name,
                     description: project.Description,
                     type: project.ProjectType,
+                    repair: false,
                     cost,
                     turns,
                     category: ProductionPanelCategory.PROJECTS,
@@ -454,6 +459,7 @@ const getUnits = (city, playerGoldBalance, isPurchase, recommendations, viewHidd
         const data = {
             name: definition.Name,
             type: definition.UnitType,
+            repair: false,
             ageless: false,
             cost,
             turns,
