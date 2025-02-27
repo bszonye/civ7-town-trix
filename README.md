@@ -32,7 +32,8 @@ chooser.
 
 ## bug fixes
 adjacency arrows now appear every time you place a building.  previously
-they would only appear the very first time.
+they would only appear the very first time.  repairs now clear from the
+production list when you build them.
 
 ## compatibility with other mods
 known interactions:
