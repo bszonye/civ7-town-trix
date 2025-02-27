@@ -38,11 +38,13 @@
                 </UIScripts>
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>
+                    <Item>text/ru_RU/InGameText.xml</Item>
                 </UpdateText>
             </Actions>
         </ActionGroup>
     </ActionGroups>
     <LocalizedText>
         <File>text/en_us/ModInfoText.xml</File>
+        <File>text/ru_RU/ModInfoText.xml</File>
     </LocalizedText>
 </Mod>
