@@ -12,9 +12,9 @@ export var CityDecorationSupport;
         HighlightColors[HighlightColors["citySelection"] = 0xaa8000ff] = "citySelection";
         HighlightColors[HighlightColors["urbanSelection"] = 0x80ff8000] = "urbanSelection";
         HighlightColors[HighlightColors["ruralSelection"] = 0x8000ff80] = "ruralSelection";
-        HighlightColors[HighlightColors["cityFill"] = 0x558000ff] = "cityFill";
-        HighlightColors[HighlightColors["urbanFill"] = 0x40ff8000] = "urbanFill";
-        HighlightColors[HighlightColors["ruralFill"] = 0x4000ff80] = "ruralFill";
+        HighlightColors[HighlightColors["cityFill"] = 0x808000ff] = "cityFill";
+        HighlightColors[HighlightColors["urbanFill"] = 0x55ff8000] = "urbanFill";
+        HighlightColors[HighlightColors["ruralFill"] = 0x5500ff80] = "ruralFill";
     })(HighlightColors = CityDecorationSupport.HighlightColors || (CityDecorationSupport.HighlightColors = {}));
     class Instance {
         constructor() {
