@@ -3,6 +3,7 @@ import CityDetails, { UpdateCityDetailsEventName } from "/base-standard/ui/city-
 import NavTray from "/core/ui/navigation-tray/model-navigation-tray.js";
 import { MustGetElement } from "/core/ui/utilities/utilities-dom.js";
 import FocusManager from '/core/ui/input/focus-manager.js';
+import TooltipManager from '/core/ui/tooltips/tooltip-manager.js';
 
 const BZ_DIVIDER_STYLE = "flex w-96 self-center";
 const BZ_DIVIDER_LINE = `\
@@ -99,6 +100,21 @@ class bzPanelCityDetails {
         tabs.unshift(BZ_TAB_OVERVIEW);
         this.panel.tabBar.setAttribute("tab-items", JSON.stringify(tabs));
     }
+    patchTooltipCompatibility() {
+        // compatibility with triex's tooltips
+        if (!('city-details-building-tooltip' in TooltipManager.types)) return;
+        const root = this.panel.Root;
+        const buildings = root.querySelectorAll(".bz-buildings-list .constructible-entry")
+        buildings.forEach((building) => {
+            building.setAttribute('data-tooltip-anchor', 'left');
+            building.setAttribute('data-tooltip-style', 'city-details-building-tooltip');
+        })
+        const wonders = root.querySelectorAll(".bz-wonders-list .constructible-entry")
+        wonders.forEach((wonders) => {
+            wonders.setAttribute('data-tooltip-anchor', 'left');
+            wonders.setAttribute('data-tooltip-style', 'city-details-building-tooltip');
+        })
+    }
     // empty decorators
     beforeAttach() { }
     afterDetach() { }
@@ -131,6 +147,7 @@ class bzPanelCityDetails {
         this.wondersCategory = MustGetElement(".bz-wonders-category", this.Root);
         this.wondersList = MustGetElement(".bz-wonders-list", this.Root);
         this.update();
+        this.patchTooltipCompatibility();
     }
     beforeDetach() {
         window.removeEventListener(bzUpdateCityDetailsEventName, this.updateOverviewListener);

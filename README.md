@@ -1,4 +1,4 @@
-# City Hall 1.3.0
+# City Hall 1.3.1
 better city & town tools for Civilization VII
 
 ## improved production list and city details
@@ -36,6 +36,7 @@ repairs clear from the production list when you build them.
 known interactions:
 
 - **Sukritact's Simple UI Adjustments: compatible.**  No conflicts.
+- **triex's city details building tooltips: compatible.**  No conflicts.
 - **MantisMaestro's Compact Production Chooser: compatible.**  when both
   mods are installed, MM's production list replaces the City Hall
   version.
@@ -44,4 +45,8 @@ known interactions:
   related to the production list and building placement.
 
 ## localization
-Russian translation by Webrok. thank you!
+supported languages:
+- Russian (translated by Webrok)
+- Simplified Chinese (translated by thendye)
+- Traditional Chinese (translated by alwdark)
+thank you all for your help!

@@ -1,0 +1,34 @@
+<Database>
+    <LocalizedText>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="zh_Hans_CN">
+            <Text>概览</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION" Language="zh_Hans_CN">
+            <Text>人口</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING" Language="zh_Hans_CN">
+            <Text>增长中</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL" Language="zh_Hans_CN">
+            <Text>农村</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN" Language="zh_Hans_CN">
+            <Text>城市</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST" Language="zh_Hans_CN">
+            <Text>专家</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL" Language="zh_Hans_CN">
+            <Text>总计</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS" Language="zh_Hans_CN">
+            <Text>连接</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES" Language="zh_Hans_CN">
+            <Text>{1_number}[icon:YIELD_CITIES] 城市</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS" Language="zh_Hans_CN">
+            <Text>{1_number}[icon:YIELD_TOWNS] 城镇</Text>
+        </Row>
+    </LocalizedText>
+</Database>
