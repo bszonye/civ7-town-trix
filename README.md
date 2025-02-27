@@ -46,7 +46,9 @@ known interactions:
 
 ## localization
 supported languages:
+
 - Russian (translated by Webrok)
 - Simplified Chinese (translated by thendye)
 - Traditional Chinese (translated by alwdark)
+
 thank you all for your help!
