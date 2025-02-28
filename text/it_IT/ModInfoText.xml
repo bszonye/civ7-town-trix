@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Database>
-    <EnglishText>
-        <Row Tag="LOC_MOD_BZ_CITY_HALL_NAME">
+    <LocalizedText>
+        <Row Tag="LOC_MOD_BZ_CITY_HALL_NAME" Language="it_IT">
             <Text>City Hall 1.4.0</Text>
         </Row>
-        <Row Tag="LOC_MOD_BZ_CITY_HALL_DESCRIPTION">
+        <Row Tag="LOC_MOD_BZ_CITY_HALL_DESCRIPTION" Language="it_IT">
             <Text>Strumenti migliorati per Città e Paesi</Text>
         </Row>
-    </EnglishText>
+    </LocalizedText>
 </Database>
