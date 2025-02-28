@@ -47,6 +47,7 @@ known interactions:
 ## localization
 supported languages:
 
+- Korean (translated by Hotsolidinfill)
 - Russian (translated by Webrok)
 - Simplified Chinese (translated by thendye)
 - Traditional Chinese (translated by alwdark)
