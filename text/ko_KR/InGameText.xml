@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+    <LocalizedText>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="ko_KR">
+            <Text>개요</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION" Language="ko_KR">
+            <Text>시민</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING" Language="ko_KR">
+            <Text>성장</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL" Language="ko_KR">
+            <Text>교외</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN" Language="ko_KR">
+            <Text>시가지</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST" Language="ko_KR">
+            <Text>전문가</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL" Language="ko_KR">
+            <Text>합계</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS" Language="ko_KR">
+            <Text>연결된 정착지</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES" Language="ko_KR">
+            <Text>[icon:YIELD_CITIES] 도시: {1_number}</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS" Language="ko_KR">
+            <Text>[icon:YIELD_TOWNS] 마을: {1_number}</Text>
+        </Row>
+    </LocalizedText>
+</Database>
