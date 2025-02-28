@@ -38,6 +38,8 @@
                 </UIScripts>
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>
+                    <Item>text/it_IT/InGameText.xml</Item>
+                    <Item>text/ko_KR/InGameText.xml</Item>
                     <Item>text/ru_RU/InGameText.xml</Item>
                     <Item>text/zh_Hans_CN/InGameText.xml</Item>
                     <Item>text/zh_Hant_HK/InGameText.xml</Item>
@@ -47,6 +49,8 @@
     </ActionGroups>
     <LocalizedText>
         <File>text/en_us/ModInfoText.xml</File>
+        <File>text/it_IT/ModInfoText.xml</File>
+        <File>text/ko_KR/ModInfoText.xml</File>
         <File>text/ru_RU/ModInfoText.xml</File>
         <File>text/zh_Hans_CN/ModInfoText.xml</File>
     </LocalizedText>

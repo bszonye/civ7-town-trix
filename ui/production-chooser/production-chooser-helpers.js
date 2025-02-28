@@ -57,6 +57,13 @@ const getAdjacentCityID = (cityID, isNext) => {
     }
     return targetCityID;
 };
+export const GetUnitSortValue = (unit) => {
+    // unit value for sorting
+    const stats = GameInfo.Unit_Stats.lookup(unit.UnitType);
+    // sort by combat value.  negative value (civilian) sorts first.
+    const combatValue = stats?.RangedCombat || stats?.Combat || -1;
+    return combatValue;
+}
 export const GetUnitStatsFromDefinition = (definition) => {
     let stats = [];
     // Movement Range
@@ -155,6 +162,8 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
         // 'Success' is a tad misleading here as a success can still fail due to requirements not being met.
         // Verify requirements either doesn't exist OR are met.
         const bestYields = GetCurrentBestTotalYieldForConstructible(city, constructible.ConstructibleType);
+        // sorting value: sort constructibles by total yield
+        let sortValue = bestYields.reduce((acc, { value }) => acc + Number(value), 0);
         const secondaryDetails = GetSecondaryDetailsHTML(bestYields);
         if (operationResult.Success || insufficientFunds || !hideIfUnavailable) {
             const possibleLocations = [];
@@ -171,6 +180,8 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                 const repair = (operationResult.RepairDamaged && constructible.Repairable);
                 if (repair) {
                     name = Locale.compose('LOC_UI_PRODUCTION_REPAIR_NAME', constructible.Name);
+                    // negative value sorts repairs first
+                    sortValue = -1 - sortValue;
                 }
                 else if (operationResult.MoveToNewLocation) {
                     name = Locale.compose('LOC_UI_PRODUCTION_MOVE_NAME', constructible.Name);
@@ -181,6 +192,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                     name,
                     type: constructible.ConstructibleType,
                     repair: !!repair,
+                    sortValue,  // total yield, repairs first
                     cost,
                     category,
                     ageless,
@@ -215,6 +227,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                         name: constructible.Name,
                         type: constructible.ConstructibleType,
                         repair: false,
+                        sortValue: 0,
                         cost,
                         turns,
                         category,
@@ -239,6 +252,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                     name: constructible.Name,
                     type: constructible.ConstructibleType,
                     repair: false,
+                    sortValue: 0,
                     showTurns: false,
                     showCost: false,
                     insufficientFunds: false,
@@ -294,6 +308,7 @@ const getProjectItems = (city, isPurchase) => {
                     description: project.Description,
                     type: project.ProjectType,
                     repair: false,
+                    sortValue: 0,
                     cost,
                     turns,
                     category: ProductionPanelCategory.PROJECTS,
@@ -454,6 +469,7 @@ const getUnits = (city, playerGoldBalance, isPurchase, recommendations, viewHidd
             continue;
         }
         const cost = cityGoldLibrary.getUnitPurchaseCost(YieldTypes.YIELD_GOLD, definition.UnitType);
+        const sortValue = GetUnitSortValue(definition);
         const secondaryDetails = GetSecondaryDetailsHTML(GetUnitStatsFromDefinition(definition));
         const turns = isPurchase ? -1 : city.BuildQueue.getTurnsLeft(definition.UnitType) ?? -1;
         const data = {
@@ -461,6 +477,7 @@ const getUnits = (city, playerGoldBalance, isPurchase, recommendations, viewHidd
             type: definition.UnitType,
             repair: false,
             ageless: false,
+            sortValue,
             cost,
             turns,
             showTurns: false,

@@ -48,8 +48,7 @@ const BZ_TAB_CONSTRUCTIBLES = {
 // PanelCityDetails decorator
 class bzPanelCityDetails {
     static panel_prototype;
-    static panel_render;
-    static panel_yieldSlot;
+    static panel_renderYieldsSlot;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -76,13 +75,14 @@ class bzPanelCityDetails {
         const proto = bzPanelCityDetails.panel_prototype = panel_prototype;
         // wrap render method to extend it
         const panel_render = proto.render;
+        const after_render = this.afterRender;
         proto.render = function(...args) {
-            const rv = panel_render.apply(this, args);
-            this.bzPanel.afterRender();
-            return rv;
+            const panel_rv = panel_render.apply(this, args);
+            const after_rv = after_render.apply(this.bzPanel, args);
+            return after_rv ?? panel_rv;
         }
         // replace panel.renderYieldsSlot to fix a bug
-        bzPanelCityDetails.panel_renderYieldSlot = proto.renderYieldsSlot;
+        bzPanelCityDetails.panel_renderYieldsSlot = proto.renderYieldsSlot;
         proto.renderYieldsSlot = function() {
             return this.bzPanel.renderYieldsSlot();
         }
