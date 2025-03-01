@@ -21,6 +21,8 @@ export var CityDecorationSupport;
             this.cityOverlayGroup = null;
             this.cityOverlay = null;
             this.beforeUnloadListener = () => { this.onUnload(); };
+            this.OUTER_REGION_OVERLAY_FILTER = { brightness: 0.45 }; // darken plots outside the city
+            this.filtered = false;
         }
         initializeOverlay() {
             this.cityOverlayGroup = WorldUI.createOverlayGroup("CityOverlayGroup", 1);
@@ -34,6 +36,9 @@ export var CityDecorationSupport;
                 console.error(`City Decoration support: Failed to find city (${ComponentID.toLogString(cityID)})!`);
                 return;
             }
+            if (this.filtered) WorldUI.popFilter();  // city changes don't use clearDecorations
+            WorldUI.pushRegionColorFilter(city.getPurchasedPlots(), {}, this.OUTER_REGION_OVERLAY_FILTER);
+            this.filtered = true;
             this.cityOverlay?.addPlots(city.location, { edgeColor: HighlightColors.citySelection, fillColor: HighlightColors.cityFill });
             const cityDistricts = city.Districts;
             if (cityDistricts) {
@@ -59,6 +64,8 @@ export var CityDecorationSupport;
             this.clearDecorations();
         }
         clearDecorations() {
+            if (this.filtered) WorldUI.popFilter();
+            this.filtered = false;
             this.cityOverlayGroup?.clearAll();
         }
     }
