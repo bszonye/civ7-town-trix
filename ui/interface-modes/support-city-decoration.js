@@ -9,10 +9,10 @@ export var CityDecorationSupport;
     // TODO: Pull from assets/engine so there is an opportunity to get color correct values (HDR, colorblind, etc...)
     let HighlightColors;
     (function (HighlightColors) {
-        HighlightColors[HighlightColors["citySelection"] = 0xaa8000ff] = "citySelection";
+        HighlightColors[HighlightColors["centerSelection"] = 0x80ff00c0] = "centerSelection";
         HighlightColors[HighlightColors["urbanSelection"] = 0x80ff8000] = "urbanSelection";
         HighlightColors[HighlightColors["ruralSelection"] = 0x8000ff80] = "ruralSelection";
-        HighlightColors[HighlightColors["cityFill"] = 0x808000ff] = "cityFill";
+        HighlightColors[HighlightColors["centerFill"] = 0x55ff00aa] = "centerFill";
         HighlightColors[HighlightColors["urbanFill"] = 0x55ff8000] = "urbanFill";
         HighlightColors[HighlightColors["ruralFill"] = 0x5500ff80] = "ruralFill";
     })(HighlightColors = CityDecorationSupport.HighlightColors || (CityDecorationSupport.HighlightColors = {}));
@@ -39,7 +39,6 @@ export var CityDecorationSupport;
             if (this.filtered) WorldUI.popFilter();  // city changes don't use clearDecorations
             WorldUI.pushRegionColorFilter(city.getPurchasedPlots(), {}, this.OUTER_REGION_OVERLAY_FILTER);
             this.filtered = true;
-            this.cityOverlay?.addPlots(city.location, { edgeColor: HighlightColors.citySelection, fillColor: HighlightColors.cityFill });
             const cityDistricts = city.Districts;
             if (cityDistricts) {
                 // Highlight the rural districts
@@ -51,13 +50,15 @@ export var CityDecorationSupport;
                     }
                 }
                 // Highlight the urban districts
-                const districtIdsUrban = cityDistricts.getIdsOfTypes([DistrictTypes.URBAN, DistrictTypes.CITY_CENTER]);
+                const districtIdsUrban = cityDistricts.getIdsOfType(DistrictTypes.URBAN);
                 if (districtIdsUrban.length > 0) {
                     const locations = Districts.getLocations(districtIdsUrban);
                     if (locations.length > 0) {
                         this.cityOverlay?.addPlots(locations, { edgeColor: HighlightColors.urbanSelection, fillColor: HighlightColors.urbanFill });
                     }
                 }
+                // Highlight the city center
+                this.cityOverlay?.addPlots([city.location], { edgeColor: HighlightColors.centerSelection, fillColor: HighlightColors.centerFill });
             }
         }
         onUnload() {

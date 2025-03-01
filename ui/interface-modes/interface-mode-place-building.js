@@ -118,13 +118,31 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
             return;
         }
         CityZoomer.zoomToCity(selectedCity);
-        //Darken all plots not in the city
+        // Darken all plots not in the city
         WorldUI.pushRegionColorFilter(selectedCity.getPurchasedPlots(), {}, this.OUTER_REGION_OVERLAY_FILTER);
+        // display guide colors for building placement
         this.plotOverlay = overlay.addPlotOverlay();
-        this.plotOverlay.addPlots(BuildingPlacementManager.reservedPlots, { fillColor: HighlightColors.worst });
-        this.plotOverlay.addPlots(BuildingPlacementManager.urbanPlots, { fillColor: HighlightColors.best });
-        this.plotOverlay.addPlots(BuildingPlacementManager.developedPlots, { fillColor: HighlightColors.okay });
-        this.plotOverlay.addPlots(BuildingPlacementManager.expandablePlots, { fillColor: HighlightColors.good });
+        const reserved = BuildingPlacementManager.reservedPlots;
+        const urban = BuildingPlacementManager.urbanPlots;
+        const developed = BuildingPlacementManager.developedPlots;
+        const expandable = BuildingPlacementManager.expandablePlots;
+        // keep the center purple to aid orientation
+        const center = selectedCity.location;
+        const centerPlot = GameplayMap.getIndexFromLocation(center);
+        if (reserved.includes(centerPlot)) {
+            // (but leave reserved tiles orange)
+        } else if (urban.includes(centerPlot)) {
+            // center is a valid selection, keep it light purple
+            this.plotOverlay.addPlots([center], { fillColor: 0x55ff00aa });
+        } else {
+            // center is blocked, use a darker purple
+            this.plotOverlay.addPlots([center], { fillColor: 0xc8800055 });
+        }
+        // apply the other guide colors
+        this.plotOverlay.addPlots(reserved, { fillColor: HighlightColors.worst });
+        this.plotOverlay.addPlots(urban.filter(p => p != centerPlot), { fillColor: HighlightColors.best });
+        this.plotOverlay.addPlots(developed, { fillColor: HighlightColors.okay });
+        this.plotOverlay.addPlots(expandable, { fillColor: HighlightColors.good });
         Audio.playSound("data-audio-plot-select-overlay", "interact-unit");
     }
     onPlotCursorUpdated(event) {
