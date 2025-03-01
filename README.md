@@ -1,4 +1,4 @@
-# City Hall 1.4.0
+# City Hall 1.5.0
 better city & town tools for Civilization VII
 
 ## improved production list and city details
@@ -12,7 +12,8 @@ new and improved features:
 - a new Overview tab showing demographics and connected settlements
 
 ## better population visibility
-colorful settlement tiles including:
+see your settlements clearly with gentle shading outside city limits and
+brighter colors for developed tiles:
 
 - green hexes for rural improvements
 - blue hexes for urban districts
