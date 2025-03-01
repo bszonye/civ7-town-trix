@@ -21,7 +21,7 @@ export var CityDecorationSupport;
             this.cityOverlayGroup = null;
             this.cityOverlay = null;
             this.beforeUnloadListener = () => { this.onUnload(); };
-            this.OUTER_REGION_OVERLAY_FILTER = { brightness: 0.45 }; // darken plots outside the city
+            this.OUTER_REGION_OVERLAY_FILTER = { brightness: 4/9 }; // darken plots outside the city
             this.filtered = false;
         }
         initializeOverlay() {
