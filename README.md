@@ -19,8 +19,8 @@ brighter colors for developed tiles:
 - blue hexes for urban districts
 - purple for the city center
 
-the city center stays purple in building placement mode, to help you
-stay oriented.  (it turns a darker purple if you can't build there.)
+the center stays purple in building placement mode, to help you stay
+oriented.  (it turns a darker purple if you can't build in the center.)
 
 ## unique quarter assistant
 guides unique building construction in the building interface, with
