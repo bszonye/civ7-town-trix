@@ -107,6 +107,8 @@ export class ProductionChooserItem extends FxsChooserItem {
     updateCostIconElement() {
         const costIcon = this.isPurchase ? 'Yield_Gold' : 'hud_turn-timer';
         this.costIconElement.style.setProperty('background-image', `url(${costIcon})`);
+        const altText = Locale.compose(this.isPurchase ? "LOC_YIELD_GOLD" : "LOC_UI_CITY_INSPECTOR_TURNS");
+        this.costIconElement.ariaLabel = altText;
     }
     createRecommendationElements(recommendationList) {
         this.recommendationsContainer.innerHTML = '';

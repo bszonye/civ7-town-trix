@@ -12,6 +12,7 @@ import { MustGetElement } from "/core/ui/utilities/utilities-dom.js";
 import FocusManager from '/core/ui/input/focus-manager.js';
 import Databind from '/core/ui/utilities/utilities-core-databinding.js';
 import { GetPrevCityID, GetNextCityID } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
+import { OVERLAY_PRIORITY } from '/base-standard/ui/utilities/utilities-overlay.js';
 export const ShowCityDetailsEventName = "show-city-details";
 export class ShowCityDetailsEvent extends CustomEvent {
     constructor(detail) {
@@ -84,7 +85,7 @@ class PanelCityDetails extends Panel {
             primaryColor: { x: 1, y: 1, z: 1, w: 1 },
             secondaryColor: { x: 0, y: 0, z: 0, w: 0 }
         };
-        this.landmarkOverlayGroup = WorldUI.createOverlayGroup("landmarkOverlayGroup", 1);
+        this.landmarkOverlayGroup = WorldUI.createOverlayGroup("landmarkOverlayGroup", OVERLAY_PRIORITY.PLOT_HIGHLIGHT);
         this.landmarkOverlay = this.landmarkOverlayGroup.addLandmarkOverlay();
         this.highlightOverlay = this.landmarkOverlayGroup.addBorderOverlay(this.HIGHLIGHT_BORDER_STYLE);
         this.engineInputListener = this.onEngineInput.bind(this);

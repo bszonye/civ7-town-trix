@@ -73,6 +73,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         this.lastHoveredPlot = -1;
         window.addEventListener(CursorUpdatedEventName, this.cursorUpdateListener);
         window.addEventListener(PlotCursorUpdatedEventName, this.plotCursorUpdatedListener);
+        WorldUI.setUnitVisibility(false);
         waitForLayout(() => this.setMapFocused(true));
     }
     transitionFrom(oldMode, newMode) {
@@ -84,6 +85,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         }
         window.removeEventListener(CursorUpdatedEventName, this.cursorUpdateListener);
         window.removeEventListener(PlotCursorUpdatedEventName, this.plotCursorUpdatedListener);
+        WorldUI.setUnitVisibility(true);
         UI.lockCursor(false);
         LensManager.setActiveLens('fxs-default-lens');
         super.transitionFrom(oldMode, newMode);
@@ -123,13 +125,20 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         this.plotOverlay.addPlots(BuildingPlacementManager.urbanPlots, { fillColor: HighlightColors.best });
         this.plotOverlay.addPlots(BuildingPlacementManager.developedPlots, { fillColor: HighlightColors.okay });
         this.plotOverlay.addPlots(BuildingPlacementManager.expandablePlots, { fillColor: HighlightColors.good });
-        Audio.playSound("data-audio-plot-select-overlay", "interact-unit");
     }
     onPlotCursorUpdated(event) {
         this.onPlotUpdated(event.detail.plotCoords);
     }
     onCursorUpdated(event) {
         this.onPlotUpdated(event.detail.plot);
+    }
+    /**
+     * @override
+     */
+    decorateHover(plotCoord, cursorOverlay, cursorModelGroup) {
+        cursorOverlay.clearAll();
+        cursorModelGroup.clear();
+        cursorModelGroup.addVFXAtPlot("VFX_3dUI_PlotCursor_City_Picker", plotCoord, { x: 0, y: 0, z: 0 });
     }
     onPlotUpdated(plot) {
         if (plot) {

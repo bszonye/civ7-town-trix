@@ -28,6 +28,7 @@ class CityDetailsModel {
         this.improvements = [];
         this.wonders = [];
         this.yields = [];
+        this.baseYieldValue = 0;
         this.isBeingRazed = false;
         this.getTurnsUntilRazed = -1;
         this.treasureFleetText = "";
@@ -162,7 +163,9 @@ class CityDetailsModel {
                             children: []
                         };
                         if (y.base.steps?.length) {
-                            this.addYieldSteps(topYieldData, y.base.steps, yieldInfo);
+                            this.addYieldSteps(topYieldData, y.base.steps, yieldInfo, false);
+                            //Reset base yield value reference
+                            this.baseYieldValue = 0;
                         }
                         this.yields.push(topYieldData);
                     }
@@ -263,35 +266,22 @@ class CityDetailsModel {
         for (const town of ownerSettlements) {
             if (town.isTown && town.Growth?.growthType == GrowthTypes.PROJECT) {
                 const connectedToTown = town.getConnectedCities();
-                const townFoodYield = town.Yields?.getNetYield(YieldTypes.YIELD_FOOD);
-                if (!townFoodYield) {
-                    console.error('model-city-details: buildSendingFoodData() - Failed to get Town Food Yield');
-                    return;
-                }
-                const citiesReceivingFood = [];
-                for (const connectedsettlementID of connectedToTown) {
-                    const connectedSettlement = Cities.get(connectedsettlementID);
-                    if (connectedSettlement && !connectedSettlement.isTown) {
-                        citiesReceivingFood.push(connectedSettlement);
-                    }
-                }
-                if (citiesReceivingFood.length == 0) {
-                    // Town is not connected to any cities to give food to
-                    continue;
-                }
-                const foodForEachCity = townFoodYield / citiesReceivingFood.length;
-                for (const city of citiesReceivingFood) {
-                    // We've found a valid town sending food to a valid city
-                    const existingData = sendingFoodData.find(value => {
-                        return ComponentID.isMatch(value.city.id, city.id);
-                    });
-                    if (existingData) {
-                        // Existing entry. Split town food between cities.
-                        existingData.data.push({ town: town, amount: foodForEachCity });
-                    }
-                    else {
-                        // New entry
-                        sendingFoodData.push({ city: city, data: [{ town: town, amount: foodForEachCity }] });
+                const foodForEachCity = town.getSentFoodPerCity();
+                for (const connectedSettlement of connectedToTown) {
+                    const city = Cities.get(connectedSettlement);
+                    if (city && !city.isTown) {
+                        // We've found a valid town sending food to a valid city
+                        const existingData = sendingFoodData.find(value => {
+                            return ComponentID.isMatch(value.city.id, city.id);
+                        });
+                        if (existingData) {
+                            // Existing entry. Split town food between cities.
+                            existingData.data.push({ town: town, amount: foodForEachCity });
+                        }
+                        else {
+                            // New entry
+                            sendingFoodData.push({ city: city, data: [{ town: town, amount: foodForEachCity }] });
+                        }
                     }
                 }
             }
@@ -371,22 +361,29 @@ class CityDetailsModel {
         });
         return uniqueQuarterDefinition;
     }
-    addYieldSteps(baseYield, steps, yieldDefinition) {
+    addYieldSteps(baseYield, steps, yieldDefinition, isModifier) {
         for (const step of steps) {
             if (step.description) {
                 const yieldData = {
                     name: step.description,
-                    value: step.value,
+                    value: isModifier ? (0.01 * step.value * this.baseYieldValue) : step.value,
                     children: []
                 };
+                if (this.baseYieldValue == 0 && step.base) {
+                    this.baseYieldValue = step.base.value;
+                }
                 this.setYieldAndGetIcon(yieldData, step, yieldDefinition);
                 if (step.base && step.base.steps && step.base.steps.length > 0) {
-                    this.addYieldSteps(yieldData, step.base.steps, yieldDefinition);
+                    this.addYieldSteps(yieldData, step.base.steps, yieldDefinition, false);
                 }
                 baseYield.children.push(yieldData);
+                //Are there any percentage based yield incomes (modifiers) applied to the base income that we need to show?
+                if (step.modifier && step.modifier.steps && step.modifier.steps.length > 0 && step.description == "Income") {
+                    this.addYieldSteps(yieldData, step.modifier.steps, yieldDefinition, true);
+                }
             }
             else if (step.steps && step.steps.length > 0) {
-                this.addYieldSteps(baseYield, step.steps, yieldDefinition);
+                this.addYieldSteps(baseYield, step.steps, yieldDefinition, false);
             }
         }
     }
