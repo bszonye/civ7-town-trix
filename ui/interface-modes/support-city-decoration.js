@@ -4,6 +4,7 @@
  * @description City Decoration support for interface modes (city-selected, city-production, city-growth, city-info)
  */
 import { ComponentID } from '/core/ui/utilities/utilities-component-id.js';
+import { OVERLAY_PRIORITY } from '/base-standard/ui/utilities/utilities-overlay.js';
 export var CityDecorationSupport;
 (function (CityDecorationSupport) {
     // TODO: Pull from assets/engine so there is an opportunity to get color correct values (HDR, colorblind, etc...)
@@ -25,7 +26,7 @@ export var CityDecorationSupport;
             this.filtered = false;
         }
         initializeOverlay() {
-            this.cityOverlayGroup = WorldUI.createOverlayGroup("CityOverlayGroup", 1);
+            this.cityOverlayGroup = WorldUI.createOverlayGroup("CityOverlayGroup", OVERLAY_PRIORITY.PLOT_HIGHLIGHT);
             this.cityOverlay = this.cityOverlayGroup.addPlotOverlay();
             engine.on('BeforeUnload', this.beforeUnloadListener);
         }

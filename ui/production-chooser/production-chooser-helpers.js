@@ -141,8 +141,8 @@ export const GetCurrentBestTotalYieldForConstructible = (city, constructibleType
     return yields;
 };
 export const GetSecondaryDetailsHTML = (items) => {
-    return items.reduce((acc, { icon, value }) => {
-        return acc + `<div class="flex items-center mx-1"><img src="${icon}" class="size-6" />${value}</div>`;
+    return items.reduce((acc, { icon, value, name }) => {
+        return acc + `<div class="flex items-center mx-1"><img aria-label="${Locale.compose(name)}" src="${icon}" class="size-6" />${value}</div>`;
     }, "");
 };
 /**
@@ -285,7 +285,6 @@ export const CreateProductionChooserItem = () => {
     const item = document.createElement('production-chooser-item');
     item.setAttribute("data-audio-group-ref", "city-actions");
     item.setAttribute("data-audio-focus", "city-production-focus");
-    item.setAttribute("data-audio-activate-ref", "data-audio-city-production-activate");
     return item;
 };
 const getProjectItems = (city, isPurchase) => {
