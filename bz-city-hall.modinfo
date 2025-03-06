@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Mod id="bz-city-hall" version="1"
+<Mod id="bz-city-hall" version="1.6.0"
     xmlns="ModInfo">
     <Properties>
         <Name>LOC_MOD_BZ_CITY_HALL_NAME</Name>

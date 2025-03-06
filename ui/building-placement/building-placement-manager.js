@@ -644,7 +644,7 @@ class BuildingPlacementManagerClass {
             return [];
         }
         let bestYieldChanges = [];
-        let bestYieldChangesTotal = 0;
+        let bestYieldChangesTotal = Number.MIN_SAFE_INTEGER;
         for (const placement of constructiblePlacementData?.placements ?? []) {
             let yieldChangesTotal = 0;
             for (const change of placement.yieldChanges) {

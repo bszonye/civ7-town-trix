@@ -2,7 +2,7 @@
 <Database>
     <EnglishText>
         <Row Tag="LOC_MOD_BZ_CITY_HALL_NAME">
-            <Text>City Hall 1.5.1</Text>
+            <Text>City Hall 1.6.0</Text>
         </Row>
         <Row Tag="LOC_MOD_BZ_CITY_HALL_DESCRIPTION">
             <Text>better city and town tools</Text>
