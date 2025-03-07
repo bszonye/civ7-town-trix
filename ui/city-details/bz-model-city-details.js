@@ -56,18 +56,20 @@ class bzCityDetailsModel {
         window.dispatchEvent(new bzUpdateCityDetailsEvent());
     }
     setConnections(city) {
+        this.connectedCities = [];
+        this.connectedTowns = [];
         const ids = city?.getConnectedCities();
-        const total = ids?.length;
-        if (!total) return null;
-        const connections = ids.map(id => Cities.get(id));
-        const cities = [];
-        const towns = [];
-        for (const connection of connections) {
-            if (connection.isTown) towns.push(connection);
-            else cities.push(connection);
+        if (!ids) return;
+        for (const id of ids) {
+            const conn = Cities.get(id);
+            if (!conn) {
+                console.warn(`bz-model-city-details: stale connection=${JSON.stringify(id)}`);
+            } else if (conn.isTown) {
+                this.connectedTowns.push(conn);
+            } else {
+                this.connectedCities.push(conn);
+            }
         }
-        this.connectedCities = cities;
-        this.connectedTowns = towns;
     }
     updateOverview(city) {
         // population
