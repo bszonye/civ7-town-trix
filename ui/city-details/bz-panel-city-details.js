@@ -339,7 +339,7 @@ class bzPanelCityDetails {
         mainDiv.classList.add("flex", "flex-col");
         if (districtData.name && districtData.description) {
             const uniqueQuarterContainer = document.createElement("div");
-            uniqueQuarterContainer.classList.add("flex", "ml-8");
+            uniqueQuarterContainer.classList.add("flex", "mx-1");
             mainDiv.appendChild(uniqueQuarterContainer);
             const uniqueQuarterIcon = document.createElement("fxs-icon");
             uniqueQuarterIcon.classList.add("size-12", "mr-2");
@@ -354,7 +354,8 @@ class bzPanelCityDetails {
             districtName.innerHTML = districtData.name;
             uniqueQuarterTextContainer.appendChild(districtName);
             const districtDescription = document.createElement("div");
-            districtDescription.classList.add("text-xs", "leading-normal", "max-w-96");
+            districtDescription.classList.add("text-xs", "leading-normal");
+            districtDescription.style.setProperty("max-width", "24rem");  // max-w-108
             districtDescription.innerHTML = districtData.description;
             uniqueQuarterTextContainer.appendChild(districtDescription);
         }
@@ -368,7 +369,7 @@ class bzPanelCityDetails {
         mainDiv.classList.add("constructible-entry", "flex", "flex-col");
         mainDiv.setAttribute("tabindex", "-1");
         const topDiv = document.createElement("div");
-        topDiv.classList.add("constructible-entry-highlight", "flex", "ml-8", "my-1", "pointer-events-none", "items-center");
+        topDiv.classList.add("constructible-entry-highlight", "flex", "mx-1", "my-1", "pointer-events-none", "items-center");
         const icon = document.createElement("fxs-icon");
         icon.classList.add("size-12");
         icon.setAttribute("data-icon-context", constructibleData.iconContext);
@@ -384,7 +385,8 @@ class bzPanelCityDetails {
         name.textContent = Locale.compose(constructibleData.name);
         nameContainer.appendChild(name);
         const yieldAdjustContainer = document.createElement("div");
-        yieldAdjustContainer.classList.add("flex", "justify-between", "w-96");
+        yieldAdjustContainer.classList.add("flex", "justify-between");
+        yieldAdjustContainer.style.setProperty("width", "24rem");  // w-108
         const yieldContainer = document.createElement("div");
         const maintenanceContainer = document.createElement("div");
         if (constructibleData.damaged) {
@@ -399,7 +401,8 @@ class bzPanelCityDetails {
             yieldContainer.appendChild(damagedText);
         }
         if (constructibleData.yieldMap) {
-            yieldContainer.classList.add("flex", "flex-wrap", "max-w-96");
+            yieldContainer.classList.add("flex", "flex-wrap");
+            yieldAdjustContainer.style.setProperty("max-width", "24rem");  // max-w-108
             for (const [_yieldType, yieldData] of constructibleData.yieldMap) {
                 if (yieldData.icon && yieldData.iconContext) {
                     const yieldEntry = document.createElement("div");
