@@ -212,18 +212,18 @@ class bzPanelCityDetails {
         <fxs-scrollable>
             <div class="flex flex-col w-128 mb-2">
                 <div class="bz-buildings-category flex mt-1">
-                    <fxs-icon class="size-12 mx-2 my-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
-                    <div class="self-center font-title text-lg uppercase text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
+                    <fxs-icon class="size-12 ml-3 my-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
+                    <div class="self-center font-title text-lg uppercase text-gradient-secondary ml-2" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
                 </div>
                 <div class="bz-buildings-list flex-col"></div>
                 <div class="bz-improvements-category flex mt-1">
-                    <fxs-icon class="size-12 mx-2 my-1" data-icon-id="CITY_IMPROVEMENTS_LIST"></fxs-icon>
-                    <div class="self-center font-title text-lg uppercase text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_IMPROVEMENTS"></div>
+                    <fxs-icon class="size-12 ml-3 my-1" data-icon-id="CITY_IMPROVEMENTS_LIST"></fxs-icon>
+                    <div class="self-center font-title text-lg uppercase text-gradient-secondary ml-2" data-l10n-id="LOC_UI_CITY_DETAILS_IMPROVEMENTS"></div>
                 </div>
                 <div class="bz-improvements-list flex-col"></div>
                 <div class="bz-wonders-category flex mt-1">
-                    <fxs-icon class="size-12 mx-2 my-1" data-icon-id="CITY_WONDERS_LIST"></fxs-icon>
-                    <div class="self-center font-title text-lg uppercase text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_WONDERS"></div>
+                    <fxs-icon class="size-12 ml-3 my-1" data-icon-id="CITY_WONDERS_LIST"></fxs-icon>
+                    <div class="self-center font-title text-lg uppercase text-gradient-secondary ml-2" data-l10n-id="LOC_UI_CITY_DETAILS_WONDERS"></div>
                 </div>
                 <div class="bz-wonders-list flex-col"></div>
             </div>
@@ -342,12 +342,13 @@ class bzPanelCityDetails {
             uniqueQuarterContainer.classList.add("flex");
             mainDiv.appendChild(uniqueQuarterContainer);
             const uniqueQuarterIcon = document.createElement("fxs-icon");
-            uniqueQuarterIcon.classList.add("size-12", "mx-2");
+            uniqueQuarterIcon.classList.add("size-12", "ml-3");
             uniqueQuarterIcon.setAttribute("data-icon-context", "DEFAULT");
             uniqueQuarterIcon.setAttribute("data-icon-id", "CITY_UNIQUE_QUARTER");
             uniqueQuarterContainer.appendChild(uniqueQuarterIcon);
             const uniqueQuarterTextContainer = document.createElement("div");
-            uniqueQuarterTextContainer.classList.add("flex", "flex-col", "flex-auto", "max-w-96");
+            uniqueQuarterTextContainer.classList.add("flex", "flex-col", "flex-auto", "ml-2");
+            uniqueQuarterTextContainer.style.setProperty("max-width", "23rem");
             uniqueQuarterContainer.appendChild(uniqueQuarterTextContainer);
             const districtName = document.createElement("div");
             districtName.classList.add("my-1", "font-title", "uppercase", "text-xs");
@@ -355,7 +356,6 @@ class bzPanelCityDetails {
             uniqueQuarterTextContainer.appendChild(districtName);
             const districtDescription = document.createElement("div");
             districtDescription.classList.add("text-xs", "leading-normal");
-            districtDescription.style.setProperty("max-width", "24rem");  // max-w-108
             districtDescription.innerHTML = districtData.description;
             uniqueQuarterTextContainer.appendChild(districtDescription);
         }
@@ -371,12 +371,12 @@ class bzPanelCityDetails {
         const topDiv = document.createElement("div");
         topDiv.classList.add("constructible-entry-highlight", "flex", "my-1", "pointer-events-none", "items-center");
         const icon = document.createElement("fxs-icon");
-        icon.classList.add("size-12", "mx-2");
+        icon.classList.add("size-12", "ml-3");
         icon.setAttribute("data-icon-context", constructibleData.iconContext);
         icon.setAttribute("data-icon-id", constructibleData.icon);
         topDiv.appendChild(icon);
         const rightContainer = document.createElement("div");
-        rightContainer.classList.add("flex", "flex-col");
+        rightContainer.classList.add("flex", "flex-col", "ml-2");
         const nameContainer = document.createElement("div");
         nameContainer.classList.add("flex", "center");
         rightContainer.appendChild(nameContainer);
