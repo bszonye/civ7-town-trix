@@ -543,10 +543,18 @@ export const Construct = (city, item, isPurchase) => {
         if (result.Success) {
             // Do we have an interface mode AND the build is not in progress?
             if (item.interfaceMode && !result.InProgress) {
+                if (item.repair && isPurchase && result.Plots.length == 1) {
+                    // 1-click repairs
+                    const loc = GameplayMap.getLocationFromIndex(result.Plots[0]);
+                    args.X = loc.x;
+                    args.Y = loc.y;
+                    Game.CityCommands.sendRequest(
+                        city.id, CityCommandTypes.PURCHASE, args);
+                    return true;
+                }
                 InterfaceMode.switchTo(item.interfaceMode, { CityID: city.id, OperationArguments: args, IsPurchasing: isPurchase });
                 return false;
-            }
-            else {
+            } else {
                 // In progress already and we have a location for it?
                 if (result.InProgress && result.Plots) {
                     // Add the location to the request, this will resume the build at the location
