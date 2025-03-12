@@ -1,3 +1,4 @@
+import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
 import { Construct } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
 // decorate ProductionChooserScreen to:
 // - update the list after selecting repairs (fixes "sticky" repairs)
