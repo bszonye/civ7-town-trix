@@ -2,7 +2,7 @@
 <Database>
     <LocalizedText>
         <Row Tag="LOC_MOD_BZ_CITY_HALL_NAME" Language="zh_Hans_CN">
-            <Text>市中心 1.7.0</Text>
+            <Text>市中心 1.8.0</Text>
         </Row>
         <Row Tag="LOC_MOD_BZ_CITY_HALL_DESCRIPTION" Language="zh_Hans_CN">
             <Text>更好的城市和城镇工具</Text>
