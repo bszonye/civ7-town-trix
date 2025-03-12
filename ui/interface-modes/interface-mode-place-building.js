@@ -32,6 +32,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     constructor() {
         super(...arguments);
         this.isPurchasing = false;
+        this.isRepair = false;
         this.plotOverlay = null;
         this.lastHoveredPlot = -1;
         this.mapFocused = true;
@@ -42,6 +43,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     initialize() {
         const context = this.Context;
         this.isPurchasing = context.IsPurchasing;
+        this.isRepair = context.IsRepair;
         const city = Cities.get(context.CityID);
         if (!city) {
             console.error("interface-mode-place-building: Unable to find city with CityID: " + ComponentID.toLogString(context.CityID));
@@ -186,7 +188,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         this.commitPlot(plot);
         const selectedCityID = UI.Player.getHeadSelectedCity(); // May be null if placing results in deselecting city
         if (selectedCityID && ComponentID.isValid(selectedCityID)) {
-            if (!(this.isPurchasing) && City.isQueueEmpty(selectedCityID)) {
+            if (!this.isPurchasing && !this.isRepair && City.isQueueEmpty(selectedCityID)) {
                 UI.Player.deselectAllCities();
                 InterfaceMode.switchToDefault();
             }

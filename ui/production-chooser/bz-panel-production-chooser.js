@@ -1,7 +1,10 @@
-// decorate ProductionChooserScreen to fix the sticky repair bug
-// (updates the production list after selecting the repair)
+import { Construct } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
+// decorate ProductionChooserScreen to:
+// - update the list after selecting repairs (fixes "sticky" repairs)
+// - always leave the list open when building repairs
 export class bzProductionChooserScreen {
     static panel_prototype;
+    static panel_doOrConfirmConstruction;;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -19,6 +22,12 @@ export class bzProductionChooserScreen {
             const panel_rv = panel_update.apply(this, args);
             const after_rv = after_update.apply(this.bzPanel, args);
             return after_rv ?? panel_rv;
+        }
+        // override doOrConfirmConstruction method
+        bzProductionChooserScreen.panel_doOrConfirmConstruction =
+            proto.doOrConfirmConstruction;
+        proto.doOrConfirmConstruction = function(...args) {
+            return this.bzPanel.bzDoOrConfirmConstruction(...args);
         }
     }
     afterUpdateItemElementMap(_items) {
@@ -42,6 +51,46 @@ export class bzProductionChooserScreen {
             return ia.name.localeCompare(ib.name);
         });
         this.panel.itemElementMap = new Map(mapItems);
+    }
+    bzDoOrConfirmConstruction(category, type, animationConfirmCallback) {
+        const city = this.panel.city;
+        if (!city) {
+            console.error(`panel-production-chooser: confirmSelection: Failed to get a valid city!`);
+            return;
+        }
+        const items = this.panel.items[category];
+        console.warn(`TRIX items=${JSON.stringify(items)}`);
+        const item = this.panel.items[category].find(item => item.type === type);
+        if (!item) {
+            console.error(`panel-production-chooser: confirmSelection: Failed to get a valid item!`);
+            return;
+        }
+        const bSuccess = Construct(city, item, this.panel.isPurchase);
+        // This is intentionally divergent behavior:
+        // - If we had an empty queue, and successfully added something
+        //   to it (which bSuccess already checked above) OTHER than
+        //   a repair, then we want to close this screen and deselect
+        //   cities, so it behaves as quick-select-auto-close.
+        // - If instead, if the queue was *not* empty, that means player
+        //   intentionally entered this screen selecting a city, AND the
+        //   player had already made recent / still in progress queue
+        //   choices.  In this case, we will *not* auto close the
+        //   screen, because we assume player is looking at the queue,
+        //   or that we should reinforce that choices are being queued
+        //   up in the list. (Screen stays open and queue additions
+        //   animate).
+        // - ALSO keep the screen open if the player chose to build
+        //   a repair, as they will likely want to queue more than one.
+        console.warn(`TRIX SUCCESS=${bSuccess}`);
+        if (bSuccess) {
+            animationConfirmCallback?.();
+            if (this.panel.wasQueueInitiallyEmpty &&
+                !this.panel.isPurchase && !item.isRepair) {
+                UI.Player.deselectAllCities();
+                InterfaceMode.switchToDefault();
+                this.panel.requestPlaceBuildingClose();
+            }
+        }
     }
 
     beforeAttach() { }

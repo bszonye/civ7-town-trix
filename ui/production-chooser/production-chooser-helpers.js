@@ -177,8 +177,8 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
             const category = getConstructibleClassPanelCategory(constructible.ConstructibleClass);
             if (possibleLocations.length > 0 && !isBuildingAlreadyQueued && !operationResult.InsufficientFunds) {
                 let name = Locale.compose('LOC_UI_PRODUCTION_NAME', constructible.Name);
-                const repair = (operationResult.RepairDamaged && constructible.Repairable);
-                if (repair) {
+                const isRepair = !!(operationResult.RepairDamaged && constructible.Repairable);
+                if (isRepair) {
                     name = Locale.compose('LOC_UI_PRODUCTION_REPAIR_NAME', constructible.Name);
                     // negative value sorts repairs first
                     sortValue = -1 - sortValue;
@@ -191,7 +191,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                 const item = {
                     name,
                     type: constructible.ConstructibleType,
-                    repair: !!repair,
+                    isRepair,
                     sortValue,  // total yield, repairs first
                     cost,
                     category,
@@ -226,7 +226,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                     return {
                         name: constructible.Name,
                         type: constructible.ConstructibleType,
-                        repair: false,
+                        isRepair: false,
                         sortValue: 0,
                         cost,
                         turns,
@@ -251,7 +251,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                     turns: -1,
                     name: constructible.Name,
                     type: constructible.ConstructibleType,
-                    repair: false,
+                    isRepair: false,
                     sortValue: 0,
                     showTurns: false,
                     showCost: false,
@@ -306,7 +306,7 @@ const getProjectItems = (city, isPurchase) => {
                     name: project.Name,
                     description: project.Description,
                     type: project.ProjectType,
-                    repair: false,
+                    isRepair: false,
                     sortValue: 0,
                     cost,
                     turns,
@@ -474,7 +474,7 @@ const getUnits = (city, playerGoldBalance, isPurchase, recommendations, viewHidd
         const data = {
             name: definition.Name,
             type: definition.UnitType,
-            repair: false,
+            isRepair: false,
             ageless: false,
             sortValue,
             cost,
@@ -543,16 +543,23 @@ export const Construct = (city, item, isPurchase) => {
         if (result.Success) {
             // Do we have an interface mode AND the build is not in progress?
             if (item.interfaceMode && !result.InProgress) {
-                if (item.repair && isPurchase && result.Plots.length == 1) {
+                console.warn(`TRIX CONSTRUCT`);
+                if (item.isRepair && result.Plots.length == 1) {
                     // 1-click repairs
                     const loc = GameplayMap.getLocationFromIndex(result.Plots[0]);
                     args.X = loc.x;
                     args.Y = loc.y;
-                    Game.CityCommands.sendRequest(
-                        city.id, CityCommandTypes.PURCHASE, args);
+                    if (isPurchase) {
+                        Game.CityCommands.sendRequest(
+                            city.id, CityCommandTypes.PURCHASE, args);
+                    } else {
+                        Game.CityOperations.sendRequest(
+                            city.id, CityOperationTypes.BUILD, args);
+                    }
                     return true;
                 }
-                InterfaceMode.switchTo(item.interfaceMode, { CityID: city.id, OperationArguments: args, IsPurchasing: isPurchase });
+                InterfaceMode.switchTo(item.interfaceMode, { CityID: city.id, OperationArguments: args, IsPurchasing: isPurchase, IsRepair: item.isRepair });
+                console.warn(`TRIX SELECTED`);
                 return false;
             } else {
                 // In progress already and we have a location for it?

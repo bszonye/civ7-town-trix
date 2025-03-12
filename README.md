@@ -34,8 +34,9 @@ the interface now recognizes unique buildings in progress and in the
 production queue, to help you plan both buildings at the same time.
 
 ## one-click repairs
-when you purchase repairs with gold, you don't have to select a target
-tile unless there's more than one to choose from.
+when you build or purchase repairs, you don't have to select a target
+tile unless there's more than one to choose from.  when you build a
+repair, the production list stays open so you can queue more, if needed.
 
 ## bug fixes
 fixed base game bugs so that adjacency arrows appear reliably and
