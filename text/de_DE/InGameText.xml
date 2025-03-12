@@ -23,7 +23,7 @@
             <Text>Gesamt</Text>
         </Row>
         <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS" Language="de_DE">
-            <Text>Verbindung</Text>
+            <Text>Verbindungen</Text>
         </Row>
         <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES" Language="de_DE">
             <Text>{1_number}[icon:YIELD_CITIES] {1_number: plural 1?Stadt; other?Städte;}</Text>
