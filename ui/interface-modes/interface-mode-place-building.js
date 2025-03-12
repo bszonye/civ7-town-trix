@@ -32,6 +32,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     constructor() {
         super(...arguments);
         this.isPurchasing = false;
+        this.isRepair = false;
         this.plotOverlay = null;
         this.lastHoveredPlot = -1;
         this.mapFocused = true;
@@ -42,6 +43,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     initialize() {
         const context = this.Context;
         this.isPurchasing = context.IsPurchasing;
+        this.isRepair = context.IsRepair;
         const city = Cities.get(context.CityID);
         if (!city) {
             console.error("interface-mode-place-building: Unable to find city with CityID: " + ComponentID.toLogString(context.CityID));
@@ -186,7 +188,14 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         this.commitPlot(plot);
         const selectedCityID = UI.Player.getHeadSelectedCity(); // May be null if placing results in deselecting city
         if (selectedCityID && ComponentID.isValid(selectedCityID)) {
-            if (!(this.isPurchasing) && City.isQueueEmpty(selectedCityID)) {
+            // close the production panel after selection, unless:
+            // - there were already items queued
+            // - the item was purchased
+            // - the selection was a repair
+            // in all of those cases, the player likely opened the city
+            // screen explicitly to manage the queue or build multiple
+            // items, so it should remain open.
+            if (City.isQueueEmpty(selectedCityID) && !this.isPurchasing && !this.isRepair) {
                 UI.Player.deselectAllCities();
                 InterfaceMode.switchToDefault();
             }

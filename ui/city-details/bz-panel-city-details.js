@@ -211,21 +211,21 @@ class bzPanelCityDetails {
         slot.innerHTML = `
         <fxs-scrollable>
             <div class="flex flex-col w-128 mb-2">
-                <div class="bz-buildings-category flex mt-1 mx-1">
-                    <fxs-icon class="size-12 m-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
-                    <div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
+                <div class="bz-buildings-category flex mt-2">
+                    <fxs-icon class="size-12 ml-3 my-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
+                    <div class="self-center font-title text-lg uppercase text-gradient-secondary ml-2" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
                 </div>
-                <div class="bz-buildings-list flex-col -mt-1 mx-1"></div>
-                <div class="bz-improvements-category flex mt-1 mx-1">
-                    <fxs-icon class="size-12 m-1" data-icon-id="CITY_IMPROVEMENTS_LIST"></fxs-icon>
-                    <div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_IMPROVEMENTS"></div>
+                <div class="bz-buildings-list flex-col"></div>
+                <div class="bz-improvements-category flex mt-1">
+                    <fxs-icon class="size-12 ml-3 my-1" data-icon-id="CITY_IMPROVEMENTS_LIST"></fxs-icon>
+                    <div class="self-center font-title text-lg uppercase text-gradient-secondary ml-2" data-l10n-id="LOC_UI_CITY_DETAILS_IMPROVEMENTS"></div>
                 </div>
-                <div class="bz-improvements-list flex-col mx-1"></div>
-                <div class="bz-wonders-category flex mt-1 mx-1">
-                    <fxs-icon class="size-12 m-1" data-icon-id="CITY_WONDERS_LIST"></fxs-icon>
-                    <div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_WONDERS"></div>
+                <div class="bz-improvements-list flex-col"></div>
+                <div class="bz-wonders-category flex mt-1">
+                    <fxs-icon class="size-12 ml-3 my-1" data-icon-id="CITY_WONDERS_LIST"></fxs-icon>
+                    <div class="self-center font-title text-lg uppercase text-gradient-secondary ml-2" data-l10n-id="LOC_UI_CITY_DETAILS_WONDERS"></div>
                 </div>
-                <div class="bz-wonders-list flex-col mx-1"></div>
+                <div class="bz-wonders-list flex-col"></div>
             </div>
         </fxs-scrollable>
         `;
@@ -339,22 +339,23 @@ class bzPanelCityDetails {
         mainDiv.classList.add("flex", "flex-col");
         if (districtData.name && districtData.description) {
             const uniqueQuarterContainer = document.createElement("div");
-            uniqueQuarterContainer.classList.add("flex", "ml-8");
+            uniqueQuarterContainer.classList.add("flex");
             mainDiv.appendChild(uniqueQuarterContainer);
             const uniqueQuarterIcon = document.createElement("fxs-icon");
-            uniqueQuarterIcon.classList.add("size-12", "mr-2");
+            uniqueQuarterIcon.classList.add("size-12", "ml-3");
             uniqueQuarterIcon.setAttribute("data-icon-context", "DEFAULT");
             uniqueQuarterIcon.setAttribute("data-icon-id", "CITY_UNIQUE_QUARTER");
             uniqueQuarterContainer.appendChild(uniqueQuarterIcon);
             const uniqueQuarterTextContainer = document.createElement("div");
-            uniqueQuarterTextContainer.classList.add("flex", "flex-col", "flex-auto", "pr-1");
+            uniqueQuarterTextContainer.classList.add("flex", "flex-col", "flex-auto", "ml-2");
+            uniqueQuarterTextContainer.style.setProperty("max-width", "23rem");
             uniqueQuarterContainer.appendChild(uniqueQuarterTextContainer);
             const districtName = document.createElement("div");
             districtName.classList.add("my-1", "font-title", "uppercase", "text-xs");
             districtName.innerHTML = districtData.name;
             uniqueQuarterTextContainer.appendChild(districtName);
             const districtDescription = document.createElement("div");
-            districtDescription.classList.add("text-xs", "leading-normal", "max-w-96");
+            districtDescription.classList.add("text-xs", "leading-normal");
             districtDescription.innerHTML = districtData.description;
             uniqueQuarterTextContainer.appendChild(districtDescription);
         }
@@ -368,23 +369,24 @@ class bzPanelCityDetails {
         mainDiv.classList.add("constructible-entry", "flex", "flex-col");
         mainDiv.setAttribute("tabindex", "-1");
         const topDiv = document.createElement("div");
-        topDiv.classList.add("constructible-entry-highlight", "flex", "ml-8", "my-1", "pointer-events-none", "items-center");
+        topDiv.classList.add("constructible-entry-highlight", "flex", "my-1", "pointer-events-none", "items-center");
         const icon = document.createElement("fxs-icon");
-        icon.classList.add("size-12");
+        icon.classList.add("size-12", "ml-3");
         icon.setAttribute("data-icon-context", constructibleData.iconContext);
         icon.setAttribute("data-icon-id", constructibleData.icon);
         topDiv.appendChild(icon);
         const rightContainer = document.createElement("div");
-        rightContainer.classList.add("flex", "flex-col");
+        rightContainer.classList.add("flex", "flex-col", "ml-2");
         const nameContainer = document.createElement("div");
-        nameContainer.classList.add("flex", "ml-2", "center");
+        nameContainer.classList.add("flex", "center");
         rightContainer.appendChild(nameContainer);
         const name = document.createElement("div");
-        name.classList.add("mr-2", "font-title", "uppercase", "text-xs");
+        name.classList.add("font-title", "uppercase", "text-xs");
         name.textContent = Locale.compose(constructibleData.name);
         nameContainer.appendChild(name);
         const yieldAdjustContainer = document.createElement("div");
-        yieldAdjustContainer.classList.add("flex", "justify-between", "w-96");
+        yieldAdjustContainer.classList.add("flex", "justify-between");
+        yieldAdjustContainer.style.setProperty("width", "24rem");  // w-108
         const yieldContainer = document.createElement("div");
         const maintenanceContainer = document.createElement("div");
         if (constructibleData.damaged) {
@@ -399,11 +401,12 @@ class bzPanelCityDetails {
             yieldContainer.appendChild(damagedText);
         }
         if (constructibleData.yieldMap) {
-            yieldContainer.classList.add("flex", "flex-wrap", "max-w-96");
+            yieldContainer.classList.add("flex", "flex-wrap");
+            yieldAdjustContainer.style.setProperty("max-width", "24rem");  // max-w-108
             for (const [_yieldType, yieldData] of constructibleData.yieldMap) {
                 if (yieldData.icon && yieldData.iconContext) {
                     const yieldEntry = document.createElement("div");
-                    yieldEntry.classList.add("flex", "mx-1");
+                    yieldEntry.classList.add("flex", "mr-2");
                     yieldContainer.appendChild(yieldEntry);
                     const yieldIcon = document.createElement("fxs-icon");
                     yieldIcon.setAttribute("data-icon-context", yieldData.iconContext);
@@ -427,7 +430,7 @@ class bzPanelCityDetails {
             for (const [_maintenanceType, maintenanceData] of constructibleData.maintenanceMap) {
                 if (maintenanceData.icon && maintenanceData.iconContext) {
                     const maintenanceEntry = document.createElement("div");
-                    maintenanceEntry.classList.add("flex", "mx-1");
+                    maintenanceEntry.classList.add("flex", "mr-2");
                     maintenanceContainer.appendChild(maintenanceEntry);
                     const maintenanceIcon = document.createElement("fxs-icon");
                     maintenanceIcon.setAttribute("data-icon-context", maintenanceData.iconContext);

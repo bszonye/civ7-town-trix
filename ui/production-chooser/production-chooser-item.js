@@ -25,7 +25,7 @@ export const UpdateProductionChooserItem = (element, data, isPurchase) => {
     element.dataset.sortValue = data.sortValue;
     element.dataset.sortCost = data.cost;
     element.dataset.isPurchase = isPurchase.toString();
-    element.dataset.isRepair = data.repair ? 'true' : 'false';
+    element.dataset.isRepair = data.isRepair ? 'true' : 'false';
     element.dataset.isAgeless = data.ageless ? 'true' : 'false';
     if (data.secondaryDetails) {
         element.dataset.secondaryDetails = data.secondaryDetails;

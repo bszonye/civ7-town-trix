@@ -1,7 +1,11 @@
-// decorate ProductionChooserScreen to fix the sticky repair bug
-// (updates the production list after selecting the repair)
+import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
+import { Construct } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
+// decorate ProductionChooserScreen to:
+// - update the list after selecting repairs (fixes "sticky" repairs)
+// - always leave the list open when building repairs
 export class bzProductionChooserScreen {
     static panel_prototype;
+    static panel_doOrConfirmConstruction;;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -19,6 +23,12 @@ export class bzProductionChooserScreen {
             const panel_rv = panel_update.apply(this, args);
             const after_rv = after_update.apply(this.bzPanel, args);
             return after_rv ?? panel_rv;
+        }
+        // override doOrConfirmConstruction method
+        bzProductionChooserScreen.panel_doOrConfirmConstruction =
+            proto.doOrConfirmConstruction;
+        proto.doOrConfirmConstruction = function(...args) {
+            return this.bzPanel.bzDoOrConfirmConstruction(...args);
         }
     }
     afterUpdateItemElementMap(_items) {
@@ -42,6 +52,35 @@ export class bzProductionChooserScreen {
             return ia.name.localeCompare(ib.name);
         });
         this.panel.itemElementMap = new Map(mapItems);
+    }
+    bzDoOrConfirmConstruction(category, type, animationConfirmCallback) {
+        const city = this.panel.city;
+        if (!city) {
+            console.error(`panel-production-chooser: confirmSelection: Failed to get a valid city!`);
+            return;
+        }
+        const item = this.panel.items[category].find(item => item.type === type);
+        if (!item) {
+            console.error(`panel-production-chooser: confirmSelection: Failed to get a valid item!`);
+            return;
+        }
+        const bSuccess = Construct(city, item, this.panel.isPurchase);
+        // close the production panel after selection, unless:
+        // - there were already items queued
+        // - the item was purchased
+        // - the selection was a repair
+        // in all of those cases, the player likely opened the city
+        // screen explicitly to manage the queue or build multiple
+        // items, so it should remain open.
+        if (bSuccess) {
+            animationConfirmCallback?.();
+            if (this.panel.wasQueueInitiallyEmpty &&
+                !this.panel.isPurchase && !item.isRepair) {
+                UI.Player.deselectAllCities();
+                InterfaceMode.switchToDefault();
+                this.panel.requestPlaceBuildingClose();
+            }
+        }
     }
 
     beforeAttach() { }
