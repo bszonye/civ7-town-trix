@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+    <LocalizedText>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="de_DE">
+            <Text>Überblick</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION" Language="de_DE">
+            <Text>Bevölkerung</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING" Language="de_DE">
+            <Text>Wachsend</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL" Language="de_DE">
+            <Text>Ländlich</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN" Language="de_DE">
+            <Text>Städtisch</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST" Language="de_DE">
+            <Text>Spezialist</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL" Language="de_DE">
+            <Text>Gesamt</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS" Language="de_DE">
+            <Text>Verbindung</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES" Language="de_DE">
+            <Text>{1_number}[icon:YIELD_CITIES] {1_number: plural 1?Stadt; other?Städte;}</Text>
+        </Row>
+        <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS" Language="de_DE">
+            <Text>{1_number}[icon:YIELD_TOWNS] {1_number: plural 1?Gemeinde; other?Gemeinden;}</Text>
+        </Row>
+    </LocalizedText>
+</Database>
