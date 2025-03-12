@@ -211,7 +211,7 @@ class bzPanelCityDetails {
         slot.innerHTML = `
         <fxs-scrollable>
             <div class="flex flex-col w-128 mb-2">
-                <div class="bz-buildings-category flex mt-1">
+                <div class="bz-buildings-category flex mt-2">
                     <fxs-icon class="size-12 ml-3 my-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
                     <div class="self-center font-title text-lg uppercase text-gradient-secondary ml-2" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
                 </div>
