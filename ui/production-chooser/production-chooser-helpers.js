@@ -543,7 +543,6 @@ export const Construct = (city, item, isPurchase) => {
         if (result.Success) {
             // Do we have an interface mode AND the build is not in progress?
             if (item.interfaceMode && !result.InProgress) {
-                console.warn(`TRIX CONSTRUCT`);
                 if (item.isRepair && result.Plots.length == 1) {
                     // 1-click repairs
                     const loc = GameplayMap.getLocationFromIndex(result.Plots[0]);
@@ -559,7 +558,6 @@ export const Construct = (city, item, isPurchase) => {
                     return true;
                 }
                 InterfaceMode.switchTo(item.interfaceMode, { CityID: city.id, OperationArguments: args, IsPurchasing: isPurchase, IsRepair: item.isRepair });
-                console.warn(`TRIX SELECTED`);
                 return false;
             } else {
                 // In progress already and we have a location for it?

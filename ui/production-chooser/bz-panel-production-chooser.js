@@ -58,30 +58,19 @@ export class bzProductionChooserScreen {
             console.error(`panel-production-chooser: confirmSelection: Failed to get a valid city!`);
             return;
         }
-        const items = this.panel.items[category];
-        console.warn(`TRIX items=${JSON.stringify(items)}`);
         const item = this.panel.items[category].find(item => item.type === type);
         if (!item) {
             console.error(`panel-production-chooser: confirmSelection: Failed to get a valid item!`);
             return;
         }
         const bSuccess = Construct(city, item, this.panel.isPurchase);
-        // This is intentionally divergent behavior:
-        // - If we had an empty queue, and successfully added something
-        //   to it (which bSuccess already checked above) OTHER than
-        //   a repair, then we want to close this screen and deselect
-        //   cities, so it behaves as quick-select-auto-close.
-        // - If instead, if the queue was *not* empty, that means player
-        //   intentionally entered this screen selecting a city, AND the
-        //   player had already made recent / still in progress queue
-        //   choices.  In this case, we will *not* auto close the
-        //   screen, because we assume player is looking at the queue,
-        //   or that we should reinforce that choices are being queued
-        //   up in the list. (Screen stays open and queue additions
-        //   animate).
-        // - ALSO keep the screen open if the player chose to build
-        //   a repair, as they will likely want to queue more than one.
-        console.warn(`TRIX SUCCESS=${bSuccess}`);
+        // close the production panel after selection, unless:
+        // - there were already items queued
+        // - the item was purchased
+        // - the selection was a repair
+        // in all of those cases, the player likely opened the city
+        // screen explicitly to manage the queue or build multiple
+        // items, so it should remain open.
         if (bSuccess) {
             animationConfirmCallback?.();
             if (this.panel.wasQueueInitiallyEmpty &&
