@@ -57,8 +57,10 @@ known interactions:
 ## localization
 supported languages:
 
+- German (translated by Chr1Z93)
 - Italian (translated by leonardfactory)
 - Korean (translated by Hotsolidinfill)
+- Polish (translated by Rixi)
 - Russian (translated by Webrok)
 - Simplified Chinese (translated by thendye)
 - Traditional Chinese (translated by alwdark)
