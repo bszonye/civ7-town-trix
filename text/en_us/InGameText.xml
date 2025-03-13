@@ -31,14 +31,14 @@
         <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS">
             <Text>{1_number}[icon:YIELD_TOWNS] {1_number: plural 1?Town; other?Towns;}</Text>
         </Row>
-        <Row Tag="LOC_OPTIONS_GROUP_BZ_CITY_HALL">
-            <Text>City Hall</Text>
-        </Row>
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS">
             <Text>one click repairs</Text>
         </Row>
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION">
             <Text>When there is only one possible location for a repair, skip the building placement interface.</Text>
+        </Row>
+        <Row Tag="LOC_OPTIONS_GROUP_BZ_CITY_HALL">
+            <Text>City Hall</Text>
         </Row>
     </EnglishText>
 </Database>
