@@ -35,10 +35,10 @@
             <Text>one click repairs</Text>
         </Row>
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION">
-            <Text>When there is only one possible location for a repair, skip the building placement interface.</Text>
+            <Text>[B]City Hall:[/B] When there is only one possible location for a repair, skip the building placement interface.</Text>
         </Row>
-        <Row Tag="LOC_OPTIONS_GROUP_BZ_CITY_HALL">
-            <Text>City Hall</Text>
-        </Row>
+        <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS">
+            <Text>trixie's mods</Text>
+        </InsertOrIgnore>
     </EnglishText>
 </Database>

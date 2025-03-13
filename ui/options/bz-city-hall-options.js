@@ -47,7 +47,7 @@ Options.addInitCallback(() => {
     Options.addOption({
         category: CategoryType.Mods,
         // @ts-ignore
-        group: MOD_ID.replace(/-/g, '_'),
+        group: "bz_mods",
         type: OptionType.Checkbox,
         id: "bz-one-click-repairs",
         initListener: onInitOneClickRepairs,
