@@ -3,6 +3,7 @@
  * @description Helper functions for the production chooser
  * @file production-chooser-helpers.ts
  */
+import bzCityHallOptions from '/bz-city-hall/ui/options/bz-city-hall-options.js';
 import BuildingPlacementManager from '/base-standard/ui/building-placement/building-placement-manager.js';
 import { AdvisorUtilities } from '/base-standard/ui/tutorial/tutorial-support.js';
 import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
@@ -543,7 +544,8 @@ export const Construct = (city, item, isPurchase) => {
         if (result.Success) {
             // Do we have an interface mode AND the build is not in progress?
             if (item.interfaceMode && !result.InProgress) {
-                if (item.isRepair && result.Plots.length == 1) {
+                if (item.isRepair && result.Plots.length == 1 &&
+                    bzCityHallOptions.oneClickRepairs) {
                     // 1-click repairs
                     const loc = GameplayMap.getLocationFromIndex(result.Plots[0]);
                     args.X = loc.x;
