@@ -1,3 +1,11 @@
+import { CategoryData, CategoryType } from '/core/ui/options/options-helpers.js';
+
+CategoryType["Mods"] = "mods";
+CategoryData[CategoryType.Mods] = {
+    title: "LOC_UI_CONTENT_MGR_SUBTITLE",
+    description: "LOC_UI_CONTENT_MGR_SUBTITLE_DESCRIPTION",
+};
+
 // Please, always use ModSettings to save and load settings in your mod.
 // Right now if you try to use **multiple** keys in localStorage, it
 // will break reading from localStorage for **every mod**. This is

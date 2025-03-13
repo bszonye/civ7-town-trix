@@ -45,7 +45,7 @@ const onUpdateOneClickRepairs = (_info, flag) => {
 
 Options.addInitCallback(() => {
     Options.addOption({
-        category: CategoryType.Game,
+        category: CategoryType.Mods,
         // @ts-ignore
         group: MOD_ID.replace(/-/g, '_'),
         type: OptionType.Checkbox,
