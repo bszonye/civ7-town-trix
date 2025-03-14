@@ -64,6 +64,7 @@ export default [
                 console: "readonly",
                 document: "readonly",
                 engine: "readonly",
+                localStorage: "readonly",
                 waitForLayout: "readonly",
                 window: "readonly",
             }

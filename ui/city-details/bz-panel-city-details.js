@@ -1,3 +1,4 @@
+// TODO: move arrow buttons to the corners, so they don't move (if possible)
 import bzCityDetails, { bzUpdateCityDetailsEventName } from "/bz-city-hall/ui/city-details/bz-model-city-details.js";
 import CityDetails, { UpdateCityDetailsEventName } from "/base-standard/ui/city-details/model-city-details.js";
 import NavTray from "/core/ui/navigation-tray/model-navigation-tray.js";

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Mod id="bz-city-hall" version="10700"
+<Mod id="bz-city-hall" version="10800"
     xmlns="ModInfo">
     <Properties>
         <Name>LOC_MOD_BZ_CITY_HALL_NAME</Name>
-        <Version>1.7.0</Version>
+        <Version>1.8.0</Version>
         <Description>LOC_MOD_BZ_CITY_HALL_DESCRIPTION</Description>
         <Authors>beezany</Authors>
         <URL>https://forums.civfanatics.com/resources/city-hall.31946/</URL>
@@ -19,6 +19,27 @@
         </Criteria>
     </ActionCriteria>
     <ActionGroups>
+        <ActionGroup id="bz-city-hall-menu" scope="shell" criteria="always">
+            <Properties>
+                <LoadOrder>1000</LoadOrder>
+            </Properties>
+            <Actions>
+                <UIScripts>
+                    <Item>ui/options/bz-city-hall-options.js</Item>
+                    <Item>ui/options/mod-options-decorator.js</Item>
+                </UIScripts>
+                <UpdateText>
+                    <Item>text/en_us/InGameText.xml</Item>
+                    <Item locale="de_DE">text/de_DE/InGameText.xml</Item>
+                    <Item locale="it_IT">text/it_IT/InGameText.xml</Item>
+                    <Item locale="ko_KR">text/ko_KR/InGameText.xml</Item>
+                    <Item locale="pl_PL">text/pl_PL/InGameText.xml</Item>
+                    <Item locale="ru_RU">text/ru_RU/InGameText.xml</Item>
+                    <Item locale="zh_Hans_CN">text/zh_Hans_CN/InGameText.xml</Item>
+                    <Item locale="zh_Hant_HK">text/zh_Hant_HK/InGameText.xml</Item>
+                </UpdateText>
+            </Actions>
+        </ActionGroup>
         <ActionGroup id="bz-city-hall-ui" scope="game" criteria="always">
             <Properties>
                 <LoadOrder>1000</LoadOrder>
@@ -29,6 +50,8 @@
                     <Item>ui/interface-modes/interface-mode-place-building.js</Item>
                     <Item>ui/interface-modes/support-city-decoration.js</Item>
                     <Item>ui/lenses/layer/building-placement-layer.js</Item>
+                    <Item>ui/options/bz-city-hall-options.js</Item>
+                    <Item>ui/options/mod-options-decorator.js</Item>
                     <Item>ui/production-chooser/production-chooser-helpers.js</Item>
                     <Item>ui/production-chooser/production-chooser-item.js</Item>
                     <Item>ui/production-chooser/production-chooser-unique-quarter.js</Item>
@@ -40,8 +63,10 @@
                 </UIScripts>
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>
+                    <Item locale="de_DE">text/de_DE/InGameText.xml</Item>
                     <Item locale="it_IT">text/it_IT/InGameText.xml</Item>
                     <Item locale="ko_KR">text/ko_KR/InGameText.xml</Item>
+                    <Item locale="pl_PL">text/pl_PL/InGameText.xml</Item>
                     <Item locale="ru_RU">text/ru_RU/InGameText.xml</Item>
                     <Item locale="zh_Hans_CN">text/zh_Hans_CN/InGameText.xml</Item>
                     <Item locale="zh_Hant_HK">text/zh_Hant_HK/InGameText.xml</Item>
@@ -51,8 +76,10 @@
     </ActionGroups>
     <LocalizedText>
         <File>text/en_us/ModInfoText.xml</File>
+        <File>text/de_DE/ModInfoText.xml</File>
         <File>text/it_IT/ModInfoText.xml</File>
         <File>text/ko_KR/ModInfoText.xml</File>
+        <File>text/pl_PL/ModInfoText.xml</File>
         <File>text/ru_RU/ModInfoText.xml</File>
         <File>text/zh_Hans_CN/ModInfoText.xml</File>
     </LocalizedText>
