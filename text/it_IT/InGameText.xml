@@ -32,13 +32,13 @@
             <Text>{1_number}[icon:YIELD_TOWNS] {1_number: plural 1?Paese; other?Paesi;}</Text>
         </Row>
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS" Language="it_IT">
-            <Text>riparazioni con un semplice clic</Text>
+            <Text>riparazioni in un clic</Text>
         </Row>
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="it_IT">
-            <Text>[B]City Hall:[/B] Se è disponibile una sola posizione per la riparazione, salta il posizionamento edificio.</Text>
+            <Text>[B]City Hall:[/B] Se è disponibile un'unica casella per la riparazione, salta la schermata di selezione edificio.</Text>
         </Row>
         <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="it_IT">
-            <Text>le mod di Trixie</Text>
+            <Text>mod di Trixie</Text>
         </InsertOrIgnore>
     </LocalizedText>
 </Database>
