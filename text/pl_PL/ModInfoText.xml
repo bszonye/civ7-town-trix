@@ -2,7 +2,7 @@
 <Database>
     <LocalizedText>
         <Row Tag="LOC_MOD_BZ_CITY_HALL_NAME" Language="pl_PL">
-            <Text>City Hall 1.9.0</Text>
+            <Text>City Hall 1.8.1</Text>
         </Row>
         <Row Tag="LOC_MOD_BZ_CITY_HALL_DESCRIPTION" Language="pl_PL">
             <Text>ulepszony panel miast i miasteczek</Text>
