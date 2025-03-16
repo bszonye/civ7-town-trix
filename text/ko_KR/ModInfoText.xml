@@ -2,7 +2,7 @@
 <Database>
     <LocalizedText>
         <Row Tag="LOC_MOD_BZ_CITY_HALL_NAME" Language="ko_KR">
-            <Text>City Hall 1.8.1</Text>
+            <Text>City Hall 1.8.2</Text>
         </Row>
         <Row Tag="LOC_MOD_BZ_CITY_HALL_DESCRIPTION" Language="ko_KR">
             <Text>향상된 도시 인터페이스</Text>

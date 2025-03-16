@@ -32,10 +32,10 @@
             <Text>[icon:YIELD_TOWNS] 마을: {1_number}</Text>
         </Row>
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS" Language="ko_KR">
-            <Text>클릭 한번으로 수리</Text>
+            <Text>City Hall • 클릭 한번으로 수리</Text>
         </Row>
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="ko_KR">
-            <Text>[B]City Hall:[/B] 수리가 가능한 위치가 하나뿐인 경우, 건물 배치 인터페이스를 생략합니다.</Text>
+            <Text>수리가 가능한 위치가 하나뿐인 경우, 건물 배치 인터페이스를 생략합니다.</Text>
         </Row>
         <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="ko_KR">
             <Text>trixie의 다양한 모드</Text>
