@@ -9,10 +9,6 @@ CategoryData[CategoryType.Mods] = {
 // fix Options tab spacing
 const MOD_OPTIONS_STYLE = document.createElement('style');
 MOD_OPTIONS_STYLE.textContent = `
-.option-frame .tab-bar__items .flex {
-    justify-content: space-evenly;
-    align-items: center;
-}
 .option-frame .tab-bar__items .flex-auto {
     flex: 1 0 auto;
     min-width: 0rem;
