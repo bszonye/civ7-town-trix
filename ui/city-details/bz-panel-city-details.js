@@ -50,6 +50,7 @@ const BZ_TAB_CONSTRUCTIBLES = {
 class bzPanelCityDetails {
     static panel_prototype;
     static panel_renderYieldsSlot;
+    static lastTab = 0;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -57,16 +58,15 @@ class bzPanelCityDetails {
         // listen for model updates
         this.updateOverviewListener = this.updateOverview.bind(this);
         this.updateConstructiblesListener = this.updateConstructibles.bind(this);
+        // remember last tab
+        this.onTabSelected = (e) => {
+            bzPanelCityDetails.lastTab = e.detail.index;
+        };
         // redirect from panel
         this.panel.onFocus = () => {
             NavTray.clear();
             NavTray.addOrUpdateGenericBack();
-            this.panel.tabBar.setAttribute("selected-tab-index", "0");
-            this.panel.slotGroup.setAttribute("selected-slot", cityDetailTabID.overview);
-            const overviewSlot = this.panel.Root.querySelector(`#${cityDetailTabID.overview}`);
-            if (overviewSlot) {
-                FocusManager.setFocus(overviewSlot);
-            }
+            this.selectTab(bzPanelCityDetails.lastTab);
         };
     }
     patchPrototypes(panel) {
@@ -116,12 +116,24 @@ class bzPanelCityDetails {
             wonders.setAttribute('data-tooltip-style', 'city-details-building-tooltip');
         })
     }
+    selectTab(index) {
+        this.panel.tabBar.setAttribute("selected-tab-index", index.toString());
+        const tabsJSON = this.panel.tabBar.getAttribute("tab-items");
+        const tabs = tabsJSON && JSON.parse(tabsJSON);
+        const tab = tabs && tabs.at(index);
+        if (!tab?.id) return;
+        this.panel.slotGroup.setAttribute("selected-slot", tab.id);
+        const slot = this.panel.Root.querySelector(`#${tab.id}`);
+        if (slot) FocusManager.setFocus(slot);
+    }
     // empty decorators
     beforeAttach() { }
     afterDetach() { }
     onAttributeChanged(_name, _prev, _next) { }
     // attach new & replaced tabs to the panel
     afterAttach() {
+        this.panel.tabBar.addEventListener("tab-selected", this.onTabSelected);
+        this.selectTab(bzPanelCityDetails.lastTab);
         window.addEventListener(bzUpdateCityDetailsEventName, this.updateOverviewListener);
         window.addEventListener(UpdateCityDetailsEventName, this.updateConstructiblesListener);
         const root = this.panel.Root;
@@ -151,6 +163,7 @@ class bzPanelCityDetails {
         this.patchTooltipCompatibility();
     }
     beforeDetach() {
+        this.panel.tabBar.removeEventListener("tab-selected", this.onTabSelected);
         window.removeEventListener(bzUpdateCityDetailsEventName, this.updateOverviewListener);
         window.removeEventListener(UpdateCityDetailsEventName, this.updateConstructiblesListener);
     }
