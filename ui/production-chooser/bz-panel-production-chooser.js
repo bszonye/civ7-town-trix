@@ -3,6 +3,15 @@ import { Construct } from '/base-standard/ui/production-chooser/production-choos
 // decorate ProductionChooserScreen to:
 // - update the list after selecting repairs (fixes "sticky" repairs)
 // - always leave the list open when building repairs
+const BZ_HEAD_STYLE = document.createElement('style');
+BZ_HEAD_STYLE.textContent = [
+`.bz-city-hall .advisor-recommendation__container .advisor-recommendation__icon {
+    width: 1.1111111111rem;
+    height: 1.1111111111rem;
+}`,
+].join('\n');
+document.body.classList.add("bz-city-hall");
+document.head.appendChild(BZ_HEAD_STYLE);
 export class bzProductionChooserScreen {
     static panel_prototype;
     static panel_doOrConfirmConstruction;;
