@@ -89,8 +89,8 @@ class bzPanelCityDetails {
         }
     }
     patchTabSlots() {
-        const tabsJSON = this.panel.tabBar.getAttribute("tab-items");
-        const tabs = JSON.parse(tabsJSON);
+        const tabItems = this.panel.tabBar.getAttribute("tab-items");
+        const tabs = JSON.parse(tabItems);
         // replace city-detail-tabs-buildings
         tabs.forEach((tab, index) => {
             if (tab.id == cityDetailTabID.buildings) {
@@ -118,9 +118,8 @@ class bzPanelCityDetails {
     }
     selectTab(index) {
         this.panel.tabBar.setAttribute("selected-tab-index", index.toString());
-        const tabsJSON = this.panel.tabBar.getAttribute("tab-items");
-        const tabs = tabsJSON && JSON.parse(tabsJSON);
-        const tab = tabs && tabs.at(index);
+        const tabItems = this.panel.tabBar.getAttribute("tab-items");
+        const tab = JSON.parse(tabItems).at(index);
         if (!tab?.id) return;
         this.panel.slotGroup.setAttribute("selected-slot", tab.id);
         const slot = this.panel.Root.querySelector(`#${tab.id}`);
