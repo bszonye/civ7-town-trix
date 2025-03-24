@@ -3,6 +3,7 @@ import { Construct } from '/base-standard/ui/production-chooser/production-choos
 // decorate ProductionChooserScreen to:
 // - update the list after selecting repairs (fixes "sticky" repairs)
 // - always leave the list open when building repairs
+// - remember Production/Purchase tab selection
 const BZ_HEAD_STYLE = document.createElement('style');
 BZ_HEAD_STYLE.textContent = [
 `.bz-city-hall .advisor-recommendation__container .advisor-recommendation__icon {
@@ -14,7 +15,8 @@ document.body.classList.add("bz-city-hall");
 document.head.appendChild(BZ_HEAD_STYLE);
 export class bzProductionChooserScreen {
     static panel_prototype;
-    static panel_doOrConfirmConstruction;;
+    static panel_doOrConfirmConstruction;
+    static isPurchase = false;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -39,6 +41,36 @@ export class bzProductionChooserScreen {
         proto.doOrConfirmConstruction = function(...args) {
             return this.bzPanel.bzDoOrConfirmConstruction(...args);
         }
+        // override cityID property
+        const panel_cityID =
+            Object.getOwnPropertyDescriptor(panel_prototype, "cityID");
+        const cityID = {
+            configurable: panel_cityID.configurable,
+            enumerable: panel_cityID.enumerable,
+            get: panel_cityID.get,
+            set(value) {
+                panel_cityID.set.apply(this, [value]);
+                // restore tab selection
+                if (bzProductionChooserScreen.isPurchase && !this._isPurchase) {
+                    this.isPurchase = true;
+                }
+            },
+        };
+        Object.defineProperty(panel_prototype, "cityID", cityID);
+        // override isPurchase property
+        const panel_isPurchase =
+            Object.getOwnPropertyDescriptor(panel_prototype, "isPurchase");
+        const isPurchase = {
+            configurable: panel_isPurchase.configurable,
+            enumerable: panel_isPurchase.enumerable,
+            get: panel_isPurchase.get,
+            set(value) {
+                // remember tab selection
+                bzProductionChooserScreen.isPurchase = value;
+                panel_isPurchase.set.apply(this, [value]);
+            },
+        };
+        Object.defineProperty(panel_prototype, "isPurchase", isPurchase);
     }
     afterUpdateItemElementMap(_items) {
         // sort the production list by cost then name
@@ -94,6 +126,13 @@ export class bzProductionChooserScreen {
 
     beforeAttach() { }
     afterAttach() {
+        if (this.panel.wasQueueInitiallyEmpty && !this.panel.city.isTown) {
+            // reset Production/Purchase tab when city queue is empty
+            const buildings = this.panel.items?.buildings;
+            const hasRepairs = buildings.some(b => b.isRepair);
+            // default to Purchase when there are repairs
+            this.panel.isPurchase = hasRepairs;
+        }
         engine.on('ConstructibleChanged', this.panel.onConstructibleAddedToMap, this.panel);
     }
     onAttributeChanged(_name, _prev, _next) { }
