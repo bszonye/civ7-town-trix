@@ -159,7 +159,6 @@ class bzPanelCityDetails {
         this.wondersCategory = MustGetElement(".bz-wonders-category", this.Root);
         this.wondersList = MustGetElement(".bz-wonders-list", this.Root);
         this.update();
-        this.patchTooltipCompatibility();
     }
     beforeDetach() {
         this.panel.tabBar.removeEventListener("tab-selected", this.onTabSelected);
@@ -346,6 +345,7 @@ class bzPanelCityDetails {
         if (constructiblesHaveFocus) {
             FocusManager.setFocus(this.constructibleSlot);
         }
+        this.patchTooltipCompatibility();
     }
     addDistrictData(districtData) {
         const mainDiv = document.createElement("div");
