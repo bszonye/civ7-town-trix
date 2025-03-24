@@ -15,7 +15,7 @@
     </Dependencies>
     <ActionCriteria>
         <Criteria id="always">
-            <AlwaysMet></AlwaysMet>
+            <AlwaysMet/>
         </Criteria>
     </ActionCriteria>
     <ActionGroups>
