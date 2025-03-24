@@ -49,13 +49,10 @@ known interactions:
 - **triex's city details building tooltips: no conflicts.**
 - **F1rstDan's Cool UI: no conflicts.** when both mods are installed,
   you can use the Options menu to customize production list styling.
-  thanks for making this work, F1rstDan!
 - **MantisMaestro's Compact Production Chooser: mostly compatible.**
   when both mods are installed, MM's production list replaces the City
-  Hall version, which also disables one-click repairs.
-- **KayleeR's Misc UI Modifications: mostly compatible.**
-  when both mods are installed, City Hall features replace some parts of
-  KayleeR's mod related to the production list and building placement.
+  Hall version, which also disables some features like one-click
+  repairs.
 - **Slothoth's Abbreviated Repair: incompatible,** but City Hall
   provides an equivalent feature, one-click repairs.
 
