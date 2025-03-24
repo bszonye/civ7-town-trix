@@ -113,6 +113,7 @@ export class ProductionChooserItem extends FxsChooserItem {
         this.agelessContainer.classList.value = 'hidden flex items-center';
         this.agelessContainer.innerHTML = '<img src="fs://game/city_ageless.png" class="size-6"/>';
         statsContainer.appendChild(this.agelessContainer);
+        // TRIX TODO: add production cost (hammers) to cost container
         this.costContainer.classList.value = 'flex items-center';
         // this.costContainer.style.setProperty(..._DEBUG_GRAY);
         this.costAmountElement.classList.value = 'font-title text-base mr-1';

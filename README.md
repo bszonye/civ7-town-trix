@@ -1,4 +1,4 @@
-# City Hall 1.8.2
+# City Hall 1.9.0
 better city & town tools for Civilization VII
 
 ## improved production list and city details
@@ -45,14 +45,16 @@ repairs clear from the production list when you build them.
 ## compatibility with other mods
 known interactions:
 
-- **Sukritact's Simple UI Adjustments: compatible.**  No conflicts.
-- **triex's city details building tooltips: compatible.**  No conflicts.
-- **MantisMaestro's Compact Production Chooser: compatible.**  when both
-  mods are installed, MM's production list replaces the City Hall
-  version.
-- **KayleeR's Misc UI Modifications: compatible.**  when both mods are
-  installed, City Hall features replace some parts of KayleeR's mod
-  related to the production list and building placement.
+- **Sukritact's Simple UI Adjustments: no conflicts.**
+- **triex's city details building tooltips: no conflicts.**
+- **F1rstDan's Cool UI: no conflicts.** when both mods are installed,
+  you can use the Options menu to customize production list styling.
+- **MantisMaestro's Compact Production Chooser: mostly compatible.**
+  when both mods are installed, MM's production list replaces the City
+  Hall version, which also disables some features like one-click
+  repairs.
+- **Slothoth's Abbreviated Repair: incompatible,** but City Hall
+  provides an equivalent feature, one-click repairs.
 
 ## localization
 supported languages:

@@ -30,5 +30,8 @@
         <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS" Language="zh_Hans_CN">
             <Text>{1_number}[icon:YIELD_TOWNS] 城镇</Text>
         </Row>
+        <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="zh_Hans_CN">
+            <Text>trixie 系列模组</Text>
+        </InsertOrIgnore>
     </LocalizedText>
 </Database>
