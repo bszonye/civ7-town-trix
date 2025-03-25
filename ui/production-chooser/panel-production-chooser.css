@@ -1,0 +1,89 @@
+/* DO NOT EDIT */
+/* Generated from panel-production-chooser.scss */
+/**
+Based on Robert Penner's easing equations
+@url http://robertpenner.com/easing/
+**/
+panel-production-chooser {
+	width: 37.3333333333rem;
+}
+
+panel-production-chooser .subsystem-frame__content {
+	padding: 0.6666666667rem;
+}
+
+town-focus-chooser-item {
+	width: 24.6111111111rem;
+}
+
+town-focus-chooser-item,
+production-chooser-item {
+	margin-bottom: 0.4444444444rem;
+}
+town-focus-chooser-item:last-child,
+production-chooser-item:last-child {
+	margin-bottom: 0rem;
+}
+
+.production-chooser__unique-quarter {
+	padding-bottom: 1.5555555556rem;
+}
+
+.production-chooser__unique-quarter-divider {
+	position: absolute;
+	bottom: 0.7222222222rem;
+	width: 100%;
+	height: 0.1111111111rem;
+	background: linear-gradient(to right, rgba(76, 83, 102, 0), rgba(76, 83, 102, 0.7), rgba(76, 83, 102, 0));
+}
+
+.town-unrest-fill {
+	background-color: #E00505;
+}
+
+.town-unrest-bg {
+	background-color: #252525;
+}
+
+.production-chooser__city-details-button {
+	background: linear-gradient(to bottom, #4C5366, #333640);
+	border-image-source: url("fs://game/shell_simple-square");
+	border-image-slice: 16 fill;
+	border-image-width: 0.8888888889rem;
+}
+.production-chooser__city-details-button:focus .city-details-highlight, .production-chooser__city-details-button:hover .city-details-highlight {
+	background: linear-gradient(90deg, #595243 0%, rgba(41, 43, 51, 0.5) 100%);
+	animation: city-details-highlight-glow;
+	animation-duration: 1.3333s;
+	animation-direction: alternate;
+	animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+	animation-iteration-count: infinite;
+}
+
+@keyframes city-details-highlight-glow {
+	0% {
+		opacity: 0.3333;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+.production-chooser-tooltip__subtext-bg {
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+town-unrest-section,
+.production-chooser__town-focus-gradient {
+	background-image: linear-gradient(to bottom, rgba(5, 7, 13, 0.4), rgba(5, 7, 13, 0.2), rgba(5, 7, 13, 0.35));
+	background-repeat: no-repeat;
+}
+
+panel-production-chooser {
+	position: relative;
+	flex-direction: column;
+}
+@media (max-height: 720px) {
+	panel-production-chooser {
+		max-height: 40rem;
+	}
+}

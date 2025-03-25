@@ -1,0 +1,21 @@
+/* DO NOT EDIT */
+/* Generated from panel-city-details.scss */
+.panel-city-details {
+	width: 32.6666666667rem;
+}
+
+.city-details-half-divider {
+	background-image: url("fs://game/prof_div_1.png");
+}
+
+.growth-entry:focus, .growth-entry:hover {
+	background: linear-gradient(90deg, #4C473D 0%, #333640 100%);
+}
+
+.constructible-entry:focus .constructible-entry-highlight, .constructible-entry:hover .constructible-entry-highlight {
+	background: linear-gradient(90deg, #4C473D 0%, #333640 100%);
+}
+
+.yield-button:focus .yield-button-highlight, .yield-button:hover .yield-button-highlight {
+	background: linear-gradient(90deg, #4C473D 0%, #333640 100%);
+}
