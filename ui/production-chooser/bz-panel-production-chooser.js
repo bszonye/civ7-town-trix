@@ -126,11 +126,10 @@ export class bzProductionChooserScreen {
 
     beforeAttach() { }
     afterAttach() {
-        if (this.panel.wasQueueInitiallyEmpty && !this.panel.city.isTown) {
-            // reset Production/Purchase tab when city queue is empty
+        if (!this.panel.isPurchase) {
+            // default to Purchase when repairs are needed
             const buildings = this.panel.items?.buildings;
             const hasRepairs = buildings.some(b => b.isRepair);
-            // default to Purchase when there are repairs
             this.panel.isPurchase = hasRepairs;
         }
         engine.on('ConstructibleChanged', this.panel.onConstructibleAddedToMap, this.panel);
@@ -138,6 +137,10 @@ export class bzProductionChooserScreen {
     onAttributeChanged(_name, _prev, _next) { }
     beforeDetach() { }
     afterDetach() {
+        // clear Purchase tab memory when closing the panel.
+        // this includes switches to the building-placement interface,
+        // but that has its own means of restoring the Purchase tab.
+        bzProductionChooserScreen.isPurchase = false;
         engine.off('ConstructibleChanged', this.panel.onConstructibleAddedToMap, this.panel);
     }
 }
