@@ -1,11 +1,8 @@
 /**
  * @file town-unrest.ts
- * @copyright Firaxis Games, 2024
+ * @copyright Firaxis Games, 2024-2025
  * @description Section with a slider that shows how long until the town is no longer in unrest.
  */
-// TODO: get this from gamecore, should be scaled by game speed
-const MAX_TURNS_UNREST = Game.EconomicRules.adjustForGameSpeed(GameInfo.UnhappinessEffects.lookup('StandardCityTransferUnrest')?.Amount ?? 10);
-//GameInfo.UnhappinessEffects.lookup('StandardCityTransferUnrest')?.Amount ?? 10;
 export class TownUnrestDisplay extends Component {
     constructor() {
         super(...arguments);
@@ -15,28 +12,34 @@ export class TownUnrestDisplay extends Component {
         this.remainingTurnsElement = document.createElement('div');
     }
     // #region Component State
-    set turnsOfUnrest(value) {
-        if (value > MAX_TURNS_UNREST) {
-            console.error(`TownUnrestDisplay: turnsOfUnrest value ${value} exceeds MAX_TURNS_UNREST ${MAX_TURNS_UNREST}`);
-        }
-        const pct = Math.max(0, Math.min(1, value / MAX_TURNS_UNREST));
-        this.sliderFillElement.style.transform = `scaleX(${pct})`;
-        const turnsRemaining = Math.max(0, MAX_TURNS_UNREST - value);
-        this.remainingTurnsElement.textContent = Locale.compose('LOC_UI_PRODUCTION_UNREST_TURNS_REMAINING', turnsRemaining);
+    get highestActiveUnrestDuration() {
+        const attr = this.Root.getAttribute('data-highest-active-unrest-duration');
+        return attr ? parseInt(attr) : 0;
+    }
+    get turnsOfUnrest() {
+        const attr = this.Root.getAttribute('data-turns-of-unrest');
+        return attr ? parseInt(attr) : 0;
     }
     // #endregion
     onInitialize() {
         super.onInitialize();
         this.render();
     }
-    onAttributeChanged(name, _oldValue, newValue) {
+    onAttributeChanged(name, _oldValue, _newValue) {
         switch (name) {
             case 'data-turns-of-unrest':
-                this.turnsOfUnrest = newValue ? parseInt(newValue) : 0;
+            case 'data-highest-active-unrest-duration':
+                this.updateUnrestDisplay(this.turnsOfUnrest, this.highestActiveUnrestDuration);
                 break;
             default:
                 break;
         }
+    }
+    updateUnrestDisplay(turnsOfUnrest, highestActiveUnrestDuration) {
+        const pct = Math.max(0, Math.min(1, turnsOfUnrest / highestActiveUnrestDuration));
+        this.sliderFillElement.style.transform = `scaleX(${pct})`;
+        const turnsRemaining = Math.max(0, turnsOfUnrest);
+        this.remainingTurnsElement.textContent = Locale.compose('LOC_UI_PRODUCTION_UNREST_TURNS_REMAINING', turnsRemaining);
     }
     render() {
         this.Root.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'px-2');
@@ -47,14 +50,14 @@ export class TownUnrestDisplay extends Component {
         slider.classList.add('w-full', 'h-1\\.5', 'my-2', 'town-unrest-bg');
         this.sliderFillElement.classList.add('size-full', 'origin-left', 'town-unrest-fill', 'transition-transform');
         slider.appendChild(this.sliderFillElement);
-        this.Root.appendChild(slider);
-        this.Root.appendChild(this.remainingTurnsElement);
+        this.Root.append(slider, this.remainingTurnsElement);
     }
 }
 Controls.define('town-unrest-display', {
     createInstance: TownUnrestDisplay,
     attributes: [
-        { name: 'data-turns-of-unrest' }
+        { name: 'data-turns-of-unrest' },
+        { name: 'data-highest-active-unrest-duration' }
     ]
 });
 

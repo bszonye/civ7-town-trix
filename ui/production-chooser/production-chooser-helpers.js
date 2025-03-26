@@ -167,7 +167,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
             const isBuildingAlreadyQueued = constructible.ConstructibleClass === 'BUILDING' && operationResult.InQueue;
             const category = getConstructibleClassPanelCategory(constructible.ConstructibleClass);
             if (possibleLocations.length > 0 && !isBuildingAlreadyQueued && !operationResult.InsufficientFunds) {
-                let name = Locale.compose('LOC_UI_PRODUCTION_NAME', constructible.Name);
+                let name = constructible.Name;
                 if (operationResult.RepairDamaged && constructible.Repairable) {
                     name = Locale.compose('LOC_UI_PRODUCTION_REPAIR_NAME', constructible.Name);
                 }
@@ -196,6 +196,8 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
             else {
                 // Most items are shown anyway even if not available, but some aren't
                 if (!hideIfUnavailable || insufficientFunds) {
+                    let name = constructible.Name;
+                    let error = '';
                     let nodeNeededError = "";
                     if (operationResult.NeededUnlock != -1) {
                         const nodeInfo = GameInfo.ProgressionTreeNodes.lookup(operationResult.NeededUnlock);
@@ -203,14 +205,20 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                             nodeNeededError = Locale.compose('LOC_UI_PRODUCTION_REQUIRES', nodeInfo.Name);
                         }
                     }
-                    const error = operationResult.AlreadyExists ? "LOC_UI_PRODUCTION_ALREADY_EXISTS" :
-                        operationResult.NeededUnlock != -1 ? nodeNeededError :
-                            possibleLocations.length === 0 ? "LOC_UI_PRODUCTION_NO_SUITABLE_LOCATIONS" :
-                                operationResult.InsufficientFunds ? "LOC_CITY_PURCHASE_INSUFFICIENT_FUNDS" :
-                                    operationResult.InQueue ? "LOC_UI_PRODUCTION_ALREADY_IN_QUEUE" : '';
+                    if (operationResult.RepairDamaged && constructible.Repairable) {
+                        name = Locale.compose('LOC_UI_PRODUCTION_REPAIR_NAME', constructible.Name);
+                        error = operationResult.InsufficientFunds ? "LOC_CITY_PURCHASE_INSUFFICIENT_FUNDS" : "";
+                    }
+                    else {
+                        error = operationResult.AlreadyExists ? "LOC_UI_PRODUCTION_ALREADY_EXISTS" :
+                            operationResult.NeededUnlock != -1 ? nodeNeededError :
+                                possibleLocations.length === 0 ? "LOC_UI_PRODUCTION_NO_SUITABLE_LOCATIONS" :
+                                    operationResult.InsufficientFunds ? "LOC_CITY_PURCHASE_INSUFFICIENT_FUNDS" :
+                                        operationResult.InQueue ? "LOC_UI_PRODUCTION_ALREADY_IN_QUEUE" : '';
+                    }
                     const cost = operationResult.Cost ?? cityGold.getBuildingPurchaseCost(YieldTypes.YIELD_GOLD, constructible.ConstructibleType);
                     return {
-                        name: constructible.Name,
+                        name,
                         type: constructible.ConstructibleType,
                         cost,
                         turns,
@@ -220,7 +228,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                         showCost: cost > 0,
                         insufficientFunds,
                         disabled: true,
-                        error: error,
+                        error,
                         secondaryDetails
                     };
                 }
@@ -266,7 +274,7 @@ export const CanPlayerUnlockNode = (nodeType, playerId) => {
 export const CreateProductionChooserItem = () => {
     const item = document.createElement('production-chooser-item');
     item.setAttribute("data-audio-group-ref", "city-actions");
-    item.setAttribute("data-audio-focus", "city-production-focus");
+    item.setAttribute("data-audio-focus-ref", "data-audio-city-production-focus");
     return item;
 };
 const getProjectItems = (city, isPurchase) => {

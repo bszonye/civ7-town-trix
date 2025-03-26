@@ -18,6 +18,7 @@ import LensManager from '/core/ui/lenses/lens-manager.js';
 import { MustGetElement } from '/core/ui/utilities/utilities-dom.js';
 import NavTray from '/core/ui/navigation-tray/model-navigation-tray.js';
 import FocusManager from '/core/ui/input/focus-manager.js';
+import { ProductionChooserScreen } from '/base-standard/ui/production-chooser/panel-production-chooser.js';
 var HighlightColors;
 (function (HighlightColors) {
     HighlightColors[HighlightColors["okay"] = 3355505406] = "okay";
@@ -66,6 +67,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     }
     transitionTo(oldMode, newMode, context) {
         super.transitionTo(oldMode, newMode, context);
+        ProductionChooserScreen.shouldReturnToPurchase = this.isPurchasing;
         // Lock out automatic cursor changes
         UI.lockCursor(true);
         // Set the building placement cursor

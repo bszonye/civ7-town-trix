@@ -442,7 +442,11 @@ class PanelCityDetails extends Panel {
             this.specialistText.textContent = Locale.compose("LOC_UI_CITY_DETAILS_SPECIALIST_PER_TILE", CityDetails.specialistPerTile);
         }
         this.currentCitizenCount.textContent = CityDetails.currentCitizens.toString();
-        if (CityDetails.turnsToNextCitizen >= 0) {
+        if (CityDetails.hasTownFocus) {
+            // TODO - Add string to explain this case
+            this.turnToNextCitizenText.textContent = "";
+        }
+        else if (CityDetails.turnsToNextCitizen >= 0) {
             this.turnToNextCitizenText.textContent = Locale.compose("LOC_UI_CITY_DETAILS_NEW_CITIZEN_IN_TURNS", CityDetails.turnsToNextCitizen);
         }
         else {

@@ -1,6 +1,6 @@
 /**
  * @file panel-production-chooser.ts
- * @copyright 2021-2024, Firaxis Games
+ * @copyright 2021-2025, Firaxis Games
  * @description The 'view' of a city's production queue
  */
 import DialogManager, { DialogBoxAction } from '/core/ui/dialog-box/manager-dialog-box.js';
@@ -28,6 +28,7 @@ import { BuildQueue } from '/base-standard/ui/build-queue/model-build-queue.js';
 import { UniqueQuarter } from '/base-standard/ui/production-chooser/production-chooser-unique-quarter.js';
 import UpdateGate from '/core/ui/utilities/utilities-update-gate.js';
 import Databind from '/core/ui/utilities/utilities-core-databinding.js';
+import { Layout } from '/core/ui/utilities/utilities-layout.js';
 const categoryLocalizationMap = {
     [ProductionPanelCategory.BUILDINGS]: 'LOC_UI_PRODUCTION_BUILDINGS',
     [ProductionPanelCategory.UNITS]: 'LOC_UI_PRODUCTION_UNITS',
@@ -57,14 +58,16 @@ export class ProductionChooserScreen extends Panel {
         }
         const hasUnrest = city.Happiness?.hasUnrest ?? false;
         const turnsOfUnrest = city.Happiness?.turnsOfUnrest ?? -1;
+        const highestActiveUnrestDuration = city.Happiness?.highestActiveUnrestDuration ?? -1;
         const isTown = city.isTown;
         const growthType = city.Growth?.growthType;
         const projectType = city.Growth?.projectType;
-        const canPurchase = Game.CityCommands.canStart(value, CityCommandTypes.PURCHASE, { Directive: OrderTypes.ORDER_CONSTRUCT }, false).Success;
+        const canPurchaseDuringUnrest = city.Gold?.canPurchaseWhileInUnrest ?? true;
         this._cityID = value;
         this._recommendations = GetCityBuildReccomendations(city);
         this.uqInfo = GetUniqueQuarterForPlayer(city.owner);
-        this._isPurchase = city.isTown;
+        this._isPurchase = city.isTown || ProductionChooserScreen.shouldReturnToPurchase;
+        ProductionChooserScreen.shouldReturnToPurchase = false;
         this.productionPurchaseTabBar.setAttribute('selected-tab-index', this._isPurchase ? '1' : '0');
         BuildingPlacementManager.initializePlacementData(this._cityID);
         BuildQueue.cityID = this._cityID;
@@ -75,7 +78,7 @@ export class ProductionChooserScreen extends Panel {
         this.updateCityStatus(city.isBeingRazed, hasUnrest);
         this.updateProductionPurchaseBar(isTown);
         this.updateTownFocusSection(city.id, isTown, hasUnrest, growthType, projectType);
-        this.updateUnrestUi({ canPurchase, hasUnrest, turnsOfUnrest });
+        this.updateUnrestUi({ hasUnrest, turnsOfUnrest, canPurchaseDuringUnrest, highestActiveUnrestDuration });
         const playerCities = Players.get(city.owner)?.Cities?.getCities();
         const hasMultipleCities = playerCities && playerCities?.length > 1;
         this.nextCityButton.classList.toggle('hidden', !hasMultipleCities);
@@ -151,6 +154,7 @@ export class ProductionChooserScreen extends Panel {
         this.onNextCityButtonListener = this.onNextCityButton.bind(this);
         this.onPrevCityButtonListener = this.onPrevCityButton.bind(this);
         this.onCityDetailsClosedListener = this.onCityDetailsClosed.bind(this);
+        this.onSettlementNameChangedListener = this.onSettlementNameChanged.bind(this);
         // #endregion
         // #region Component State
         this.isInitialLoadComplete = false;
@@ -165,7 +169,7 @@ export class ProductionChooserScreen extends Panel {
         // #endregion
         // #region Element References
         this.frame = document.createElement("fxs-subsystem-frame");
-        this.cityNameElement = document.createElement("fxs-header");
+        this.cityNameElement = document.createElement("fxs-editable-header");
         this.cityStatusContainerElement = document.createElement("div");
         this.cityStatusIconElement = document.createElement("img");
         this.cityStatusTextElement = document.createElement("div");
@@ -342,6 +346,7 @@ export class ProductionChooserScreen extends Panel {
         delayByFrame(() => {
             this.isInitialLoadComplete = true;
             engine.on('CityGovernmentLevelChanged', this.onCityGovernmentLevelChanged, this);
+            engine.on('CityMadePurchase', this.onCityMadePurchase, this);
             engine.on('CityGrowthModeChanged', this.onCityGrowthModeChanged, this);
             engine.on('CityProductionQueueChanged', this.onCityProductionQueueChanged, this);
             engine.on('CitySelectionChanged', this.onCitySelectionChanged, this);
@@ -366,6 +371,7 @@ export class ProductionChooserScreen extends Panel {
             this.townFocusSection.addEventListener('chooser-item-selected', this.onCurrentFocusItemSelected);
             this.townFocusPanelCloseButton.addEventListener('action-activate', this.onCloseTownFocusPanel);
             this.productionAccordion.addEventListener('chooser-item-selected', this.onChooserItemSelected);
+            this.cityNameElement.addEventListener('editable-header-text-changed', this.onSettlementNameChangedListener);
             this.onInterfaceModeChanged();
             this.updateItems.call('onAttach');
             if (this.city?.isTown) {
@@ -375,6 +381,7 @@ export class ProductionChooserScreen extends Panel {
     }
     onDetach() {
         engine.off('CityGovernmentLevelChanged', this.onCityGovernmentLevelChanged, this);
+        engine.off('CityMadePurchase', this.onCityMadePurchase, this);
         engine.off('CityGrowthModeChanged', this.onCityGrowthModeChanged, this);
         engine.off('CityProductionQueueChanged', this.onCityProductionQueueChanged, this);
         engine.off('CitySelectionChanged', this.onCitySelectionChanged, this);
@@ -397,6 +404,7 @@ export class ProductionChooserScreen extends Panel {
         this.showCityDetailsButton.removeEventListener('action-activate', this.onCityDetailsActivated);
         this.townFocusSection.removeEventListener('chooser-item-selected', this.onCurrentFocusItemSelected);
         this.productionAccordion.removeEventListener('chooser-item-selected', this.onChooserItemSelected);
+        this.cityNameElement.removeEventListener('editable-header-text-changed', this.onSettlementNameChangedListener);
         Object.values(this.productionCategorySlots).forEach(slot => slot.disconnect());
         super.onDetach();
     }
@@ -435,13 +443,32 @@ export class ProductionChooserScreen extends Panel {
     }
     onConstructibleAddedToMap(data) {
         const owningCityID = GameplayMap.getOwningCityFromXY(data.location.x, data.location.y);
-        if (ComponentID.isMatch(this.cityID, owningCityID)) {
+        if (owningCityID && ComponentID.isMatch(this.cityID, owningCityID)) {
             this.updateItems.call('onConstructibleAddedToMap');
         }
     }
     onCityProductionQueueChanged({ cityID }) {
         if (ComponentID.isMatch(this.cityID, cityID)) {
             this.updateItems.call('onCityProductionQueueChanged');
+        }
+    }
+    onSettlementNameChanged(event) {
+        if (event.detail.newStr == this.city.name) {
+            return;
+        }
+        const args = {
+            Name: event.detail.newStr
+        };
+        if (!this._cityID) {
+            console.error(`panel-production-chooser: onSettlementNameChanged - cityID was null during name change operation!`);
+            return;
+        }
+        const result = Game.CityCommands.canStart(this._cityID, CityCommandTypes.NAME_CITY, args, false);
+        if (result.Success) {
+            Game.CityCommands.sendRequest(this._cityID, CityCommandTypes.NAME_CITY, args);
+        }
+        else {
+            console.error('panel-production-chooser: onSettlementNameChanged - city name change operation failed!', result.FailureReasons);
         }
     }
     onCityGrowthModeChanged({ cityID }) {
@@ -464,6 +491,13 @@ export class ProductionChooserScreen extends Panel {
             this.updateItems.call('onCityGovernmentLevelChanged');
         }
     }
+    onCityMadePurchase({ cityID }) {
+        const city = Cities.get(cityID);
+        if (city && ComponentID.isMatch(this.cityID, cityID)) {
+            BuildingPlacementManager.initializePlacementData(cityID);
+            this.updateItems.call('onCityModePurchase');
+        }
+    }
     onPrevCityButton() {
         const prevCityId = GetPrevCityID(this.cityID);
         if (ComponentID.isValid(prevCityId)) {
@@ -482,7 +516,7 @@ export class ProductionChooserScreen extends Panel {
         }
     }
     isSmallScreen() {
-        return window.innerHeight <= this.SMALL_SCREEN_MODE_MAX_HEIGHT || window.innerWidth <= this.SMALL_SCREEN_MODE_MAX_WIDTH;
+        return window.innerHeight <= Layout.pixelsToScreenPixels(this.SMALL_SCREEN_MODE_MAX_HEIGHT) || window.innerWidth <= Layout.pixelsToScreenPixels(this.SMALL_SCREEN_MODE_MAX_WIDTH);
     }
     onFocusIn(event) {
         const focusedPanel = event.target instanceof HTMLElement ? this.getElementParentPanel(event.target) : null;
@@ -805,11 +839,14 @@ export class ProductionChooserScreen extends Panel {
             this.Root.dataset.showTownFocus = 'false';
         }
     }
-    updateUnrestUi({ hasUnrest, turnsOfUnrest, canPurchase }) {
+    updateUnrestUi({ hasUnrest, turnsOfUnrest, canPurchaseDuringUnrest, highestActiveUnrestDuration }) {
         this.townFocusSection.dataset.disabled = hasUnrest ? 'true' : 'false';
-        this.productionPurchaseContainer.classList.toggle('hidden', hasUnrest);
-        this.townUnrestDisplay.classList.toggle('hidden', !canPurchase);
-        this.townUnrestDisplay.dataset.turnsOfUnrest = turnsOfUnrest.toString();
+        this.townUnrestDisplay.classList.toggle('hidden', !hasUnrest);
+        this.productionPurchaseContainer.classList.toggle('hidden', hasUnrest && !canPurchaseDuringUnrest);
+        if (hasUnrest) {
+            this.townUnrestDisplay.dataset.turnsOfUnrest = turnsOfUnrest.toString();
+        }
+        this.townUnrestDisplay.dataset.highestActiveUnrestDuration = highestActiveUnrestDuration.toString();
     }
     updateProductionPurchaseBar(isTown) {
         this.productionPurchaseTabBar.classList.toggle('hidden', isTown);
@@ -879,6 +916,7 @@ export class ProductionChooserScreen extends Panel {
         this.cityNameElement.classList.add('flex-auto', 'px-4', 'text-lg', 'text-center', 'font-title', 'uppercase', 'tracking-100');
         this.cityNameElement.setAttribute('font-fit-mode', 'shrink');
         this.cityNameElement.setAttribute('wrap', 'nowrap');
+        this.cityNameElement.setAttribute('tab-for', 'panel-production-chooser');
         cityNameWrapper.appendChild(this.cityNameElement);
         this.nextCityButton.classList.add('flex', 'flex-row-reverse', 'items-center');
         this.nextCityButton.setAttribute('action-key', 'inline-next-city');
@@ -978,6 +1016,8 @@ export class ProductionChooserScreen extends Panel {
         this.Root.appendChild(productionChooserHSlot);
     }
 }
+// Used as a flag to tell the chooser to go back to purchase mode if we were just placing a purchased contructible
+ProductionChooserScreen.shouldReturnToPurchase = false;
 Controls.define('panel-production-chooser', {
     createInstance: ProductionChooserScreen,
     description: '',

@@ -1,6 +1,6 @@
 /**
  * @file model-city-details.ts
- * @copyright 2024, Firaxis Games
+ * @copyright 2024-2025, Firaxis Games
  * @description Data model for Detailed break down of a cities status
  */
 import { ComponentID } from '/core/ui/utilities/utilities-component-id.js';
@@ -20,6 +20,7 @@ class CityDetailsModel {
         this.specialistPerTile = 0;
         this.currentCitizens = 0;
         this.turnsToNextCitizen = 0;
+        this.hasTownFocus = false;
         this.happinessPerTurn = 0;
         this.hasUnrest = false;
         this.foodPerTurn = 0;
@@ -62,6 +63,12 @@ class CityDetailsModel {
             if (cityGrowth) {
                 this.turnsToNextCitizen = cityGrowth.turnsUntilGrowth;
                 this.foodToGrow = cityGrowth.getNextGrowthFoodThreshold().value;
+                if (this.isTown && cityGrowth.growthType != GrowthTypes.EXPAND) {
+                    this.hasTownFocus = true;
+                }
+                else {
+                    this.hasTownFocus = false;
+                }
             }
             const cityHappiness = city.Happiness;
             if (cityHappiness) {
@@ -236,9 +243,13 @@ class CityDetailsModel {
         });
         this.updateGate.call('constructor');
         engine.on('CitySelectionChanged', this.onCitySelectionChanged, this);
+        engine.on('CityGrowthModeChanged', this.onCityGrowthModeChanged, this);
     }
     onCitySelectionChanged() {
         this.updateGate.call('onCitySelectionChanged');
+    }
+    onCityGrowthModeChanged() {
+        this.updateGate.call('onCityGrowthModeChanged');
     }
     reset() {
         this.specialistPerTile = 0;

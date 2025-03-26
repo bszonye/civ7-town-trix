@@ -82,7 +82,7 @@ panel-production-chooser {
 	position: relative;
 	flex-direction: column;
 }
-@media (max-height: 720px) {
+@media (max-height: 40rem) {
 	panel-production-chooser {
 		max-height: 40rem;
 	}
