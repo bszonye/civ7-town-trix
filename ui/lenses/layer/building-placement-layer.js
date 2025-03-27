@@ -15,6 +15,16 @@ const adjacencyIcons = new Map([
     [DirectionTypes.DIRECTION_SOUTHWEST, "adjacencyarrow_southwest"],
     [DirectionTypes.DIRECTION_WEST, "adjacencyarrow_west"]
 ]);
+function adjacencyYield(building) {
+    if (!building) return [];
+    const adjTypes = GameInfo.Constructible_Adjacencies.filter(at =>
+        at.ConstructibleType == building.ConstructibleType && !at.RequiresActivation
+    );
+    const adjYields = adjTypes.map(at => GameInfo.Adjacency_YieldChanges.find(
+        ay => ay.ID == at.YieldChangeId));
+    const yieldSet = new Set(adjYields.map(ay => ay.YieldType));
+    return [...yieldSet];
+}
 export class WorkerYieldsLensLayer {
     constructor() {
         this.BUILD_SLOT_SPRITE_PADDING = 12;
@@ -152,22 +162,32 @@ export class WorkerYieldsLensLayer {
                 console.error("building-placement-layer: Unable to find a valid Constructible with ComponentID: " + ComponentID.toLogString(constructibleID));
                 continue;
             }
-            const constructibleDefinition = GameInfo.Constructibles.lookup(existingConstructible.type);
-            if (!constructibleDefinition) {
+            const building = GameInfo.Constructibles.lookup(existingConstructible.type);
+            if (!building) {
                 console.error("building-placement-layer: Unable to find a valid ConstructibleDefinition with type: " + existingConstructible.type);
                 continue;
             }
+            if (building.Population == 0) continue;  // skip walls
             //TODO: add completion turns to in progress buildings once asset is implemented
             //TODO: add replaceable once asset is implemented
-            const iconString = UI.getIconBLP(constructibleDefinition.ConstructibleType);
-            buildingSlots.push({ iconURL: iconString ? iconString : "" });
+            const yields = adjacencyYield(building)
+                .map(y => BuildingPlacementManager.getYieldPillIcon(y, 1, true));
+            const iconString = UI.getIconBLP(building.ConstructibleType);
+            buildingSlots.push({ iconURL: iconString ? iconString : "", yields });
         }
         for (let i = 0; i < maxSlots; i++) {
             const groupWidth = (maxSlots - 1) * this.BUILD_SLOT_SPRITE_PADDING;
             const xPos = (i * this.BUILD_SLOT_SPRITE_PADDING) + (groupWidth / 2) - groupWidth;
             grid.addSprite(district.location, UI.getIconBLP('BUILDING_UNFILLED'), { x: xPos, y: -28, z: 0 });
-            if (buildingSlots[i]) {
-                grid.addSprite(district.location, buildingSlots[i].iconURL, { x: xPos, y: -27.5, z: 0 }, { scale: 0.7 });
+            const slot = buildingSlots[i];
+            if (slot) {
+                const p = { x: xPos, y: -27.5, z: 0 };
+                for (const [i, yieldIcon] of slot.yields.entries()) {
+                    const d = (slot.yields.length - i);  // work back to front
+                    const py = { x: p.x, y: p.y + 7*d, z: d };  // behind building
+                    grid.addSprite(district.location, yieldIcon, py);
+                }
+                grid.addSprite(district.location, slot.iconURL, p, { scale: 0.7 });
             }
         }
     }
@@ -213,11 +233,11 @@ export class WorkerYieldsLensLayer {
                 return;
             }
             const arrowOffset = this.calculateAdjacencyDirectionOffsetLocation(adjacencyDirection);
-            const yieldIcon = UI.getIconBLP(yieldDef.YieldType + "_1", "YIELD");
+            const yieldIcon = UI.getIconBLP(yieldDef.YieldType + "_5", "YIELD");
             const yieldOffset = { x: 1.5 * arrowOffset.x, y: 1.5 * arrowOffset.y };
             //scale -1 to flip the arrows to indicate incoming adjacencies
             this.adjacenciesSpriteGrid.addSprite(buildingLocation, arrowIcon, arrowOffset, { scale: -1 });
-            this.adjacenciesSpriteGrid.addSprite(buildingLocation, yieldIcon, yieldOffset, { scale: 2 });
+            this.adjacenciesSpriteGrid.addSprite(buildingLocation, yieldIcon, yieldOffset, { scale: 1 });
             //TODO: outgoing adjacencies once implemented in GameCore
         });
         this.adjacenciesSpriteGrid.setVisible(true);
