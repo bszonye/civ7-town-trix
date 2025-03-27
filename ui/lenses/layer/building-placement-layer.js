@@ -32,7 +32,7 @@ const BZ_LARGE = gatherBuildingsTagged("FULL_TILE");
 export class WorkerYieldsLensLayer {
     constructor() {
         this.BUILD_SLOT_SPRITE_PADDING = 12;
-        this.BUILDING_TYPE_SPRITE_PADDING = 6.5;
+        this.YIELD_SPRITE_HEIGHT = 6;
         this.YIELD_SPRITE_PADDING = 11;
         this.YIELD_WRAP_AT = 3;
         this.YIELD_WRAPPED_ROW_OFFSET = 8;
@@ -182,6 +182,7 @@ export class WorkerYieldsLensLayer {
             const iconURL = UI.getIconBLP(building.ConstructibleType) || "";
             // building yield type flag
             const yields = adjacencyYield(building)
+                // .map(y => UI.getIconBLP(y + "_5", "YIELD"));
                 .map(y => BuildingPlacementManager.getYieldPillIcon(y, 1, true));
             // building age
             const chrono = (age) => GameInfo.Ages.lookup(age)?.ChronologyIndex ?? 0;
@@ -198,11 +199,12 @@ export class WorkerYieldsLensLayer {
             const slot = buildingSlots[i];
             if (slot) {
                 const p = { x: xPos, y: -27.5, z: 0 };
-                for (const [i, yieldIcon] of slot.yields.entries()) {
-                    const d = (slot.yields.length - i);  // work back to front
-                    const dy = this.BUILDING_TYPE_SPRITE_PADDING * d;
-                    const py = { x: p.x, y: p.y + dy, z: d };  // behind building
-                    grid.addSprite(district.location, yieldIcon, py);
+                for (const [j, yieldIcon] of slot.yields.entries()) {
+                    const w = slot.yields.length - 1;
+                    const dx = this.YIELD_SPRITE_PADDING * 2/3 * (j - w/2);
+                    const dy = this.YIELD_SPRITE_HEIGHT;
+                    const pf = { x: p.x + dx, y: p.y + dy, z: 3 };
+                    grid.addSprite(district.location, yieldIcon, pf, { scale: 3/4 });
                 }
                 grid.addSprite(district.location, slot.iconURL, p, { scale: 0.7 });
             }
