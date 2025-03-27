@@ -25,9 +25,14 @@ function adjacencyYield(building) {
     const yieldSet = new Set(adjYields.map(ay => ay.YieldType));
     return [...yieldSet];
 }
+function gatherBuildingsTagged(tag) {
+    return new Set(GameInfo.TypeTags.filter(e => e.Tag == tag).map(e => e.Type));
+}
+const BZ_LARGE = gatherBuildingsTagged("FULL_TILE");
 export class WorkerYieldsLensLayer {
     constructor() {
         this.BUILD_SLOT_SPRITE_PADDING = 12;
+        this.BUILDING_TYPE_SPRITE_PADDING = 6.5;
         this.YIELD_SPRITE_PADDING = 11;
         this.YIELD_WRAP_AT = 3;
         this.YIELD_WRAPPED_ROW_OFFSET = 8;
@@ -167,14 +172,25 @@ export class WorkerYieldsLensLayer {
                 console.error("building-placement-layer: Unable to find a valid ConstructibleDefinition with type: " + existingConstructible.type);
                 continue;
             }
-            if (building.Population == 0) continue;  // skip walls
-            //TODO: add completion turns to in progress buildings once asset is implemented
-            //TODO: add replaceable once asset is implemented
+            //TODO: show turns remaining for in-progress buildings
+            //TODO: show replaceable (obsolete) buildings
+            // skip walls
+            if (building.Population == 0) continue;
+            // large buildings take up an extra slot
+            if (BZ_LARGE.has(building.ConstructibleType)) maxSlots -= 1;
+            // building icon
+            const iconURL = UI.getIconBLP(building.ConstructibleType) || "";
+            // building yield type flag
             const yields = adjacencyYield(building)
                 .map(y => BuildingPlacementManager.getYieldPillIcon(y, 1, true));
-            const iconString = UI.getIconBLP(building.ConstructibleType);
-            buildingSlots.push({ iconURL: iconString ? iconString : "", yields });
+            // building age
+            const chrono = (age) => GameInfo.Ages.lookup(age)?.ChronologyIndex ?? 0;
+            const currentAge = chrono(Game.age);
+            const age = building.Age ?  chrono(building.Age) : currentAge - 0.5;
+            buildingSlots.push({ iconURL, yields, age });
         }
+        // sort buildings by age, like Map Trix
+        buildingSlots.sort((a, b) => b.age - a.age);
         for (let i = 0; i < maxSlots; i++) {
             const groupWidth = (maxSlots - 1) * this.BUILD_SLOT_SPRITE_PADDING;
             const xPos = (i * this.BUILD_SLOT_SPRITE_PADDING) + (groupWidth / 2) - groupWidth;
@@ -184,7 +200,8 @@ export class WorkerYieldsLensLayer {
                 const p = { x: xPos, y: -27.5, z: 0 };
                 for (const [i, yieldIcon] of slot.yields.entries()) {
                     const d = (slot.yields.length - i);  // work back to front
-                    const py = { x: p.x, y: p.y + 7*d, z: d };  // behind building
+                    const dy = this.BUILDING_TYPE_SPRITE_PADDING * d;
+                    const py = { x: p.x, y: p.y + dy, z: d };  // behind building
                     grid.addSprite(district.location, yieldIcon, py);
                 }
                 grid.addSprite(district.location, slot.iconURL, p, { scale: 0.7 });

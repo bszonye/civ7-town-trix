@@ -25,6 +25,7 @@ export var CityDecorationSupport;
             this.citySpriteGrid = null;
             this.beforeUnloadListener = () => { this.onUnload(); };
             this.BUILD_SLOT_SPRITE_PADDING = 12;
+            this.BUILDING_TYPE_SPRITE_PADDING = 7;
             this.OUTER_REGION_OVERLAY_FILTER = { brightness: 4/9 }; // darken plots outside the city
             this.filtered = false;
         }
