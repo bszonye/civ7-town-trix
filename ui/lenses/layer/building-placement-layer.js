@@ -15,7 +15,7 @@ const adjacencyIcons = new Map([
     [DirectionTypes.DIRECTION_SOUTHWEST, "adjacencyarrow_southwest"],
     [DirectionTypes.DIRECTION_WEST, "adjacencyarrow_west"]
 ]);
-class WorkerYieldsLensLayer {
+export class WorkerYieldsLensLayer {
     constructor() {
         this.BUILD_SLOT_SPRITE_PADDING = 12;
         this.YIELD_SPRITE_PADDING = 11;
@@ -133,7 +133,8 @@ class WorkerYieldsLensLayer {
         }
         return offsets;
     }
-    realizeBuildSlots(district) {
+    realizeBuildSlots(district, grid=null) {
+        if (!grid) grid = this.yieldSpriteGrid;
         const districtDefinition = GameInfo.Districts.lookup(district.type);
         if (!districtDefinition) {
             console.error("building-placement-layer: Unable to retrieve a valid DistrictDefinition with DistrictType: " + district.type);
@@ -141,6 +142,9 @@ class WorkerYieldsLensLayer {
         }
         const constructibles = MapConstructibles.getConstructibles(district.location.x, district.location.y);
         const buildingSlots = [];
+        let maxSlots = districtDefinition.MaxConstructibles;
+        // TODO: ignore walls
+        // TODO: single-slot buildings
         for (let i = 0; i < constructibles.length; i++) {
             const constructibleID = constructibles[i];
             const existingConstructible = Constructibles.getByComponentID(constructibleID);
@@ -158,12 +162,12 @@ class WorkerYieldsLensLayer {
             const iconString = UI.getIconBLP(constructibleDefinition.ConstructibleType);
             buildingSlots.push({ iconURL: iconString ? iconString : "" });
         }
-        for (let i = 0; i < districtDefinition.MaxConstructibles; i++) {
-            const groupWidth = (districtDefinition.MaxConstructibles - 1) * this.BUILD_SLOT_SPRITE_PADDING;
+        for (let i = 0; i < maxSlots; i++) {
+            const groupWidth = (maxSlots - 1) * this.BUILD_SLOT_SPRITE_PADDING;
             const xPos = (i * this.BUILD_SLOT_SPRITE_PADDING) + (groupWidth / 2) - groupWidth;
-            this.yieldSpriteGrid.addSprite(district.location, UI.getIconBLP('BUILDING_UNFILLED'), { x: xPos, y: -28, z: 0 });
+            grid.addSprite(district.location, UI.getIconBLP('BUILDING_UNFILLED'), { x: xPos, y: -28, z: 0 });
             if (buildingSlots[i]) {
-                this.yieldSpriteGrid.addSprite(district.location, buildingSlots[i].iconURL, { x: xPos, y: -27.5, z: 0 }, { scale: 0.7 });
+                grid.addSprite(district.location, buildingSlots[i].iconURL, { x: xPos, y: -27.5, z: 0 }, { scale: 0.7 });
             }
         }
     }
