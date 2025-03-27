@@ -22,9 +22,8 @@ brighter colors for developed tiles:
 
 the center stays purple in building placement mode, to help you stay
 oriented.  (it turns a darker purple if you can't build in the center.)
-the city map shows building icons in both the main view as well as
-building placement, and the buildings have flags with their adjacency
-bonuses.
+the city map shows building icons in the main view, and the buildings
+have flags with their adjacency bonus yields.
 
 ## unique quarter assistant
 guides unique building construction in the building interface, with
