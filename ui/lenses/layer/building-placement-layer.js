@@ -15,9 +15,24 @@ const adjacencyIcons = new Map([
     [DirectionTypes.DIRECTION_SOUTHWEST, "adjacencyarrow_southwest"],
     [DirectionTypes.DIRECTION_WEST, "adjacencyarrow_west"]
 ]);
-class WorkerYieldsLensLayer {
+function adjacencyYield(building) {
+    if (!building) return [];
+    const adjTypes = GameInfo.Constructible_Adjacencies.filter(at =>
+        at.ConstructibleType == building.ConstructibleType && !at.RequiresActivation
+    );
+    const adjYields = adjTypes.map(at => GameInfo.Adjacency_YieldChanges.find(
+        ay => ay.ID == at.YieldChangeId));
+    const yieldSet = new Set(adjYields.map(ay => ay.YieldType));
+    return [...yieldSet];
+}
+function gatherBuildingsTagged(tag) {
+    return new Set(GameInfo.TypeTags.filter(e => e.Tag == tag).map(e => e.Type));
+}
+const BZ_LARGE = gatherBuildingsTagged("FULL_TILE");
+export class WorkerYieldsLensLayer {
     constructor() {
         this.BUILD_SLOT_SPRITE_PADDING = 12;
+        this.YIELD_SPRITE_HEIGHT = 6;
         this.YIELD_SPRITE_PADDING = 11;
         this.YIELD_WRAP_AT = 3;
         this.YIELD_WRAPPED_ROW_OFFSET = 8;
@@ -133,7 +148,8 @@ class WorkerYieldsLensLayer {
         }
         return offsets;
     }
-    realizeBuildSlots(district) {
+    realizeBuildSlots(district, grid=null) {
+        if (!grid) grid = this.yieldSpriteGrid;
         const districtDefinition = GameInfo.Districts.lookup(district.type);
         if (!districtDefinition) {
             console.error("building-placement-layer: Unable to retrieve a valid DistrictDefinition with DistrictType: " + district.type);
@@ -141,6 +157,7 @@ class WorkerYieldsLensLayer {
         }
         const constructibles = MapConstructibles.getConstructibles(district.location.x, district.location.y);
         const buildingSlots = [];
+        let maxSlots = districtDefinition.MaxConstructibles;
         for (let i = 0; i < constructibles.length; i++) {
             const constructibleID = constructibles[i];
             const existingConstructible = Constructibles.getByComponentID(constructibleID);
@@ -148,22 +165,46 @@ class WorkerYieldsLensLayer {
                 console.error("building-placement-layer: Unable to find a valid Constructible with ComponentID: " + ComponentID.toLogString(constructibleID));
                 continue;
             }
-            const constructibleDefinition = GameInfo.Constructibles.lookup(existingConstructible.type);
-            if (!constructibleDefinition) {
+            const building = GameInfo.Constructibles.lookup(existingConstructible.type);
+            if (!building) {
                 console.error("building-placement-layer: Unable to find a valid ConstructibleDefinition with type: " + existingConstructible.type);
                 continue;
             }
-            //TODO: add completion turns to in progress buildings once asset is implemented
-            //TODO: add replaceable once asset is implemented
-            const iconString = UI.getIconBLP(constructibleDefinition.ConstructibleType);
-            buildingSlots.push({ iconURL: iconString ? iconString : "" });
+            //TODO: show turns remaining for in-progress buildings
+            //TODO: show replaceable (obsolete) buildings
+            // skip walls
+            if (building.Population == 0) continue;
+            // large buildings take up an extra slot
+            if (BZ_LARGE.has(building.ConstructibleType)) maxSlots -= 1;
+            // building icon
+            const iconURL = UI.getIconBLP(building.ConstructibleType) || "";
+            // building yield type flag
+            const yields = adjacencyYield(building)
+                // .map(y => UI.getIconBLP(y + "_5", "YIELD"));
+                .map(y => BuildingPlacementManager.getYieldPillIcon(y, 1, true));
+            // building age
+            const chrono = (age) => GameInfo.Ages.lookup(age)?.ChronologyIndex ?? 0;
+            const currentAge = chrono(Game.age);
+            const age = building.Age ?  chrono(building.Age) : currentAge - 0.5;
+            buildingSlots.push({ iconURL, yields, age });
         }
-        for (let i = 0; i < districtDefinition.MaxConstructibles; i++) {
-            const groupWidth = (districtDefinition.MaxConstructibles - 1) * this.BUILD_SLOT_SPRITE_PADDING;
+        // sort buildings by age, like Map Trix
+        buildingSlots.sort((a, b) => b.age - a.age);
+        for (let i = 0; i < maxSlots; i++) {
+            const groupWidth = (maxSlots - 1) * this.BUILD_SLOT_SPRITE_PADDING;
             const xPos = (i * this.BUILD_SLOT_SPRITE_PADDING) + (groupWidth / 2) - groupWidth;
-            this.yieldSpriteGrid.addSprite(district.location, UI.getIconBLP('BUILDING_UNFILLED'), { x: xPos, y: -28, z: 0 });
-            if (buildingSlots[i]) {
-                this.yieldSpriteGrid.addSprite(district.location, buildingSlots[i].iconURL, { x: xPos, y: -27.5, z: 0 }, { scale: 0.7 });
+            grid.addSprite(district.location, UI.getIconBLP('BUILDING_UNFILLED'), { x: xPos, y: -28, z: 0 });
+            const slot = buildingSlots[i];
+            if (slot) {
+                const p = { x: xPos, y: -27.5, z: 0 };
+                for (const [j, yieldIcon] of slot.yields.entries()) {
+                    const w = slot.yields.length - 1;
+                    const dx = this.YIELD_SPRITE_PADDING * 2/3 * (j - w/2);
+                    const dy = this.YIELD_SPRITE_HEIGHT;
+                    const pf = { x: p.x + dx, y: p.y + dy, z: 3 };
+                    grid.addSprite(district.location, yieldIcon, pf, { scale: 3/4 });
+                }
+                grid.addSprite(district.location, slot.iconURL, p, { scale: 0.7 });
             }
         }
     }
@@ -200,18 +241,20 @@ class WorkerYieldsLensLayer {
                 console.error("building-placement-layer: No valid yield definition for yield type: " + adjacency.yieldType.toString());
                 return;
             }
-            const adjacencyLocation = GameplayMap.getLocationFromIndex(adjacency.sourcePlotIndex);
             const buildingLocation = GameplayMap.getLocationFromIndex(BuildingPlacementManager.hoveredPlotIndex);
+            const adjacencyLocation = GameplayMap.getLocationFromIndex(adjacency.sourcePlotIndex);
             const adjacencyDirection = GameplayMap.getDirectionToPlot(buildingLocation, adjacencyLocation);
-            const adjacencyIcon = adjacencyIcons.get(adjacencyDirection);
-            if (adjacencyIcon === undefined) {
+            const arrowIcon = adjacencyIcons.get(adjacencyDirection);
+            if (arrowIcon === undefined) {
                 console.error("building-placement-layer: No valid adjacency icon for direction: " + adjacencyDirection.toString());
                 return;
             }
-            const iconOffset = this.calculateAdjacencyDirectionOffsetLocation(adjacencyDirection);
+            const arrowOffset = this.calculateAdjacencyDirectionOffsetLocation(adjacencyDirection);
+            const yieldIcon = UI.getIconBLP(yieldDef.YieldType + "_5", "YIELD");
+            const yieldOffset = { x: 1.5 * arrowOffset.x, y: 1.5 * arrowOffset.y };
             //scale -1 to flip the arrows to indicate incoming adjacencies
-            this.adjacenciesSpriteGrid.addSprite(buildingLocation, adjacencyIcon, { x: iconOffset.x, y: iconOffset.y, z: 0 }, { scale: -1 });
-            this.adjacenciesSpriteGrid.addSprite(buildingLocation, UI.getIcon(yieldDef.YieldType + "_1", "YIELD"), { x: iconOffset.x, y: iconOffset.y, z: 1 }, { scale: 1 });
+            this.adjacenciesSpriteGrid.addSprite(buildingLocation, arrowIcon, arrowOffset, { scale: -1 });
+            this.adjacenciesSpriteGrid.addSprite(buildingLocation, yieldIcon, yieldOffset, { scale: 1 });
             //TODO: outgoing adjacencies once implemented in GameCore
         });
         this.adjacenciesSpriteGrid.setVisible(true);
