@@ -38,6 +38,7 @@ export var CityDecorationSupport;
             engine.on('BeforeUnload', this.beforeUnloadListener);
         }
         realizeBuildSlots(district, grid) {
+            // borrow the realizeBuildSlots method
             WorkerYieldsLensLayer.prototype.realizeBuildSlots.apply(this, [district, grid]);
         }
         decoratePlots(cityID) {
