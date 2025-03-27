@@ -158,8 +158,6 @@ export class WorkerYieldsLensLayer {
         const constructibles = MapConstructibles.getConstructibles(district.location.x, district.location.y);
         const buildingSlots = [];
         let maxSlots = districtDefinition.MaxConstructibles;
-        // TODO: ignore walls
-        // TODO: single-slot buildings
         for (let i = 0; i < constructibles.length; i++) {
             const constructibleID = constructibles[i];
             const existingConstructible = Constructibles.getByComponentID(constructibleID);
