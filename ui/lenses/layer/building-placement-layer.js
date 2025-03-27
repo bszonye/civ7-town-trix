@@ -200,18 +200,20 @@ class WorkerYieldsLensLayer {
                 console.error("building-placement-layer: No valid yield definition for yield type: " + adjacency.yieldType.toString());
                 return;
             }
-            const adjacencyLocation = GameplayMap.getLocationFromIndex(adjacency.sourcePlotIndex);
             const buildingLocation = GameplayMap.getLocationFromIndex(BuildingPlacementManager.hoveredPlotIndex);
+            const adjacencyLocation = GameplayMap.getLocationFromIndex(adjacency.sourcePlotIndex);
             const adjacencyDirection = GameplayMap.getDirectionToPlot(buildingLocation, adjacencyLocation);
-            const adjacencyIcon = adjacencyIcons.get(adjacencyDirection);
-            if (adjacencyIcon === undefined) {
+            const arrowIcon = adjacencyIcons.get(adjacencyDirection);
+            if (arrowIcon === undefined) {
                 console.error("building-placement-layer: No valid adjacency icon for direction: " + adjacencyDirection.toString());
                 return;
             }
-            const iconOffset = this.calculateAdjacencyDirectionOffsetLocation(adjacencyDirection);
+            const arrowOffset = this.calculateAdjacencyDirectionOffsetLocation(adjacencyDirection);
+            const yieldIcon = UI.getIconBLP(yieldDef.YieldType + "_1", "YIELD");
+            const yieldOffset = { x: 1.5 * arrowOffset.x, y: 1.5 * arrowOffset.y };
             //scale -1 to flip the arrows to indicate incoming adjacencies
-            this.adjacenciesSpriteGrid.addSprite(buildingLocation, adjacencyIcon, { x: iconOffset.x, y: iconOffset.y, z: 0 }, { scale: -1 });
-            this.adjacenciesSpriteGrid.addSprite(buildingLocation, UI.getIcon(yieldDef.YieldType + "_1", "YIELD"), { x: iconOffset.x, y: iconOffset.y, z: 1 }, { scale: 1 });
+            this.adjacenciesSpriteGrid.addSprite(buildingLocation, arrowIcon, arrowOffset, { scale: -1 });
+            this.adjacenciesSpriteGrid.addSprite(buildingLocation, yieldIcon, yieldOffset, { scale: 2 });
             //TODO: outgoing adjacencies once implemented in GameCore
         });
         this.adjacenciesSpriteGrid.setVisible(true);
