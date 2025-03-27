@@ -4,14 +4,15 @@ better city & town tools for Civilization VII
 ## improved production list and city details
 new and improved features:
 
-- compact redesign for the production list and building breakdown
-- yellow highlighting for damaged buildings so you don't miss repairs
+- color-coded city views with buildings and adjacency bonuses
+- unique quarter assistant
+- one-click repairs
+- compact production list and building breakdown
 - production list sorted by total yield, combat strength, and cost
-- improvements and wonders sorted by name in the building breakdown
-- simpler icons for agelesss buildings and maintenance costs
-- a new Overview tab showing demographics and connected settlements
+- building breakdown sorted by improvement and wonder names
+- a new City Overview tab showing demographics and connected settlements
 
-## better map colors
+## better map view
 see your settlements clearly with gentle shading outside city limits and
 brighter colors for developed tiles:
 
@@ -21,6 +22,9 @@ brighter colors for developed tiles:
 
 the center stays purple in building placement mode, to help you stay
 oriented.  (it turns a darker purple if you can't build in the center.)
+the city map shows building icons in both the main view as well as
+building placement, and the buildings have flags with their adjacency
+bonuses.
 
 ## unique quarter assistant
 guides unique building construction in the building interface, with
@@ -34,13 +38,11 @@ the interface now recognizes unique buildings in progress and in the
 production queue, to help you plan both buildings at the same time.
 
 ## one-click repairs
-when you build or purchase repairs, you don't have to select a target
-tile unless there's more than one to choose from.  when you build a
-repair, the production list stays open so you can queue more, if needed.
+when your city needs repairs, you can buy them with just one click.
 
-## bug fixes
-fixed base game bugs so that adjacency arrows appear reliably and
-repairs clear from the production list when you build them.
+- repairs always appear at the top of the production list, highlighted
+- the production list automatically switches to Purchase repairs
+- you don't need to select tile unless there's more than one choice
 
 ## compatibility with other mods
 known interactions:
