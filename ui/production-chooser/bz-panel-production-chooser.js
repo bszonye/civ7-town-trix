@@ -50,10 +50,9 @@ export class bzProductionChooserScreen {
             get: panel_cityID.get,
             set(value) {
                 panel_cityID.set.apply(this, [value]);
-                // restore tab selection
-                if (bzProductionChooserScreen.isPurchase && !this._isPurchase) {
-                    this.isPurchase = true;
-                }
+                // restore tab selection (if needed & possible)
+                if (this._isPurchase || this.city.Happiness?.hasUnrest) return;
+                if (bzProductionChooserScreen.isPurchase) this.isPurchase = true;
             },
         };
         Object.defineProperty(panel_prototype, "cityID", cityID);
@@ -126,10 +125,8 @@ export class bzProductionChooserScreen {
 
     beforeAttach() { }
     afterAttach() {
-        // purchasing isn't possible during unrest
-        const hasUnrest = this.panel.city.Happiness?.hasUnrest ?? false;
-        if (!this.panel.isPurchase && !hasUnrest) {
-            // default to Purchase when repairs are needed
+        if (!this.panel.isPurchase && !this.panel.city.Happiness?.hasUnrest) {
+            // when repairs are needed, switch to Purchase (if possible)
             const buildings = this.panel.items?.buildings;
             const hasRepairs = buildings.some(b => b.isRepair);
             this.panel.isPurchase = hasRepairs;
