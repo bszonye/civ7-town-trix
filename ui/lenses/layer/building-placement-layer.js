@@ -235,6 +235,7 @@ export class WorkerYieldsLensLayer {
         if (yieldAdjacencies.length <= 0) {
             return;
         }
+        const multiArrow = {};
         yieldAdjacencies.forEach(adjacency => {
             const yieldDef = GameInfo.Yields.lookup(adjacency.yieldType);
             if (!yieldDef) {
@@ -244,14 +245,20 @@ export class WorkerYieldsLensLayer {
             const buildingLocation = GameplayMap.getLocationFromIndex(BuildingPlacementManager.hoveredPlotIndex);
             const adjacencyLocation = GameplayMap.getLocationFromIndex(adjacency.sourcePlotIndex);
             const adjacencyDirection = GameplayMap.getDirectionToPlot(buildingLocation, adjacencyLocation);
+            // show arrow icons
             const arrowIcon = adjacencyIcons.get(adjacencyDirection);
             if (arrowIcon === undefined) {
                 console.error("building-placement-layer: No valid adjacency icon for direction: " + adjacencyDirection.toString());
                 return;
             }
             const arrowOffset = this.calculateAdjacencyDirectionOffsetLocation(adjacencyDirection);
+            // handle multiple adjacencies from the same direction
+            const arrowCount = multiArrow[adjacencyDirection] ?? 0;
+            const scale = 1.5 + 0.3 * arrowCount;
+            multiArrow[adjacencyDirection] = arrowCount + 1;
+            // show yield icons
             const yieldIcon = UI.getIconBLP(yieldDef.YieldType + "_5", "YIELD");
-            const yieldOffset = { x: 1.5 * arrowOffset.x, y: 1.5 * arrowOffset.y };
+            const yieldOffset = { x: scale * arrowOffset.x, y: scale * arrowOffset.y };
             //scale -1 to flip the arrows to indicate incoming adjacencies
             this.adjacenciesSpriteGrid.addSprite(buildingLocation, arrowIcon, arrowOffset, { scale: -1 });
             this.adjacenciesSpriteGrid.addSprite(buildingLocation, yieldIcon, yieldOffset, { scale: 1 });
