@@ -126,7 +126,9 @@ export class bzProductionChooserScreen {
 
     beforeAttach() { }
     afterAttach() {
-        if (!this.panel.isPurchase) {
+        // purchasing isn't possible during unrest
+        const hasUnrest = this.panel.city.Happiness?.hasUnrest ?? false;
+        if (!this.panel.isPurchase && !hasUnrest) {
             // default to Purchase when repairs are needed
             const buildings = this.panel.items?.buildings;
             const hasRepairs = buildings.some(b => b.isRepair);
