@@ -31,5 +31,14 @@
         <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS" Language="pl_PL">
             <Text>{1_number}[icon:YIELD_TOWNS] {1_number: plural 1?Miasteczko; other?Miasteczka;}</Text>
         </Row>
+        <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS" Language="pl_PL">
+            <Text>Ratusz • naprawy jednym kliknięciem</Text>
+        </Row>
+        <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="pl_PL">
+            <Text>Jeżeli istnieje tylko jedno możliwe miejsce wykonania naprawy, pomiń interfejs rozmieszczania budynków.</Text>
+        </Row>
+        <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="pl_PL">
+            <Text>mody trixie</Text>
+        </InsertOrIgnore>
     </LocalizedText>
 </Database>

@@ -89,7 +89,9 @@ export class bzProductionChooserScreen {
             // sort by cost (lower is better)
             if (ia.sortCost != ib.sortCost) return ia.sortCost - ib.sortCost;
             // finally, sort by name
-            return ia.name.localeCompare(ib.name);
+            const aName = Locale.compose(ia.name);
+            const bName = Locale.compose(ib.name);
+            return aName.localeCompare(bName);
         });
         this.panel.itemElementMap = new Map(mapItems);
     }
