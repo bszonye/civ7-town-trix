@@ -254,11 +254,11 @@ export class WorkerYieldsLensLayer {
             const arrowOffset = this.calculateAdjacencyDirectionOffsetLocation(adjacencyDirection);
             // handle multiple adjacencies from the same direction
             const arrowCount = multiArrow[adjacencyDirection] ?? 0;
-            const scale = 1.5 + 0.3 * arrowCount;
             multiArrow[adjacencyDirection] = arrowCount + 1;
+            const shift = 1.5 + 0.3 * arrowCount;
             // show yield icons
             const yieldIcon = UI.getIconBLP(yieldDef.YieldType + "_5", "YIELD");
-            const yieldOffset = { x: scale * arrowOffset.x, y: scale * arrowOffset.y };
+            const yieldOffset = { x: shift * arrowOffset.x, y: shift * arrowOffset.y };
             //scale -1 to flip the arrows to indicate incoming adjacencies
             this.adjacenciesSpriteGrid.addSprite(buildingLocation, arrowIcon, arrowOffset, { scale: -1 });
             this.adjacenciesSpriteGrid.addSprite(buildingLocation, yieldIcon, yieldOffset, { scale: 1 });
