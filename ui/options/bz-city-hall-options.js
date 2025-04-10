@@ -5,10 +5,11 @@ import ModSettings from '/bz-city-hall/ui/options/mod-options-decorator.js';
 
 const MOD_ID = "bz-city-hall";
 
+const BZ_DEFAULT_OPTIONS = {
+    oneClickRepairs: true,
+};
 const bzCityHallOptions = new class {
-    data = {
-        oneClickRepairs: true,
-    };
+    data = { ...BZ_DEFAULT_OPTIONS };
     constructor() {
         const modSettings = ModSettings.load(MOD_ID);
         if (modSettings) this.data = modSettings;
@@ -28,7 +29,7 @@ const bzCityHallOptions = new class {
         }
     }
     get oneClickRepairs() {
-        return this.data.oneClickRepairs;
+        return this.data.oneClickRepairs ?? BZ_DEFAULT_OPTIONS.oneClickRepairs;
     }
     set oneClickRepairs(flag) {
         this.data.oneClickRepairs = !!flag;
