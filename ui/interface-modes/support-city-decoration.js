@@ -26,6 +26,7 @@ export var CityDecorationSupport;
             this.beforeUnloadListener = () => { this.onUnload(); };
             this.BUILD_SLOT_SPRITE_PADDING = 12;
             this.YIELD_SPRITE_HEIGHT = 6;
+            this.YIELD_SPRITE_ANGLE = Math.PI / 4;  // 45°
             this.YIELD_SPRITE_PADDING = 11;
             this.OUTER_REGION_OVERLAY_FILTER = { brightness: 4/9 }; // darken plots outside the city
             this.filtered = false;

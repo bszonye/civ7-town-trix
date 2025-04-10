@@ -37,8 +37,8 @@
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="it_IT">
             <Text>Se è disponibile un'unica casella per la riparazione, salta la schermata di selezione edificio.</Text>
         </Row>
-        <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="it_IT">
+        <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="it_IT">
             <Text>mod di Trixie</Text>
-        </InsertOrIgnore>
+        </Replace>
     </LocalizedText>
 </Database>

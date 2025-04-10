@@ -37,8 +37,8 @@
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="de_DE">
             <Text>Wenn es nur einen Ort für eine Reparatur gibt, wird die Gebäudeplatzierung übersprungen.</Text>
         </Row>
-        <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="de_DE">
+        <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="de_DE">
             <Text>Trixies mods</Text>
-        </InsertOrIgnore>
+        </Replace>
     </LocalizedText>
 </Database>
