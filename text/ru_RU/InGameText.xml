@@ -37,8 +37,8 @@
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="ru_RU">
             <Text>Чинит объект автоматически после нажатия на кнопку починки, без клика по клетке (если этот объект один)</Text>
         </Row>
-        <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="ru_RU">
+        <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="ru_RU">
             <Text>Моды от Trixie</Text>
-        </InsertOrIgnore>
+        </Replace>
     </LocalizedText>
 </Database>

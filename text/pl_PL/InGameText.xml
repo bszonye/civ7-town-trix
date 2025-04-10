@@ -37,8 +37,8 @@
         <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="pl_PL">
             <Text>Jeżeli istnieje tylko jedno możliwe miejsce wykonania naprawy, pomiń interfejs rozmieszczania budynków.</Text>
         </Row>
-        <InsertOrIgnore Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="pl_PL">
+        <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="pl_PL">
             <Text>mody trixie</Text>
-        </InsertOrIgnore>
+        </Replace>
     </LocalizedText>
 </Database>

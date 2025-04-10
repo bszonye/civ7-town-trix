@@ -32,7 +32,7 @@ const BZ_LARGE = gatherBuildingsTagged("FULL_TILE");
 export class WorkerYieldsLensLayer {
     constructor() {
         this.BUILD_SLOT_SPRITE_PADDING = 12;
-        this.YIELD_SPRITE_HEIGHT = 6;
+        this.YIELD_SPRITE_HEIGHT = 4.5;
         this.YIELD_SPRITE_PADDING = 11;
         this.YIELD_WRAP_AT = 3;
         this.YIELD_WRAPPED_ROW_OFFSET = 8;
@@ -201,7 +201,8 @@ export class WorkerYieldsLensLayer {
                     const w = slot.yields.length - 1;
                     const dx = this.YIELD_SPRITE_PADDING * 2/3 * (j - w/2);
                     const dy = this.YIELD_SPRITE_HEIGHT;
-                    const pf = { x: p.x + dx, y: p.y + dy, z: 3 };
+                    const dz = this.YIELD_SPRITE_HEIGHT;
+                    const pf = { x: p.x + dx, y: p.y + dy, z: p.z + dz };
                     grid.addSprite(district.location, yieldIcon, pf, { scale: 3/4 });
                 }
                 grid.addSprite(district.location, slot.iconURL, p, { scale: 0.7 });
