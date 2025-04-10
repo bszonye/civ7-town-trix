@@ -1,3 +1,4 @@
+import bzCityHallOptions from '/bz-city-hall/ui/options/bz-city-hall-options.js';
 import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
 import { Construct } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
 // decorate ProductionChooserScreen to:
@@ -127,7 +128,9 @@ export class bzProductionChooserScreen {
 
     beforeAttach() { }
     afterAttach() {
-        if (!this.panel.isPurchase && !this.panel.city.Happiness?.hasUnrest) {
+        if (bzCityHallOptions.oneClickRepairs &&
+            !this.panel.isPurchase &&
+            !this.panel.city.Happiness?.hasUnrest) {
             // when repairs are needed, switch to Purchase (if possible)
             const buildings = this.panel.items?.buildings;
             const hasRepairs = buildings.some(b => b.isRepair);
