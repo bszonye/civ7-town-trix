@@ -16,9 +16,10 @@ new and improved features:
 see your settlements clearly with gentle shading outside city limits and
 brighter colors for developed tiles:
 
-- green hexes for rural improvements
-- blue hexes for urban districts
 - purple for the city center
+- blue for urban districts
+- teal for fishing boats
+- green for other rural improvements
 
 the center stays purple in building placement mode, to help you stay
 oriented.  (it turns a darker purple if you can't build in the center.)
