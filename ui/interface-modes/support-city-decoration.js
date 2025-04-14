@@ -12,11 +12,13 @@ export var CityDecorationSupport;
     let HighlightColors;
     (function (HighlightColors) {
         HighlightColors[HighlightColors["centerSelection"] = 0x80ff00c0] = "centerSelection";
-        HighlightColors[HighlightColors["urbanSelection"] = 0x80ff8000] = "urbanSelection";
         HighlightColors[HighlightColors["ruralSelection"] = 0x8000ff80] = "ruralSelection";
+        HighlightColors[HighlightColors["urbanSelection"] = 0x80ff8000] = "urbanSelection";
+        HighlightColors[HighlightColors["waterSelection"] = 0x80c0c040] = "waterSelection";
         HighlightColors[HighlightColors["centerFill"] = 0x55ff00aa] = "centerFill";
-        HighlightColors[HighlightColors["urbanFill"] = 0x55ff8000] = "urbanFill";
         HighlightColors[HighlightColors["ruralFill"] = 0x5500ff80] = "ruralFill";
+        HighlightColors[HighlightColors["urbanFill"] = 0x55ff8000] = "urbanFill";
+        HighlightColors[HighlightColors["waterFill"] = 0x55c0c040] = "waterFill";
     })(HighlightColors = CityDecorationSupport.HighlightColors || (CityDecorationSupport.HighlightColors = {}));
     class Instance {
         constructor() {
@@ -54,35 +56,30 @@ export var CityDecorationSupport;
             if (this.filtered) WorldUI.popFilter();  // city changes don't use clearDecorations
             WorldUI.pushRegionColorFilter(city.getPurchasedPlots(), {}, this.OUTER_REGION_OVERLAY_FILTER);
             this.filtered = true;
-            const cityDistricts = city.Districts;
-            if (cityDistricts) {
-                // Highlight the rural districts
-                const districtIdsRural = cityDistricts.getIdsOfType(DistrictTypes.RURAL);
-                if (districtIdsRural.length > 0) {
-                    const locations = Districts.getLocations(districtIdsRural);
-                    if (locations.length > 0) {
-                        this.cityOverlay?.addPlots(locations, { edgeColor: HighlightColors.ruralSelection, fillColor: HighlightColors.ruralFill });
-                    }
+            const rural = [];
+            const urban = [];
+            const water = [];
+            const districts = city.Districts.getIds().map(id => Districts.get(id));
+            for (const district of districts) {
+                const loc = district.location;
+                if (district.type == DistrictTypes.CITY_CENTER) {
+                    this.realizeBuildSlots(district, this.citySpriteGrid);
+                } else if (district.type == DistrictTypes.URBAN) {
+                    this.realizeBuildSlots(district, this.citySpriteGrid);
+                    urban.push(loc);
+                } else if (district.type == DistrictTypes.RURAL) {
+                    const ttypeID = GameplayMap.getTerrainType(loc.x, loc.y);
+                    const ttype = GameInfo.Terrains.lookup(ttypeID);
+                    const isWater =
+                        ttype.TerrainType == "TERRAIN_COAST" ||
+                        ttype.TerrainType == "TERRAIN_NAVIGABLE_RIVER";
+                    (isWater ? water : rural).push(loc);
                 }
-                // Highlight the urban districts
-                const districtIdsUrban = cityDistricts.getIdsOfType(DistrictTypes.URBAN);
-                if (districtIdsUrban.length > 0) {
-                    const locations = Districts.getLocations(districtIdsUrban);
-                    if (locations.length > 0) {
-                        this.cityOverlay?.addPlots(locations, { edgeColor: HighlightColors.urbanSelection, fillColor: HighlightColors.urbanFill });
-                        for (const loc of locations) {
-                            const district = Districts.getAtLocation(loc);
-                            if (district) {
-                                this.realizeBuildSlots(district, this.citySpriteGrid);
-                            }
-                        }
-                    }
-                }
-                // Highlight the city center
-                this.cityOverlay?.addPlots([city.location], { edgeColor: HighlightColors.centerSelection, fillColor: HighlightColors.centerFill });
-                const center = Districts.getAtLocation(city.location);
-                this.realizeBuildSlots(center, this.citySpriteGrid);
             }
+            this.cityOverlay?.addPlots(water, { edgeColor: HighlightColors.waterSelection, fillColor: HighlightColors.waterFill });
+            this.cityOverlay?.addPlots(rural, { edgeColor: HighlightColors.ruralSelection, fillColor: HighlightColors.ruralFill });
+            this.cityOverlay?.addPlots(urban, { edgeColor: HighlightColors.urbanSelection, fillColor: HighlightColors.urbanFill });
+            this.cityOverlay?.addPlots([city.location], { edgeColor: HighlightColors.centerSelection, fillColor: HighlightColors.centerFill });
         }
         onUnload() {
             this.clearDecorations();
