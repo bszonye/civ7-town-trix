@@ -18,7 +18,7 @@ brighter colors for developed tiles:
 
 - purple for the city center
 - blue for urban districts
-- teal for fishing boats
+- teal for offshore improvements
 - green for other rural improvements
 
 the center stays purple in building placement mode, to help you stay
