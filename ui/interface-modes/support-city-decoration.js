@@ -11,14 +11,14 @@ export var CityDecorationSupport;
     // TODO: Pull from assets/engine so there is an opportunity to get color correct values (HDR, colorblind, etc...)
     let HighlightColors;
     (function (HighlightColors) {
-        HighlightColors[HighlightColors["centerSelection"] = 0x80ff00c0] = "centerSelection";
-        HighlightColors[HighlightColors["ruralSelection"] = 0x8000ff80] = "ruralSelection";
-        HighlightColors[HighlightColors["urbanSelection"] = 0x80ff8000] = "urbanSelection";
-        HighlightColors[HighlightColors["waterSelection"] = 0x80c0c040] = "waterSelection";
-        HighlightColors[HighlightColors["centerFill"] = 0x55ff00aa] = "centerFill";
-        HighlightColors[HighlightColors["ruralFill"] = 0x5500ff80] = "ruralFill";
-        HighlightColors[HighlightColors["urbanFill"] = 0x55ff8000] = "urbanFill";
-        HighlightColors[HighlightColors["waterFill"] = 0x55c0c040] = "waterFill";
+        HighlightColors[HighlightColors["centerSelection"] = 0x80ff80e0] = "centerSelection";
+        HighlightColors[HighlightColors["urbanSelection"] = 0x80ffa080] = "urbanSelection";
+        HighlightColors[HighlightColors["coastalSelection"] = 0x80ffff80] = "coastalSelection";
+        HighlightColors[HighlightColors["ruralSelection"] = 0x8080ff80] = "ruralSelection";
+        HighlightColors[HighlightColors["centerFill"] = 0x55ff00c0] = "centerFill";
+        HighlightColors[HighlightColors["urbanFill"] = 0x55ff4000] = "urbanFill";
+        HighlightColors[HighlightColors["coastalFill"] = 0x55ffff00] = "coastalFill";
+        HighlightColors[HighlightColors["ruralFill"] = 0x5500ff00] = "ruralFill";
     })(HighlightColors = CityDecorationSupport.HighlightColors || (CityDecorationSupport.HighlightColors = {}));
     class Instance {
         constructor() {
@@ -58,7 +58,7 @@ export var CityDecorationSupport;
             this.filtered = true;
             const rural = [];
             const urban = [];
-            const water = [];
+            const coastal = [];
             const districts = city.Districts.getIds().map(id => Districts.get(id));
             for (const district of districts) {
                 const loc = district.location;
@@ -73,10 +73,10 @@ export var CityDecorationSupport;
                     const isWater =
                         ttype.TerrainType == "TERRAIN_COAST" ||
                         ttype.TerrainType == "TERRAIN_NAVIGABLE_RIVER";
-                    (isWater ? water : rural).push(loc);
+                    (isWater ? coastal : rural).push(loc);
                 }
             }
-            this.cityOverlay?.addPlots(water, { edgeColor: HighlightColors.waterSelection, fillColor: HighlightColors.waterFill });
+            this.cityOverlay?.addPlots(coastal, { edgeColor: HighlightColors.coastalSelection, fillColor: HighlightColors.coastalFill });
             this.cityOverlay?.addPlots(rural, { edgeColor: HighlightColors.ruralSelection, fillColor: HighlightColors.ruralFill });
             this.cityOverlay?.addPlots(urban, { edgeColor: HighlightColors.urbanSelection, fillColor: HighlightColors.urbanFill });
             this.cityOverlay?.addPlots([city.location], { edgeColor: HighlightColors.centerSelection, fillColor: HighlightColors.centerFill });
