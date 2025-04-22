@@ -1,4 +1,4 @@
-# City Hall 1.11.1
+# City Hall 1.11.2
 better city & town tools for Civilization VII
 
 ## improved production list and city details
@@ -48,7 +48,6 @@ when your city needs repairs, you can buy them with just one click.
 known interactions:
 
 - **Sukritact's Simple UI Adjustments: no conflicts.**
-- **triex's city details building tooltips: no conflicts.**
 - **F1rstDan's Cool UI: no conflicts.** when both mods are installed,
   you can use the Options menu to customize production list styling.
 - **MantisMaestro's Compact Production Chooser: mostly compatible.**

@@ -38,6 +38,10 @@ class bzCityDetailsModel {
         });
         this.updateGate.call('constructor');
         engine.on('CitySelectionChanged', this.onCitySelectionChanged, this);
+        engine.on('CityPopulationChanged', this.onCityPopulationchanged, this);
+    }
+    onCityPopulationchanged() {
+        this.updateGate.call('onCityPopulationChanged');
     }
     onCitySelectionChanged() {
         this.updateGate.call('onCitySelectionChanged');

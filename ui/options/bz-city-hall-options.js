@@ -16,17 +16,6 @@ const bzCityHallOptions = new class {
     }
     save() {
         ModSettings.save(MOD_ID, this.data);
-        // sync optional styling
-        if (this.data.oneClickRepairs) {
-            document.body.classList.add("bz-relationship-fix");
-        } else {
-            document.body.classList.remove("bz-relationship-fix");
-        }
-        if (this.data.yieldBanner) {
-            document.body.classList.add("bz-yield-banner");
-        } else {
-            document.body.classList.remove("bz-yield-banner");
-        }
     }
     get oneClickRepairs() {
         return this.data.oneClickRepairs ?? BZ_DEFAULT_OPTIONS.oneClickRepairs;

@@ -4,7 +4,6 @@ import CityDetails, { UpdateCityDetailsEventName } from "/base-standard/ui/city-
 import NavTray from "/core/ui/navigation-tray/model-navigation-tray.js";
 import { MustGetElement } from "/core/ui/utilities/utilities-dom.js";
 import FocusManager from '/core/ui/input/focus-manager.js';
-import TooltipManager from '/core/ui/tooltips/tooltip-manager.js';
 
 const BZ_DIVIDER_STYLE = "flex w-96 self-center";
 const BZ_DIVIDER_LINE = `\
@@ -100,21 +99,6 @@ class bzPanelCityDetails {
         // add Overview tab
         tabs.unshift(BZ_TAB_OVERVIEW);
         this.panel.tabBar.setAttribute("tab-items", JSON.stringify(tabs));
-    }
-    patchTooltipCompatibility() {
-        // compatibility with triex's tooltips
-        if (!('city-details-building-tooltip' in TooltipManager.types)) return;
-        const root = this.panel.Root;
-        const buildings = root.querySelectorAll(".bz-buildings-list .constructible-entry")
-        buildings.forEach((building) => {
-            building.setAttribute('data-tooltip-anchor', 'left');
-            building.setAttribute('data-tooltip-style', 'city-details-building-tooltip');
-        })
-        const wonders = root.querySelectorAll(".bz-wonders-list .constructible-entry")
-        wonders.forEach((wonders) => {
-            wonders.setAttribute('data-tooltip-anchor', 'left');
-            wonders.setAttribute('data-tooltip-style', 'city-details-building-tooltip');
-        })
     }
     selectTab(index) {
         this.panel.tabBar.setAttribute("selected-tab-index", index.toString());
@@ -345,7 +329,6 @@ class bzPanelCityDetails {
         if (constructiblesHaveFocus) {
             FocusManager.setFocus(this.constructibleSlot);
         }
-        this.patchTooltipCompatibility();
     }
     addDistrictData(districtData) {
         const mainDiv = document.createElement("div");
@@ -381,6 +364,8 @@ class bzPanelCityDetails {
         const mainDiv = document.createElement("fxs-activatable");
         mainDiv.classList.add("constructible-entry", "flex", "flex-col");
         mainDiv.setAttribute("tabindex", "-1");
+        mainDiv.setAttribute("data-type", constructibleData.type);
+        mainDiv.setAttribute('data-tooltip-style', 'production-constructible-tooltip');
         const topDiv = document.createElement("div");
         topDiv.classList.add("constructible-entry-highlight", "flex", "my-1", "pointer-events-none", "items-center");
         const icon = document.createElement("fxs-icon");
