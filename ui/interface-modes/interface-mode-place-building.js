@@ -355,7 +355,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         }
         else {
             Input.setActiveContext(InputContext.Shell);
-            const placeBuildingPanel = MustGetElement("panel-place-building");
+            const placeBuildingPanel = MustGetElement(".panel-place-building");
             if (placeBuildingPanel) {
                 Focus.setContextAwareFocus(placeBuildingPanel, placeBuildingPanel);
             }
