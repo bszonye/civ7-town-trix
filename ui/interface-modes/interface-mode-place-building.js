@@ -17,8 +17,8 @@ import PlotCursor from '/core/ui/input/plot-cursor.js';
 import LensManager from '/core/ui/lenses/lens-manager.js';
 import { MustGetElement } from '/core/ui/utilities/utilities-dom.js';
 import NavTray from '/core/ui/navigation-tray/model-navigation-tray.js';
-import FocusManager from '/core/ui/input/focus-manager.js';
 import { ProductionChooserScreen } from '/base-standard/ui/production-chooser/panel-production-chooser.js';
+import { Focus } from '/core/ui/input/focus-support.js';
 var HighlightColors;
 (function (HighlightColors) {
     HighlightColors[HighlightColors["okay"] = 0xc800f2fe] = "okay";
@@ -64,6 +64,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
             InterfaceMode.switchTo("INTERFACEMODE_CITY_PRODUCTION", { CityID: context.CityID });
             return false;
         }
+        BuildingPlacementManager.initializePlacementData(context.CityID);
         BuildingPlacementManager.selectPlacementData(context.CityID, result, constructible);
         LensManager.setActiveLens("fxs-building-placement-lens");
         return true;
@@ -74,7 +75,7 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         // Lock out automatic cursor changes
         UI.lockCursor(true);
         // Set the building placement cursor
-        UI.setCursorByURL("fs://game/core/ui/cursors/place.ani");
+        UI.setCursorByType(UIHTMLCursorTypes.Place);
         this.lastHoveredPlot = -1;
         window.addEventListener(CursorUpdatedEventName, this.cursorUpdateListener);
         window.addEventListener(PlotCursorUpdatedEventName, this.plotCursorUpdatedListener);
@@ -171,10 +172,10 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
                 this.lastHoveredPlot = plotIndex;
                 // Valid plots are already ready to accept a building
                 if (BuildingPlacementManager.isValidPlacementPlot(plotIndex)) {
-                    UI.setCursorByURL("fs://game/core/ui/cursors/place.ani");
+                    UI.setCursorByType(UIHTMLCursorTypes.Place);
                 }
                 else {
-                    UI.setCursorByURL("fs://game/core/ui/cursors/cantplace.ani");
+                    UI.setCursorByType(UIHTMLCursorTypes.CantPlace);
                 }
                 if (plotIndex != BuildingPlacementManager.hoveredPlotIndex) {
                     // We also want to select the hovered plot so BuildingPlacementManager
@@ -212,16 +213,19 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     }
     proposePlot(plot, accept, reject) {
         const plotIndex = GameplayMap.getIndexFromLocation(plot);
+        const context = this.Context;
+        const constructible = GameInfo.Constructibles.lookup(context.OperationArguments.ConstructibleType);
+        const constructibleType = (constructible) ? '-' + constructible.ConstructibleType : '';
         // Unique, urban, and undeveloped plots are ready to accept the building placement
         if (BuildingPlacementManager.reservedPlots.find(p => p == plotIndex) || BuildingPlacementManager.urbanPlots.find(p => p == plotIndex) || BuildingPlacementManager.expandablePlots.find(p => p == plotIndex)) {
             accept();
-            Audio.playSound('data-audio-city-production-placement-activate', 'city-actions');
+            UI.sendAudioEvent('placement-activate' + constructibleType);
         }
         // Building over a developed plot requires confirmation to replace the improvement on that plot
         else if (BuildingPlacementManager.developedPlots.find(p => p == plotIndex)) {
             const acceptCallback = () => {
                 accept();
-                Audio.playSound('data-audio-city-production-placement-activate', 'city-actions');
+                UI.sendAudioEvent('placement-activate' + constructibleType);
             };
             const cancelCallback = () => {
                 this.setMapFocused(true);
@@ -344,9 +348,6 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         NavTray.addOrUpdateGenericCancel();
     }
     setMapFocused(isMapFocused) {
-        if (!this.placeBuildingPanel) {
-            this.placeBuildingPanel = MustGetElement(".panel-place-building");
-        }
         this.mapFocused = isMapFocused;
         this.updateNavTray();
         if (this.mapFocused) {
@@ -354,8 +355,9 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
         }
         else {
             Input.setActiveContext(InputContext.Shell);
-            if (this.placeBuildingPanel) {
-                FocusManager.setFocus(this.placeBuildingPanel);
+            const placeBuildingPanel = MustGetElement("panel-place-building");
+            if (placeBuildingPanel) {
+                Focus.setContextAwareFocus(placeBuildingPanel, placeBuildingPanel);
             }
         }
     }
@@ -383,5 +385,4 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     }
 }
 InterfaceMode.addHandler('INTERFACEMODE_PLACE_BUILDING', new PlaceBuildingInterfaceMode());
-
 //# sourceMappingURL=file:///base-standard/ui/interface-modes/interface-mode-place-building.js.map
