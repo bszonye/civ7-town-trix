@@ -44,21 +44,21 @@ class ProductionConstructibleTooltipType {
     reset() {
     }
     isUpdateNeeded(target) {
-        const targetProductionItem = target.closest('production-chooser-item');
-        if (!targetProductionItem) {
+        const targetConstructibleItem = target.closest('[data-tooltip-style="production-constructible-tooltip"]');
+        if (!targetConstructibleItem) {
             this.target = null;
             // The target nor any of it's parents are production items. Skip update.
             return false;
         }
-        if (!targetProductionItem.dataset.type || targetProductionItem.dataset.type === this.definition?.ConstructibleType) {
+        if (!targetConstructibleItem.dataset.type || targetConstructibleItem.dataset.type === this.definition?.ConstructibleType) {
             return false;
         }
-        const definition = GameInfo.Constructibles.lookup(targetProductionItem.dataset.type);
+        const definition = GameInfo.Constructibles.lookup(targetConstructibleItem.dataset.type);
         if (!definition) {
             return false;
         }
         this.maintenance = Database.query('gameplay', 'select YieldType, Amount from Constructible_Maintenances where ConstructibleType = ?', definition.ConstructibleType)?.filter(maintenance => maintenance.Amount > 0) ?? null;
-        this.target = targetProductionItem;
+        this.target = targetConstructibleItem;
         this.definition = definition;
         return true;
     }
@@ -186,20 +186,20 @@ class ProductionUnitTooltipType {
     reset() {
     }
     isUpdateNeeded(target) {
-        const targetProductionItem = target.closest('production-chooser-item');
-        if (!targetProductionItem) {
+        const targetUnitItem = target.closest('[data-tooltip-style="production-unit-tooltip"]');
+        if (!targetUnitItem) {
             // The target nor any of it's parents are production items. Skip update.
             this.target = null;
             return false;
         }
-        if (!targetProductionItem.dataset.type || targetProductionItem.dataset.type === this.definition?.UnitType) {
+        if (!targetUnitItem.dataset.type || targetUnitItem.dataset.type === this.definition?.UnitType) {
             return false;
         }
-        const definition = GameInfo.Units.lookup(targetProductionItem.dataset.type);
+        const definition = GameInfo.Units.lookup(targetUnitItem.dataset.type);
         if (!definition) {
             return false;
         }
-        this.target = targetProductionItem;
+        this.target = targetUnitItem;
         this.definition = definition;
         return true;
     }
@@ -378,5 +378,4 @@ class ProductionProjectTooltipType {
     }
 }
 TooltipManager.registerType('production-project-tooltip', new ProductionProjectTooltipType());
-
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/panel-production-tooltips.js.map

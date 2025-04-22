@@ -86,22 +86,23 @@ export class ProductionChooserAccordionSection {
         this.isOpen = true;
         this.slot.classList.remove('disabled');
         // we toggle tabindex because the slot can be disable-focus-allowed true
-        this.slot.childNodes.forEach(child => {
+        const selectableChildren = this.slot.querySelectorAll(".production-chooser-item");
+        for (const child of selectableChildren) {
             child.setAttribute("tabindex", "-1");
-        });
+        }
         this.observe();
     }
     close() {
         this.arrowIcon.classList.remove('-rotate-90');
         this.isOpen = false;
         // we toggle tabindex because the slot can be disable-focus-allowed true
-        this.slot.childNodes.forEach(child => {
+        const selectableChildren = this.slot.querySelectorAll(".production-chooser-item");
+        for (const child of selectableChildren) {
             child.removeAttribute("tabindex");
-        });
+        }
         this.updateHeight(0);
         this.disconnect();
     }
 }
 _ProductionChooserAccordionSection_isOpen_accessor_storage = new WeakMap();
-
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/production-chooser-accordion.js.map

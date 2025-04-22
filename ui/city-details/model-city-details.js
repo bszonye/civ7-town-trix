@@ -244,6 +244,10 @@ class CityDetailsModel {
         this.updateGate.call('constructor');
         engine.on('CitySelectionChanged', this.onCitySelectionChanged, this);
         engine.on('CityGrowthModeChanged', this.onCityGrowthModeChanged, this);
+        engine.on('CityPopulationChanged', this.onCityPopulationchanged, this);
+    }
+    onCityPopulationchanged() {
+        this.updateGate.call('onCityPopulationChanged');
     }
     onCitySelectionChanged() {
         this.updateGate.call('onCitySelectionChanged');
@@ -462,5 +466,4 @@ engine.whenReady.then(() => {
     CityDetails.updateCallback = updateModel;
 });
 export { CityDetails as default };
-
 //# sourceMappingURL=file:///base-standard/ui/city-details/model-city-details.js.map

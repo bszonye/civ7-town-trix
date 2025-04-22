@@ -8,6 +8,7 @@ import { AdvisorUtilities } from '/base-standard/ui/tutorial/tutorial-support.js
 import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
 import { ComponentID } from '/core/ui/utilities/utilities-component-id.js';
 import { Icon } from '/core/ui/utilities/utilities-image.js';
+import CityDetails from "/base-standard/ui/city-details/model-city-details.js";
 // #region Types
 export var ProductionPanelCategory;
 (function (ProductionPanelCategory) {
@@ -122,10 +123,17 @@ export const GetCurrentBestTotalYieldForConstructible = (city, constructibleType
             console.error(`production-chooser-helper: GetCurrentBestTotalYieldForConstructible() failed to find yield definition for yield index ${iYield}`);
             continue;
         }
+        let isLastYield = true;
+        for (let iNextYield = iYield + 1; iNextYield < GameInfo.Yields.length; iNextYield++) {
+            const nextChange = bestYieldChanges[iNextYield];
+            if (nextChange > 0) {
+                isLastYield = false;
+            }
+        }
         yields.push({
             iconId: iYield.toString(),
             icon: Icon.getYieldIcon(yieldDef.YieldType),
-            value: `+${change}`,
+            value: isLastYield ? Locale.compose("LOC_UI_CITY_DETAILS_YIELD_ONE_DECIMAL", change) : Locale.compose("LOC_UI_CITY_DETAILS_YIELD_ONE_DECIMAL_COMMA", change),
             name: yieldDef.Name,
             yieldType: yieldDef.YieldType,
             isMainYield: true
@@ -135,7 +143,7 @@ export const GetCurrentBestTotalYieldForConstructible = (city, constructibleType
 };
 export const GetSecondaryDetailsHTML = (items) => {
     return items.reduce((acc, { icon, value, name }) => {
-        return acc + `<div class="flex items-center"><img aria-label="${Locale.compose(name)}" src="${icon}" class="size-8 mr-1" />${value}</div>`;
+        return acc + `<div class="flex items-center mr-2"><img aria-label="${Locale.compose(name)}" src="${icon}" class="size-8" />${value}</div>`;
     }, "");
 };
 /**
@@ -189,7 +197,8 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
                     disabled: constructible.Cost < 0,
                     locations: locations,
                     interfaceMode: 'INTERFACEMODE_PLACE_BUILDING',
-                    secondaryDetails
+                    secondaryDetails,
+                    repairDamaged: operationResult.RepairDamaged
                 };
                 return item;
             }
@@ -377,6 +386,9 @@ export const GetProductionItems = (city, recommendations, playerGoldBalance, isP
     let uqBuildingOneResult = results.find(({ index }) => index === uqInfo?.buildingOneDef.$index)?.result;
     let uqBuildingTwoResult = results.find(({ index }) => index === uqInfo?.buildingTwoDef.$index)?.result;
     let shouldShowUniqueQuarter = false;
+    let repairableItemCount = 0;
+    let repairableTotalCost = 0;
+    let repairableTotalTurns = 0;
     // Once a unique quarter building is completed, gamecore does not include it in the results, 
     // so we must ensure that the unique quarter buildings are part of the results
     if (uqInfo) {
@@ -399,6 +411,7 @@ export const GetProductionItems = (city, recommendations, playerGoldBalance, isP
         }
         shouldShowUniqueQuarter = ShouldShowUniqueQuarter(uqBuildingOneResult, uqBuildingTwoResult);
     }
+    let repairItems = [];
     for (const { index, result } of results) {
         const definition = index === uqInfo?.buildingOneDef.$index ? uqInfo?.buildingOneDef :
             index === uqInfo?.buildingTwoDef.$index ? uqInfo?.buildingTwoDef :
@@ -414,10 +427,54 @@ export const GetProductionItems = (city, recommendations, playerGoldBalance, isP
         if (!data) {
             continue;
         }
-        data.recommendations = AdvisorUtilities.getBuildRecommendationIcons(recommendations, data.type);
-        items[data.category].push(data);
+        // keep track of the count of items that can be repairable
+        // if the result has multiple plots to indicate that there are multiple items that are damaged
+        // we will count each plot as part of the repairs
+        // Be careful not to count unique buildings twice, if there's more than one of a building it'll be
+        // covered in the number of plots.
+        if (!repairItems.find(item => item.type == data.type)) {
+            if (result.RepairDamaged && result.Plots && result.Plots.length > 1) {
+                const numberOfPlots = result.Plots.length;
+                repairableItemCount += numberOfPlots;
+                repairableTotalCost += (data.cost * numberOfPlots);
+                repairableTotalTurns += (data.turns * numberOfPlots);
+                repairItems.push(data);
+            }
+            else {
+                data.repairDamaged && (repairableItemCount++, repairableTotalCost += data.cost, repairableTotalTurns += data.turns);
+                if (data.repairDamaged) {
+                    repairItems.push(data);
+                }
+            }
+            data.recommendations = AdvisorUtilities.getBuildRecommendationIcons(recommendations, data.type);
+            items[data.category].push(data);
+        }
+    }
+    // if we have more then one item that can be repaird, we create a repair all item. This makes it easier to create
+    // the production chooser item and keep it on top
+    if (repairableItemCount > 1) {
+        const repairAllItem = createRepairAllProductionChooserItemData(repairableTotalCost, repairableTotalTurns);
+        repairAllItem && items.buildings.unshift(repairAllItem);
     }
     return items;
+};
+const createRepairAllProductionChooserItemData = (cost, turns) => {
+    // get players gold. Compare current gold vs acumilated cost
+    const localPlayer = Players.get(GameContext.localPlayerID);
+    if (!localPlayer) {
+        console.error(`production-chooser-helper: Failed to retrieve PlayerLibrary for Player ${GameContext.localPlayerID}`);
+        return null;
+    }
+    return {
+        type: 'IMPROVEMENT_REPAIR_ALL',
+        category: ProductionPanelCategory.BUILDINGS,
+        name: 'LOC_UI_PRODUCTION_REPAIR_ALL',
+        cost,
+        turns,
+        showTurns: turns > -1,
+        showCost: cost > 0,
+        insufficientFunds: cost > (localPlayer.Treasury?.goldBalance || 0),
+    };
 };
 const getConstructibleClassPanelCategory = (constructibleClass) => {
     switch (constructibleClass) {
@@ -564,6 +621,58 @@ export const Construct = (city, item, isPurchase) => {
     }
     return false;
 };
+export const RepairConstruct = (city, item, isPurchase) => {
+    const typeInfo = GameInfo.Types.lookup(item.type);
+    if (typeInfo) {
+        let args;
+        switch (typeInfo.Kind) {
+            case 'KIND_CONSTRUCTIBLE':
+                args = {
+                    ConstructibleType: typeInfo.Hash
+                };
+                break;
+            case 'KIND_UNIT':
+                args = {
+                    UnitType: typeInfo.Hash
+                };
+                break;
+            case 'KIND_PROJECT':
+                args = {
+                    ProjectType: typeInfo.Hash
+                };
+                break;
+            default:
+                console.error(`Construct: Constructing unsupported kind ${typeInfo.Kind}.`);
+                return;
+        }
+        let result;
+        // Project check on next line temporary addition so can share panel with purchases (EFB 5/5/21)
+        if (isPurchase) {
+            result = Game.CityCommands.canStart(city.id, CityCommandTypes.PURCHASE, args, false);
+        }
+        else {
+            result = Game.CityOperations.canStart(city.id, CityOperationTypes.BUILD, args, false);
+        }
+        if (result.Success) {
+            // In progress already and we have a location for it?
+            if (result.Plots) {
+                result.Plots.forEach(plot => {
+                    // Add the location to the request, this will resume the build at the location
+                    const loc = GameplayMap.getLocationFromIndex(plot);
+                    args.X = loc.x;
+                    args.Y = loc.y;
+                    // Project check on next line temporary addition so can share panel with purchases (EFB 5/5/21)
+                    if (isPurchase) {
+                        Game.CityCommands.sendRequest(city.id, CityCommandTypes.PURCHASE, args);
+                    }
+                    else {
+                        Game.CityOperations.sendRequest(city.id, CityOperationTypes.BUILD, args);
+                    }
+                });
+            }
+        }
+    }
+};
 export const GetCityBuildReccomendations = (city) => {
     if (!city)
         return [];
@@ -644,5 +753,87 @@ export const GetTownFocusBlp = (growthType, projectType) => {
     }
     return iconBlp;
 };
-
+export const GetLastProductionData = (cityID) => {
+    const city = Cities.get(cityID);
+    if (!city) {
+        console.error(`production-chooser-helper: GetLastProductionData failed to get city for ID ${cityID}`);
+        return;
+    }
+    const buildQueue = city.BuildQueue;
+    if (!buildQueue) {
+        console.error(`production-chooser-helper: GetLastProductionData failed to get build queue for ID ${cityID}`);
+        return;
+    }
+    const lastTypeHash = buildQueue.previousProductionTypeHash;
+    if (lastTypeHash == 0) {
+        // Expected case. Like city center type hash. No need to return anything.
+        return;
+    }
+    // Check if the last production was a constructible
+    const constructibles = city.Constructibles;
+    if (!constructibles) {
+        console.error(`production-chooser-helper: GetLastProductionData failed to get constructible for ID ${cityID}`);
+        return;
+    }
+    const ids = constructibles.getIdsOfType(lastTypeHash);
+    if (ids.length > 0) {
+        const lastCompletedID = ids[0];
+        const lastCompleted = Constructibles.getByComponentID(lastCompletedID);
+        if (lastCompleted) {
+            const lastDefinition = GameInfo.Constructibles.lookup(lastCompleted.type);
+            if (lastDefinition) {
+                // Find the yields for this building
+                let yields = [];
+                if (lastDefinition.ConstructibleClass == 'BUILDING') {
+                    for (const district of CityDetails.buildings) {
+                        for (const building of district.constructibleData) {
+                            if (ComponentID.isMatch(building.id, lastCompletedID) && building.yieldMap) {
+                                for (const yieldData of building.yieldMap) {
+                                    yields.push({ icon: yieldData[0], value: Locale.compose("LOC_UI_CITY_DETAILS_YIELD_ONE_DECIMAL", yieldData[1].value) });
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (lastDefinition.ConstructibleClass == 'WONDER') {
+                    for (const wonder of CityDetails.wonders) {
+                        if (ComponentID.isMatch(wonder.id, lastCompletedID) && wonder.yieldMap) {
+                            for (const yieldData of wonder.yieldMap) {
+                                yields.push({ icon: yieldData[0], value: Locale.compose("LOC_UI_CITY_DETAILS_YIELD_ONE_DECIMAL", yieldData[1].value) });
+                            }
+                            break;
+                        }
+                    }
+                }
+                const data = {
+                    typeHash: lastTypeHash,
+                    name: lastDefinition.Name,
+                    type: lastDefinition.ConstructibleType,
+                    isUnit: false,
+                    details: yields
+                };
+                return data;
+            }
+        }
+    }
+    // If not a constructible, see if it's a unit
+    const unitDefinition = GameInfo.Units.lookup(lastTypeHash);
+    if (unitDefinition) {
+        const data = {
+            typeHash: lastTypeHash,
+            name: unitDefinition.Name,
+            type: unitDefinition.UnitType,
+            isUnit: true,
+            details: []
+        };
+        const unitStats = GetUnitStatsFromDefinition(unitDefinition);
+        for (const stat of unitStats) {
+            data.details.push({ icon: stat.icon, value: stat.value });
+        }
+        return data;
+    }
+    console.error(`production-chooser-helper: GetLastProductionData failed to return valid last production data for city ID ${cityID}`);
+    return;
+};
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/production-chooser-helpers.js.map

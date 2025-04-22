@@ -6,7 +6,7 @@
 import DialogManager, { DialogBoxAction } from '/core/ui/dialog-box/manager-dialog-box.js';
 import FocusManager from '/core/ui/input/focus-manager.js';
 import NavTray from '/core/ui/navigation-tray/model-navigation-tray.js';
-import Panel from '/core/ui/panel-support.js';
+import Panel, { AnchorType } from '/core/ui/panel-support.js';
 import { Audio } from '/core/ui/audio-base/audio-support.js';
 import { CityDetailsClosedEventName } from '/base-standard/ui/city-details/panel-city-details.js';
 import { ComponentID } from '/core/ui/utilities/utilities-component-id.js';
@@ -14,12 +14,14 @@ import { FocusCityViewEventName } from '/base-standard/ui/views/view-city.js';
 import { InterfaceMode, InterfaceModeChangedEventName } from '/core/ui/interface-modes/interface-modes.js';
 import ViewManager from '/core/ui/views/view-manager.js';
 import { IsElement, MustGetElement } from '/core/ui/utilities/utilities-dom.js';
-import { ProductionPanelCategory, GetPrevCityID, GetNextCityID, CreateProductionChooserItem, GetProductionItems, Construct, GetCityBuildReccomendations, GetCurrentTownFocus, SetTownFocus, GetUniqueQuarterForPlayer, GetNumUniqueQuarterBuildingsCompleted } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
+import PlotCursor from '/core/ui/input/plot-cursor.js';
+import { ProductionPanelCategory, GetPrevCityID, GetNextCityID, CreateProductionChooserItem, GetProductionItems, Construct, GetCityBuildReccomendations, GetCurrentTownFocus, SetTownFocus, GetUniqueQuarterForPlayer, GetNumUniqueQuarterBuildingsCompleted, RepairConstruct } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
 import { CanConvertToCity, ConvertToCity } from '/base-standard/ui/production-chooser/production-chooser-operations.js';
 import './production-chooser-item.js';
 import './panel-town-focus.js';
 import './town-focus-section.js';
 import './town-unrest-display.js';
+import './last-production-section.js';
 import './city-yields.js';
 import { ProductionChooserAccordionSection } from './production-chooser-accordion.js';
 import { UpdateProductionChooserItem } from './production-chooser-item.js';
@@ -84,6 +86,7 @@ export class ProductionChooserScreen extends Panel {
         this.nextCityButton.classList.toggle('hidden', !hasMultipleCities);
         this.prevCityButton.classList.toggle('hidden', !hasMultipleCities);
         Camera.lookAtPlot(city.location);
+        this.lastProductionSection.dataset.cityid = JSON.stringify(this._cityID);
     }
     get cityID() {
         if (!this._cityID) {
@@ -183,6 +186,7 @@ export class ProductionChooserScreen extends Panel {
         this.productionPurchaseTabBar = document.createElement("fxs-tab-bar");
         this.showCityDetailsButton = document.createElement("fxs-activatable");
         this.townFocusSection = document.createElement("town-focus-section");
+        this.lastProductionSection = document.createElement("last-production-section");
         this.townUnrestDisplay = document.createElement("town-unrest-display");
         /* townPurchaseLabel replaces the production/purchase tab bar when the settlement is a town */
         this.townPurchaseLabel = document.createElement("div");
@@ -197,7 +201,16 @@ export class ProductionChooserScreen extends Panel {
         // #endregion
         // #region DOM Events
         this.onChooserItemSelected = (event) => {
-            if (!InterfaceMode.isInInterfaceMode("INTERFACEMODE_PLACE_BUILDING") && IsElement(event.target, 'production-chooser-item')) {
+            // add check to see if the production-chooser-item is repair all
+            if (IsElement(event.target, 'production-chooser-item') && event.target.hasAttribute('data-repair-all')) {
+                this.items.buildings.forEach(item => {
+                    item.interfaceMode = '';
+                    if (item.repairDamaged) {
+                        RepairConstruct(this.city, item, this.isPurchase);
+                    }
+                });
+            }
+            else if (!InterfaceMode.isInInterfaceMode("INTERFACEMODE_PLACE_BUILDING") && IsElement(event.target, 'production-chooser-item')) {
                 const category = event.target.dataset.category;
                 const type = event.target.dataset.type;
                 if (category && type) {
@@ -319,7 +332,7 @@ export class ProductionChooserScreen extends Panel {
                     break;
             }
         };
-        this.animateInType = this.animateOutType = 5 /* AnchorType.RelativeToLeft */;
+        this.animateInType = this.animateOutType = AnchorType.RelativeToLeft;
         const [upgradeToCityButton, costElement] = this.renderUpgradeToCityButton();
         this.upgradeToCityButton = upgradeToCityButton;
         this.upgradeToCityButtonCostElement = costElement;
@@ -337,6 +350,7 @@ export class ProductionChooserScreen extends Panel {
         this.cityID = UI.Player.getHeadSelectedCity();
         this.townUnrestDisplay.setAttribute("data-slot", "header");
         this.wasQueueInitiallyEmpty = this.city.BuildQueue?.getQueue().length === 0;
+        this.cityNameElement.classList.add('trigger-nav-help');
     }
     onAttach() {
         super.onAttach();
@@ -352,6 +366,7 @@ export class ProductionChooserScreen extends Panel {
             engine.on('CitySelectionChanged', this.onCitySelectionChanged, this);
             engine.on('ConstructibleAddedToMap', this.onConstructibleAddedToMap, this);
             engine.on('TreasuryChanged', this.onPlayerTreasuryChanged, this);
+            engine.on('TutorialCallout', this.onTutorialOpened, this);
             window.addEventListener(InterfaceModeChangedEventName, this.onInterfaceModeChanged);
             window.addEventListener(CityDetailsClosedEventName, this.onCityDetailsClosedListener);
             window.addEventListener(FocusCityViewEventName, this.onFocusCityViewEvent);
@@ -502,17 +517,26 @@ export class ProductionChooserScreen extends Panel {
         const prevCityId = GetPrevCityID(this.cityID);
         if (ComponentID.isValid(prevCityId)) {
             UI.Player.selectCity(prevCityId);
+            const city = Cities.get(prevCityId);
+            if (city) {
+                PlotCursor.plotCursorCoords = city.location;
+            }
         }
     }
     onCityDetailsClosed() {
         this.panelProductionSlot.classList.remove("hidden");
         this.frame.classList.add("trigger-nav-help");
+        this.cityNameElement.classList.add("trigger-nav-help");
         FocusManager.setFocus(this.productionAccordion);
     }
     onNextCityButton() {
         const nextCityId = GetNextCityID(this.cityID);
         if (ComponentID.isValid(nextCityId)) {
             UI.Player.selectCity(nextCityId);
+            const city = Cities.get(nextCityId);
+            if (city) {
+                PlotCursor.plotCursorCoords = city.location;
+            }
         }
     }
     isSmallScreen() {
@@ -553,9 +577,19 @@ export class ProductionChooserScreen extends Panel {
         });
     }
     // #endregion
+    onTutorialOpened(_data) {
+        const currentState = this.cityNameElement.getAttribute('disable');
+        if (!currentState || currentState == "false") {
+            this.cityNameElement.setAttribute('disable', 'true');
+        }
+        else {
+            this.cityNameElement.setAttribute('disable', 'false');
+        }
+    }
     showCityDetails() {
         const cityDetailsPanel = this.cityDetailsSlot.querySelector(".panel-city-details");
         if (cityDetailsPanel) {
+            cityDetailsPanel.maybeComponent?.update();
             cityDetailsPanel.classList.toggle("hidden");
             if (!cityDetailsPanel.classList.contains("hidden")) {
                 FocusManager.setFocus(cityDetailsPanel);
@@ -571,6 +605,7 @@ export class ProductionChooserScreen extends Panel {
             FocusManager.setFocus(newCityDetailsPanel);
             Audio.playSound("data-audio-city-details-enter", 'city-actions');
         }
+        this.cityNameElement.classList.remove('trigger-nav-help');
         // TODO - This is required because fxs-slot was consuming 'focusout' which would normally handle this. Can be removed if 'focusout' on the Root is fixed
         this.lastFocusedPanel?.classList.remove('trigger-nav-help');
         this.lastFocusedPanel = null;
@@ -639,24 +674,21 @@ export class ProductionChooserScreen extends Panel {
                 chooserItem = CreateProductionChooserItem();
                 this.itemElementMap.set(item.type, chooserItem);
             }
-            if (this.isPurchase) {
-                chooserItem.setAttribute("data-audio-activate-ref", "data-audio-city-purchase-activate");
-            }
-            else {
-                chooserItem.setAttribute("data-audio-activate-ref", "data-audio-city-production-activate");
-            }
             UpdateProductionChooserItem(chooserItem, item, this.isPurchase);
         }
     }
-    realizeCategory(category) {
+    realizeCategory(category, items) {
         const { slot } = this.productionCategorySlots[category];
-        for (const [, item] of this.itemElementMap) {
-            const itemCategory = item.dataset.category;
-            if (category == itemCategory) {
-                // Ignore this building if it is already in the unique quarter element
-                if (!this.uniqueQuarter?.containsBuilding(item)) {
-                    slot.appendChild(item);
-                }
+        for (const item of items) {
+            let element = this.itemElementMap.get(item.type);
+            if (!element) {
+                element = CreateProductionChooserItem();
+                this.itemElementMap.set(item.type, element);
+                UpdateProductionChooserItem(element, item, this.isPurchase);
+            }
+            // Ignore this building if it is already in the unique quarter element
+            if (!this.uniqueQuarter?.containsBuilding(element)) {
+                slot.appendChild(element);
             }
         }
     }
@@ -683,7 +715,7 @@ export class ProductionChooserScreen extends Panel {
             }
         }
         for (const category of Object.values(ProductionPanelCategory)) {
-            this.realizeCategory(category);
+            this.realizeCategory(category, items[category]);
         }
     }
     updateCityName(city) {
@@ -736,6 +768,10 @@ export class ProductionChooserScreen extends Panel {
             case "camera-zoom-in":
                 this.onNextCityButton();
                 break;
+            case "accept":
+                // Prevent accept from re-selecting tile
+                live = false;
+                break;
             default:
                 live = true;
                 break;
@@ -755,8 +791,8 @@ export class ProductionChooserScreen extends Panel {
     handleEngineInput(inputEvent) {
         const { name, status } = inputEvent.detail;
         if (status != InputActionStatuses.FINISH) {
-            // don't allow zooming in/out while in this screen
-            return !(name === 'camera-zoom-in' || name === 'camera-zoom-out');
+            // don't allow zooming in/out while in this screen, or selecting a tile
+            return !(name === 'camera-zoom-in' || name === 'camera-zoom-out' || name == "accept");
         }
         let live = false;
         switch (name) {
@@ -768,6 +804,10 @@ export class ProductionChooserScreen extends Panel {
                 else {
                     live = true;
                 }
+                break;
+            case "accept":
+                // Prevent accept from re-selecting tile
+                live = false;
                 break;
             default:
                 live = true;
@@ -949,6 +989,8 @@ export class ProductionChooserScreen extends Panel {
         yieldBarRow.insertAdjacentHTML('beforeend', `<city-yields></city-yields>`);
         this.townFocusSection.dataset.slot = 'header';
         this.frame.appendChild(this.townFocusSection);
+        this.lastProductionSection.dataset.slot = 'header';
+        this.frame.appendChild(this.lastProductionSection);
         this.productionPurchaseContainer.classList.value = 'flex items-center';
         this.productionPurchaseContainer.setAttribute('data-slot', 'header');
         this.townPurchaseLabel.classList.value = 'flex flex-auto items-center justify-center';
@@ -1026,5 +1068,4 @@ Controls.define('panel-production-chooser', {
     ],
     styles: ["fs://game/base-standard/ui/production-chooser/panel-production-chooser.css"],
 });
-
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/panel-production-chooser.js.map

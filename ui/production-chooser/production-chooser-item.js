@@ -40,6 +40,15 @@ export const UpdateProductionChooserItem = (element, data, isPurchase) => {
     else {
         element.removeAttribute('data-recommendations');
     }
+    if (data.type == "IMPROVEMENT_REPAIR_ALL") {
+        element.setAttribute('data-repair-all', 'true');
+    }
+    if (isPurchase) {
+        element.setAttribute("data-audio-activate-ref", "data-audio-city-purchase-activate");
+    }
+    else {
+        element.setAttribute("data-audio-activate-ref", "data-audio-city-production-activate");
+    }
     element.setAttribute('data-tooltip-style', categoryTooltipStyleMap[data.category]);
 };
 export class ProductionChooserItem extends FxsChooserItem {
@@ -72,7 +81,7 @@ export class ProductionChooserItem extends FxsChooserItem {
         super.onDetach();
     }
     render() {
-        this.Root.classList.add('text-sm');
+        this.Root.classList.add('text-sm', 'production-chooser-item');
         this.container.classList.add('p-2', 'font-title', 'tracking-100');
         this.iconElement.classList.add('size-16', 'bg-contain', 'bg-center', 'bg-no-repeat', 'mr-2');
         this.container.appendChild(this.iconElement);
@@ -198,5 +207,4 @@ Controls.define('production-chooser-item', {
         { name: 'data-recommendations' },
     ]
 });
-
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/production-chooser-item.js.map

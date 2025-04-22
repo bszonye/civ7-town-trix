@@ -63,7 +63,7 @@ const cityDetailTabItems = [
         headerText: "LOC_UI_CITY_DETAILS_YIELDS_TAB"
     }
 ];
-class PanelCityDetails extends Panel {
+export class PanelCityDetails extends Panel {
     constructor() {
         super(...arguments);
         // #region Element References
@@ -691,6 +691,8 @@ class PanelCityDetails extends Panel {
         const mainDiv = document.createElement("fxs-activatable");
         mainDiv.classList.add("constructible-entry", "flex", "flex-col");
         mainDiv.setAttribute("tabindex", "-1");
+        mainDiv.setAttribute("data-type", constructibleData.type);
+        mainDiv.setAttribute('data-tooltip-style', 'production-constructible-tooltip');
         const topDiv = document.createElement("div");
         topDiv.classList.add("constructible-entry-highlight", "flex", "ml-6", "mt-1", "mb-1", "pointer-events-none");
         const icon = document.createElement("fxs-icon");
@@ -822,5 +824,4 @@ Controls.define("panel-city-details", {
     styles: ["fs://game/base-standard/ui/city-details/panel-city-details.css"],
     tabIndex: -1
 });
-
 //# sourceMappingURL=file:///base-standard/ui/city-details/panel-city-details.js.map
