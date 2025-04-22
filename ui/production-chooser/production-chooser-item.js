@@ -110,6 +110,9 @@ export class ProductionChooserItem extends FxsChooserItem {
         this.errorTextElement.classList.value = 'font-body text-negative-light z-1 pointer-events-none';
         infoContainer.appendChild(this.errorTextElement);
         this.container.appendChild(infoContainer);
+        this.agelessContainer.classList.value = 'hidden flex items-center mr-2';
+        this.agelessContainer.innerHTML = '<img src="fs://game/city_ageless.png" class="size-6"/>';
+        this.container.appendChild(this.agelessContainer);
         this.recommendationsContainer.classList.value = 'flex items-center justify-left';
         this.container.appendChild(this.recommendationsContainer);
         const rightColumn = document.createElement('div');
@@ -119,9 +122,6 @@ export class ProductionChooserItem extends FxsChooserItem {
         // statsContainer.style.setProperty(..._DEBUG_GRAY);
         this.secondaryDetailsElement.classList.value = 'invisible flex';
         statsContainer.appendChild(this.secondaryDetailsElement);
-        this.agelessContainer.classList.value = 'hidden flex items-center';
-        this.agelessContainer.innerHTML = '<img src="fs://game/city_ageless.png" class="size-6"/>';
-        statsContainer.appendChild(this.agelessContainer);
         // TRIX TODO: add production cost (hammers) to cost container
         this.costContainer.classList.value = 'flex items-center';
         // this.costContainer.style.setProperty(..._DEBUG_GRAY);
@@ -206,6 +206,10 @@ export class ProductionChooserItem extends FxsChooserItem {
                 {
                     const isAgeless = newValue === 'true';
                     this.agelessContainer.classList.toggle('hidden', !isAgeless);
+                    const itemNameClassList = this.itemNameElement.classList;
+                    itemNameClassList.toggle('text-accent-2', !isAgeless);
+                    itemNameClassList.toggle('text-secondary', isAgeless);
+                    itemNameClassList.toggle('font-bold', isAgeless);
                 }
                 break;
             case 'data-secondary-details': {
