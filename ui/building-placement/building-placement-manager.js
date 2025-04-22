@@ -210,8 +210,8 @@ class BuildingPlacementManagerClass {
             return buildingData.constructibleType == constructible.$hash;
         });
         if (!this.selectedPlacementData) {
-            console.error(`building-placement-manager: Failed to find type ${constructible.ConstructibleType} in allPlacementData`);
-            return;
+            // This can be an expected case. Example: Repairing a constructible.
+            console.warn(`building-placement-manager: Failed to find type ${constructible.ConstructibleType} in allPlacementData`);
         }
         window.dispatchEvent(new BuildingPlacementConstructibleChangedEvent());
     }
@@ -430,13 +430,13 @@ class BuildingPlacementManagerClass {
         }
         if (yieldNum > 0) {
             yieldIconPath += "_pos";
+            //We want to emphasize the main yield for the building we are placing
+            if (mainYield) {
+                yieldIconPath += "-lrg";
+            }
         }
         else {
             yieldIconPath += "_neg";
-        }
-        //We want to emphasize the main yield for the building we are placing
-        if (mainYield) {
-            yieldIconPath += "-lrg";
         }
         return yieldIconPath;
     }
@@ -661,5 +661,4 @@ class BuildingPlacementManagerClass {
 BuildingPlacementManagerClass.instance = null;
 const BuildingPlacementManager = new BuildingPlacementManagerClass();
 export { BuildingPlacementManager as default };
-
 //# sourceMappingURL=file:///base-standard/ui/building-placement/building-placement-manager.js.map
