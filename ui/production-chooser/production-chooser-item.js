@@ -54,6 +54,15 @@ export const UpdateProductionChooserItem = (element, data, isPurchase) => {
     else {
         element.removeAttribute('data-recommendations');
     }
+    if (data.type == "IMPROVEMENT_REPAIR_ALL") {
+        element.setAttribute('data-repair-all', 'true');
+    }
+    if (isPurchase) {
+        element.setAttribute("data-audio-activate-ref", "data-audio-city-purchase-activate");
+    }
+    else {
+        element.setAttribute("data-audio-activate-ref", "data-audio-city-production-activate");
+    }
     element.setAttribute('data-tooltip-style', categoryTooltipStyleMap[data.category]);
 };
 export class ProductionChooserItem extends FxsChooserItem {
@@ -89,7 +98,7 @@ export class ProductionChooserItem extends FxsChooserItem {
         super.onDetach();
     }
     render() {
-        this.Root.classList.add('text-xs', 'leading-tight');
+        this.Root.classList.add('production-chooser-item', 'text-xs', 'leading-tight');
         this.container.classList.add('flex', 'justify-start', 'items-center', 'p-1');
         this.iconElement.classList.add('size-12', 'bg-contain', 'bg-center', 'bg-no-repeat');
         this.container.appendChild(this.iconElement);
