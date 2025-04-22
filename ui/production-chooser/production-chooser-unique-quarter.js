@@ -15,7 +15,7 @@ export class UniqueQuarter {
         this.buildingElementOne = undefined;
         this.buildingElementTwo = undefined;
         this.root.className = 'production-chooser__unique-quarter relative flex flex-col pointer-events-auto';
-        this.uqInfoCols.className = 'flex items-center mx-2 mb-2 hover\\:text-accent-1 focus\\:text-accent-1';
+        this.uqInfoCols.className = 'production-chooser-item flex items-center mx-2 mb-2 hover\\:text-accent-1 focus\\:text-accent-1';
         this.uqInfoCols.setAttribute('data-tooltip-anchor-offset', '20');
         this.uqInfoCols.setAttribute('tabindex', '-1');
         const uqCol1 = document.createElement('fxs-icon');
@@ -52,5 +52,4 @@ export class UniqueQuarter {
             || this.buildingElementTwo == item;
     }
 }
-
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/production-chooser-unique-quarter.js.map
