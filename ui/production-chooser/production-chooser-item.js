@@ -209,7 +209,6 @@ export class ProductionChooserItem extends FxsChooserItem {
                     const itemNameClassList = this.itemNameElement.classList;
                     itemNameClassList.toggle('text-accent-2', !isAgeless);
                     itemNameClassList.toggle('text-secondary', isAgeless);
-                    itemNameClassList.toggle('font-bold', isAgeless);
                 }
                 break;
             case 'data-secondary-details': {
