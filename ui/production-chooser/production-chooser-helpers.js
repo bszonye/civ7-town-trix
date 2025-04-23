@@ -172,7 +172,7 @@ export const GetConstructibleItemData = (constructible, city, operationResult, h
         // Verify requirements either doesn't exist OR are met.
         const bestYields = GetCurrentBestTotalYieldForConstructible(city, constructible.ConstructibleType);
         // sorting value: sort constructibles by total yield
-        let sortValue = bestYields.reduce((acc, { value }) => acc + Number(value), 0);
+        let sortValue = bestYields.reduce((acc, { value }) => acc + parseInt(value), 0);
         const secondaryDetails = GetSecondaryDetailsHTML(bestYields);
         if (operationResult.Success || insufficientFunds || !hideIfUnavailable) {
             const possibleLocations = [];

@@ -33,20 +33,26 @@ export class bzProductionChooserScreen {
         if (bzProductionChooserScreen.panel_prototype == panel_prototype) return;
         // patch PanelCityDetails methods
         const proto = bzProductionChooserScreen.panel_prototype = panel_prototype;
-        // wrap updateItemElementMap method to extend it
-        const panel_update = proto.updateItemElementMap;
-        const after_update = this.afterUpdateItemElementMap;
-        proto.updateItemElementMap = function(...args) {
-            const panel_rv = panel_update.apply(this, args);
-            const after_rv = after_update.apply(this.bzPanel, args);
-            return after_rv ?? panel_rv;
-        }
         // override doOrConfirmConstruction method
         bzProductionChooserScreen.panel_doOrConfirmConstruction =
             proto.doOrConfirmConstruction;
         proto.doOrConfirmConstruction = function(...args) {
             return this.bzPanel.bzDoOrConfirmConstruction(...args);
         }
+        // override isPurchase property
+        const panel_isPurchase =
+            Object.getOwnPropertyDescriptor(panel_prototype, "isPurchase");
+        const isPurchase = {
+            configurable: panel_isPurchase.configurable,
+            enumerable: panel_isPurchase.enumerable,
+            get: panel_isPurchase.get,
+            set(value) {
+                // remember tab selection
+                bzProductionChooserScreen.isPurchase = value;
+                panel_isPurchase.set.apply(this, [value]);
+            },
+        };
+        Object.defineProperty(panel_prototype, "isPurchase", isPurchase);
         // override cityID property
         const panel_cityID =
             Object.getOwnPropertyDescriptor(panel_prototype, "cityID");
@@ -62,44 +68,37 @@ export class bzProductionChooserScreen {
             },
         };
         Object.defineProperty(panel_prototype, "cityID", cityID);
-        // override isPurchase property
-        const panel_isPurchase =
-            Object.getOwnPropertyDescriptor(panel_prototype, "isPurchase");
-        const isPurchase = {
-            configurable: panel_isPurchase.configurable,
-            enumerable: panel_isPurchase.enumerable,
-            get: panel_isPurchase.get,
+        // override items property
+        const panel_items =
+            Object.getOwnPropertyDescriptor(panel_prototype, "items");
+        const items = {
+            configurable: panel_items.configurable,
+            enumerable: panel_items.enumerable,
+            get: panel_items.get,
             set(value) {
-                // remember tab selection
-                bzProductionChooserScreen.isPurchase = value;
-                panel_isPurchase.set.apply(this, [value]);
+                // sort items
+                for (const [_key, list] of Object.entries(value)) {
+                    list.sort((a, b) => {
+                        // sort by value (higher absolute value is better)
+                        if (a.sortValue != b.sortValue) {
+                            if (a.sortValue < 0 || b.sortValue < 0) {
+                                // negative values sort first (repairs & civilians)
+                                return a.sortValue - b.sortValue;
+                            }
+                            return b.sortValue - a.sortValue;
+                        }
+                        // sort by cost (lower is better)
+                        if (a.sortCost != b.sortCost) return a.sortCost - b.sortCost;
+                        // finally, sort by name
+                        const aName = Locale.compose(a.name);
+                        const bName = Locale.compose(b.name);
+                        return aName.localeCompare(bName);
+                    });
+                }
+                panel_items.set.apply(this, [value]);
             },
         };
-        Object.defineProperty(panel_prototype, "isPurchase", isPurchase);
-    }
-    afterUpdateItemElementMap(_items) {
-        // sort the production list by cost then name
-        const mapItems = Array.from(this.panel.itemElementMap);
-        mapItems.sort((a, b) => {
-            // rows contain [type, item] from itemElementMap
-            const ia = a[1].dataset;  // item a
-            const ib = b[1].dataset;  // item b
-            // sort by value (higher absolute value is better)
-            if (ia.sortValue != ib.sortValue) {
-                if (ia.sortValue < 0 || ib.sortValue < 0) {
-                    // negative values sort first (repairs & civilians)
-                    return ia.sortValue - ib.sortValue;
-                }
-                return ib.sortValue - ia.sortValue;
-            }
-            // sort by cost (lower is better)
-            if (ia.sortCost != ib.sortCost) return ia.sortCost - ib.sortCost;
-            // finally, sort by name
-            const aName = Locale.compose(ia.name);
-            const bName = Locale.compose(ib.name);
-            return aName.localeCompare(bName);
-        });
-        this.panel.itemElementMap = new Map(mapItems);
+        Object.defineProperty(panel_prototype, "items", items);
     }
     bzDoOrConfirmConstruction(category, type, animationConfirmCallback) {
         const city = this.panel.city;
