@@ -1,6 +1,6 @@
 /**
  * @file building-placement-layer
- * @copyright 2023, Firaxis Games
+ * @copyright 2023-2025, Firaxis Games
  * @description Lens layer to show yield deltas and adjacencies from placing a building
  */
 import BuildingPlacementManager, { BuildingPlacementHoveredPlotChangedEventName } from '/base-standard/ui/building-placement/building-placement-manager.js';
@@ -23,16 +23,16 @@ class WorkerYieldsLensLayer {
         this.YIELD_WRAPPED_ROW_OFFSET = 8;
         this.yieldSpriteGrid = WorldUI.createSpriteGrid("BuildingPlacementYields_SpriteGroup", true);
         this.adjacenciesSpriteGrid = WorldUI.createSpriteGrid("Adjacencies_SpriteGroup", true);
-        this.buildingPlacementPlotChangedListener = () => { this.onBuildingPlacementPlotChanged(); };
+        this.buildingPlacementPlotChangedListener = this.onBuildingPlacementPlotChanged.bind(this);
     }
     initLayer() {
         this.yieldSpriteGrid.setVisible(false);
         this.adjacenciesSpriteGrid.setVisible(false);
-        window.addEventListener(BuildingPlacementHoveredPlotChangedEventName, this.buildingPlacementPlotChangedListener);
     }
     applyLayer() {
         this.realizeBuidlingPlacementSprites();
         this.yieldSpriteGrid.setVisible(true);
+        window.addEventListener(BuildingPlacementHoveredPlotChangedEventName, this.buildingPlacementPlotChangedListener);
     }
     removeLayer() {
         this.yieldSpriteGrid.clear();
@@ -133,13 +133,29 @@ class WorkerYieldsLensLayer {
         }
         return offsets;
     }
+    /*Show building slots below each tile*/
     realizeBuildSlots(district) {
         const districtDefinition = GameInfo.Districts.lookup(district.type);
         if (!districtDefinition) {
             console.error("building-placement-layer: Unable to retrieve a valid DistrictDefinition with DistrictType: " + district.type);
             return;
         }
-        const constructibles = MapConstructibles.getConstructibles(district.location.x, district.location.y);
+        const constructibles = MapConstructibles.getConstructibles(district.location.x, district.location.y).filter((constructibleID) => {
+            const constructible = Constructibles.getByComponentID(constructibleID);
+            if (!constructible) {
+                console.error(`building-placement-layer: realizeBuildSlots - no constructible found for component id ${constructibleID}`);
+                return false;
+            }
+            const constructibleDefinition = GameInfo.Constructibles.lookup(constructible.type);
+            if (!constructibleDefinition) {
+                console.error(`building-placement-layer: realizeBuildSlots - no constructible definition found for component id ${constructibleID}`);
+                return false;
+            }
+            if (constructibleDefinition.ExistingDistrictOnly) {
+                return false;
+            }
+            return true;
+        });
         const buildingSlots = [];
         for (let i = 0; i < constructibles.length; i++) {
             const constructibleID = constructibles[i];
@@ -167,6 +183,7 @@ class WorkerYieldsLensLayer {
             }
         }
     }
+    /* Update displayed info when hovering a new plot */
     onBuildingPlacementPlotChanged() {
         this.adjacenciesSpriteGrid.clear();
         this.adjacenciesSpriteGrid.setVisible(false);
@@ -216,6 +233,7 @@ class WorkerYieldsLensLayer {
         });
         this.adjacenciesSpriteGrid.setVisible(true);
     }
+    /* Determine where adjacency arrows should go based on adjacency location */
     calculateAdjacencyDirectionOffsetLocation(adjacencyDirection) {
         //TODO: Will need to be shifted once outgoing adjacencies are displayed
         switch (adjacencyDirection) {

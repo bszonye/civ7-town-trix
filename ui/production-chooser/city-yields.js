@@ -1,11 +1,22 @@
-import { UpdateCityDetailsEventName } from '/base-standard/ui/city-details/model-city-details.js';
 import CityYieldsEngine from '/base-standard/ui/utilities/utilities-city-yields.js';
 import { ComponentID } from '/core/ui/utilities/utilities-component-id.js';
+import UpdateGate from '/core/ui/utilities/utilities-update-gate.js';
 export class CityYieldsBar extends Component {
     constructor() {
         super(...arguments);
         this.cityID = null;
         this.yieldElements = new Map();
+        this.refresh = new UpdateGate(() => {
+            const cityId = this.cityID;
+            if (!cityId || !ComponentID.isValid(cityId)) {
+                console.error('city-yields: invalid city id');
+                return;
+            }
+            const yields = CityYieldsEngine.getCityYieldDetails(cityId);
+            for (const yieldData of yields) {
+                this.createOrUpdateYieldEntry(yieldData);
+            }
+        });
     }
     onInitialize() {
         super.onInitialize();
@@ -13,27 +24,41 @@ export class CityYieldsBar extends Component {
         this.cityID = UI.Player.getHeadSelectedCity();
     }
     onAttach() {
-        this.refresh(); // refresh here so if we're reattaching we're up to date
-        engine.on('CityYieldChanged', this.onCityYieldOrPopulationChanged, this);
-        engine.on('CityPopulationChanged', this.onCityYieldOrPopulationChanged, this);
-        engine.on('CitySelectionChanged', this.onCitySelectionChanged, this);
-        window.addEventListener(UpdateCityDetailsEventName, this.onCityYieldOrPopulationChanged.bind(this));
+        this.refresh.call("onAttach"); // refresh here so if we're reattaching we're up to date
+        this.Root.listenForEngineEvent('CityYieldChanged', this.onCityYieldChanged, this);
+        this.Root.listenForEngineEvent('CityPopulationChanged', this.onCityPopulationChanged, this);
+        this.Root.listenForEngineEvent('CitySelectionChanged', this.onCitySelectionChanged, this);
+        this.Root.listenForEngineEvent('CityGrowthModeChanged', this.onCityGrowthModeChanged, this);
     }
     onDetach() {
-        engine.off('CityYieldChanged', this.onCityYieldOrPopulationChanged, this);
-        engine.off('CityPopulationChanged', this.onCityYieldOrPopulationChanged, this);
-        engine.off('CitySelectionChanged', this.onCitySelectionChanged, this);
-        window.removeEventListener(UpdateCityDetailsEventName, this.onCityYieldOrPopulationChanged.bind(this));
     }
-    onCityYieldOrPopulationChanged() {
-        this.refresh();
+    onCityYieldChanged({ cityID }) {
+        if (!ComponentID.isMatch(this.cityID, cityID)) {
+            // We only care about events for the selected city
+            return;
+        }
+        this.refresh.call("onCityYieldChanged");
+    }
+    onCityPopulationChanged({ cityID }) {
+        if (!ComponentID.isMatch(this.cityID, cityID)) {
+            // We only care about events for the selected city
+            return;
+        }
+        this.refresh.call("onCityPopulationChanged");
+    }
+    onCityGrowthModeChanged({ cityID }) {
+        if (!ComponentID.isMatch(this.cityID, cityID)) {
+            // We only care about events for the selected city
+            return;
+        }
+        this.refresh.call("onCityGrowthModeChanged");
     }
     onCitySelectionChanged({ cityID }) {
         if (ComponentID.isMatch(this.cityID, cityID)) {
             return;
         }
         this.cityID = cityID;
-        this.refresh();
+        this.refresh.call("onCitySelectionChanged");
     }
     createOrUpdateYieldEntry({ type, valueNum, label }) {
         if (!type) {
@@ -60,21 +85,9 @@ export class CityYieldsBar extends Component {
             yieldElements.text.nodeValue = truncValue;
         }
     }
-    refresh(yields) {
-        if (!yields) {
-            const cityId = this.cityID;
-            if (!cityId || !ComponentID.isValid(cityId)) {
-                console.error('city-yields: invalid city id');
-                return;
-            }
-            yields = CityYieldsEngine.getCityYieldDetails(cityId);
-        }
-        for (const yieldData of yields) {
-            this.createOrUpdateYieldEntry(yieldData);
-        }
-    }
 }
 Controls.define('city-yields', {
     createInstance: CityYieldsBar
 });
+
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/city-yields.js.map
