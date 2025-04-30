@@ -1,6 +1,6 @@
 /**
  * @file building-placement-layer
- * @copyright 2023, Firaxis Games
+ * @copyright 2023-2025, Firaxis Games
  * @description Lens layer to show yield deltas and adjacencies from placing a building
  */
 import BuildingPlacementManager, { BuildingPlacementHoveredPlotChangedEventName } from '/base-standard/ui/building-placement/building-placement-manager.js';
@@ -39,7 +39,7 @@ export class WorkerYieldsLensLayer {
         this.YIELD_WRAPPED_ROW_OFFSET = 8;
         this.yieldSpriteGrid = WorldUI.createSpriteGrid("BuildingPlacementYields_SpriteGroup", true);
         this.adjacenciesSpriteGrid = WorldUI.createSpriteGrid("Adjacencies_SpriteGroup", true);
-        this.buildingPlacementPlotChangedListener = () => { this.onBuildingPlacementPlotChanged(); };
+        this.buildingPlacementPlotChangedListener = this.onBuildingPlacementPlotChanged.bind(this);
     }
     initLayer() {
         this.yieldSpriteGrid.setVisible(false);
@@ -149,6 +149,7 @@ export class WorkerYieldsLensLayer {
         }
         return offsets;
     }
+    /*Show building slots below each tile*/
     realizeBuildSlots(district, grid=null) {
         if (!grid) grid = this.yieldSpriteGrid;
         const districtDefinition = GameInfo.Districts.lookup(district.type);
@@ -174,7 +175,7 @@ export class WorkerYieldsLensLayer {
             //TODO: show turns remaining for in-progress buildings
             //TODO: show replaceable (obsolete) buildings
             // skip walls
-            if (building.Population == 0) continue;
+            if (building.ExistingDistrictOnly) continue;
             // large buildings take up an extra slot
             if (BZ_LARGE.has(building.ConstructibleType)) maxSlots -= 1;
             // building icon
@@ -210,6 +211,7 @@ export class WorkerYieldsLensLayer {
             }
         }
     }
+    /* Update displayed info when hovering a new plot */
     onBuildingPlacementPlotChanged() {
         this.adjacenciesSpriteGrid.clear();
         this.adjacenciesSpriteGrid.setVisible(false);
@@ -268,6 +270,7 @@ export class WorkerYieldsLensLayer {
         });
         this.adjacenciesSpriteGrid.setVisible(true);
     }
+    /* Determine where adjacency arrows should go based on adjacency location */
     calculateAdjacencyDirectionOffsetLocation(adjacencyDirection) {
         //TODO: Will need to be shifted once outgoing adjacencies are displayed
         switch (adjacencyDirection) {
