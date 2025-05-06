@@ -190,8 +190,6 @@ export class WorkerYieldsLensLayer {
             const age = building.Age ?  chrono(building.Age) : currentAge - 0.5;
             buildingSlots.push({ iconURL, yields, age });
         }
-        // sort buildings by age, like Map Trix
-        buildingSlots.sort((a, b) => b.age - a.age);
         for (let i = 0; i < maxSlots; i++) {
             const groupWidth = (maxSlots - 1) * this.BUILD_SLOT_SPRITE_PADDING;
             const xPos = (i * this.BUILD_SLOT_SPRITE_PADDING) + (groupWidth / 2) - groupWidth;
