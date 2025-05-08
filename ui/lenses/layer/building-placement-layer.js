@@ -184,11 +184,7 @@ export class WorkerYieldsLensLayer {
             const yields = adjacencyYield(building)
                 // .map(y => UI.getIconBLP(y + "_5", "YIELD"));
                 .map(y => BuildingPlacementManager.getYieldPillIcon(y, 1, true));
-            // building age
-            const chrono = (age) => GameInfo.Ages.lookup(age)?.ChronologyIndex ?? 0;
-            const currentAge = chrono(Game.age);
-            const age = building.Age ?  chrono(building.Age) : currentAge - 0.5;
-            buildingSlots.push({ iconURL, yields, age });
+            buildingSlots.push({ iconURL, yields, });
         }
         for (let i = 0; i < maxSlots; i++) {
             const groupWidth = (maxSlots - 1) * this.BUILD_SLOT_SPRITE_PADDING;
