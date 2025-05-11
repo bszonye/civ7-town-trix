@@ -30,6 +30,7 @@ export default [
                 DirectionTypes: "readonly",
                 DistrictTypes: "readonly",
                 Districts: "readonly",
+                FeatureTypes: "readonly",
                 Game: "readonly",
                 GameContext: "readonly",
                 GameInfo: "readonly",
