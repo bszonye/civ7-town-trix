@@ -46,6 +46,8 @@ const BZ_TAB_CONSTRUCTIBLES = {
     headerText: "LOC_UI_CITY_DETAILS_BUILDINGS_TAB"
 };
 // custom & adapted icons
+const BZ_ICON_CITY = "YIELD_CITIES";  // total city population
+const BZ_ICON_TOWN = "YIELD_TOWNS";  // total city population
 const BZ_ICON_RURAL = "CITY_RURAL";  // urban population/yield
 const BZ_ICON_URBAN = "CITY_URBAN";  // rural population/yield
 const BZ_ICON_SPECIAL = "CITY_SPECIAL_BASE";  // specialists
@@ -216,6 +218,15 @@ function getTownFocus(city) {
     const icon = isGrowing ? "PROJECT_GROWTH" : info.ProjectType;
     return { isGrowing, name, note, icon, info, };
 }
+const BZ_PRELOADED_ICONS = {};
+function preloadIcon(icon, context) {
+    if (!icon) return;
+    const url = icon.startsWith("url(") ? icon : UI.getIcon(icon, context);
+    const name = url.replace(/url|[(\042\047)]/g, '');  // \042\047 = quotation marks
+    if (!name || name in BZ_PRELOADED_ICONS) return;
+    BZ_PRELOADED_ICONS[name] = true;
+    Controls.preloadImage(name, 'plot-tooltip');
+}
 
 // PanelCityDetails decorator
 class bzPanelCityDetails {
@@ -239,6 +250,13 @@ class bzPanelCityDetails {
             NavTray.addOrUpdateGenericBack();
             this.selectTab(bzPanelCityDetails.lastTab);
         };
+        Loading.runWhenFinished(() => {
+            const icons = [
+                BZ_ICON_CITY, BZ_ICON_TOWN, BZ_ICON_RURAL,
+                BZ_ICON_URBAN, BZ_ICON_SPECIAL, BZ_ICON_TIMER,
+            ];
+            for (const y of icons) preloadIcon(y);
+        });
     }
     patchPrototypes(panel) {
         const panel_prototype = Object.getPrototypeOf(panel);
@@ -399,7 +417,7 @@ class bzPanelCityDetails {
         const { food, pop, religion, } = bzCityDetails.growth;
         const layout = [
             {
-                icon: pop.isTown ? "YIELD_TOWNS" : "YIELD_CITIES",
+                icon: pop.isTown ? BZ_ICON_TOWN : BZ_ICON_CITY,
                 label: "LOC_UI_CITY_STATUS_POPULATION_TITLE",
                 value: pop.total.toFixed(),
             },
@@ -480,7 +498,7 @@ class bzPanelCityDetails {
                 const focus = getTownFocus(conn);
                 row.appendChild(docIcon(focus.icon, size, size));
             } else {
-                row.appendChild(docIcon("YIELD_CITIES", size, small));
+                row.appendChild(docIcon(BZ_ICON_CITY, size, small));
             }
             const name = document.createElement("div");
             name.classList.value = "max-w-36 mx-1 text-left";
