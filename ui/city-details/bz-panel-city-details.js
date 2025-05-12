@@ -16,6 +16,22 @@ const _BZ_WARNING_RED = "#3a0806";  // danger
 const BZ_WARNING_AMBER = "#cea92f";  // caution
 const _BZ_WARNING_BRONZE = "#604639";  // note
 
+// additional CSS definitions
+const BZ_HEAD_STYLE = [
+`
+.bz-city-hall .text-gradient-secondary {
+    fxs-font-gradient-color: #f9ecd2;
+    color: #e5d2ac;
+}
+`,
+];
+BZ_HEAD_STYLE.map(style => {
+    const e = document.createElement('style');
+    e.textContent = style;
+    document.head.appendChild(e);
+});
+document.body.classList.add("bz-city-hall");
+
 var cityDetailTabID;
 (function (cityDetailTabID) {
     // only need to define the ones we're using in the decorator
