@@ -5,32 +5,16 @@ import NavTray from "/core/ui/navigation-tray/model-navigation-tray.js";
 import { MustGetElement } from "/core/ui/utilities/utilities-dom.js";
 import FocusManager from '/core/ui/input/focus-manager.js';
 
+// vertical separator
 const BZ_DIVIDER_STYLE = "flex w-96 self-center";
 const BZ_DIVIDER_LINE = `\
 <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
 <div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider -scale-x-100"></div>
 `
 const BZ_DIVIDER = `<div class="${BZ_DIVIDER_STYLE}">${BZ_DIVIDER_LINE}</div>`
-const BZ_WARNING_BLACK = "#000000";
-const _BZ_WARNING_RED = "#3a0806";  // danger
-const BZ_WARNING_AMBER = "#cea92f";  // caution
-const _BZ_WARNING_BRONZE = "#604639";  // note
 
-// additional CSS definitions
-const BZ_HEAD_STYLE = [
-`
-.bz-city-hall .text-gradient-secondary {
-    fxs-font-gradient-color: #f9ecd2;
-    color: #e5d2ac;
-}
-`,
-];
-BZ_HEAD_STYLE.map(style => {
-    const e = document.createElement('style');
-    e.textContent = style;
-    document.head.appendChild(e);
-});
-document.body.classList.add("bz-city-hall");
+// horizontal separator
+const BZ_DOT_DIVIDER = Locale.compose("LOC_PLOT_DIVIDER_DOT");
 
 var cityDetailTabID;
 (function (cityDetailTabID) {
@@ -61,6 +45,178 @@ const BZ_TAB_CONSTRUCTIBLES = {
     iconClass: "size-16",
     headerText: "LOC_UI_CITY_DETAILS_BUILDINGS_TAB"
 };
+// custom & adapted icons
+const BZ_ICON_RURAL = "CITY_RURAL";  // urban population/yield
+const BZ_ICON_URBAN = "CITY_URBAN";  // rural population/yield
+const BZ_ICON_SPECIAL = "CITY_SPECIAL_BASE";  // specialists
+const BZ_ICON_TIMER = "url('hud_turn-timer')";
+// color palette
+const BZ_COLOR = {
+    // game colors
+    silver: "#4c5366",  // = primary
+    bronze: "#e5d2ac",  // = secondary
+    primary: "#4c5366",
+    primary1: "#8d97a6",
+    primary2: "#4c5366",
+    primary3: "#333640",
+    primary4: "#23252b",
+    primary5: "#12151f",
+    secondary: "#e5d2ac",
+    secondary1: "#e5d2ac",
+    secondary2: "#8c7e62",
+    secondary3: "#4c473d",
+    accent: "#616266",
+    accent1: "#e5e5e5",
+    accent2: "#c2c4cc",
+    accent3: "#9da0a6",
+    accent4: "#85878c",
+    accent5: "#616266",
+    accent6: "#05070d",
+    // bronze shades
+    bronze1: "#f9ecd2",
+    bronze2: "#e5d2ac",  // = secondary1
+    bronze3: "#c7b28a",
+    bronze4: "#a99670",
+    bronze5: "#8c7e62",  // = secondary 2
+    bronze6: "#4c473d",  // = secondary 3
+    // rules background
+    rules: "#8c7e6233",
+    // alert colors
+    black: "#000000",
+    danger: "#af1b1c99",  // danger = militaristic 60% opacity
+    caution: "#cea92f",  // caution = healthbar-medium
+    note: "#ff800033",  // note = orange 20% opacity
+    // geographic colors
+    hill: "#a9967066",  // Rough terrain = dark bronze 40% opacity
+    vegetated: "#aaff0033",  // Vegetated features = green 20% opacity
+    wet: "#55aaff66",  // Wet features = teal 40% opacity
+    road: "#f9ecd2cc",  // Roads & Railroads = pale bronze 80% opacity
+    // yield types
+    food: "#80b34d",        //  90° 40 50 green
+    production: "#a33d29",  //  10° 60 40 red
+    gold: "#f6ce55",        //  45° 90 65 yellow
+    science: "#6ca6e0",     // 210° 65 65 cyan
+    culture: "#5c5cd6",     // 240° 60 60 violet
+    happiness: "#f5993d",   //  30° 90 60 orange
+    diplomacy: "#afb7cf",   // 225° 25 75 gray
+    // independent power types
+    militaristic: "#af1b1c",
+    scientific: "#4d7c96",
+    economic: "#ffd553",
+    cultural: "#892bb3",
+};
+// box metrics (for initialization, component can update)
+// TODO: remove unneeded items
+const BASE_FONT_SIZE = 18;
+const BZ_FONT_SPACING = 1.5;
+const BZ_PADDING = 0.6666666667;
+const BZ_MARGIN = BZ_PADDING / 2;
+const BZ_BORDER = 0.1111111111;
+const BZ_RULES_WIDTH = 12;
+let metrics = getFontMetrics();
+
+// additional CSS definitions
+const BZ_HEAD_STYLE = [
+`
+.bz-city-hall .text-gradient-secondary {
+    fxs-font-gradient-color: ${BZ_COLOR.bronze1};
+    color: ${BZ_COLOR.bronze2};
+}
+`,
+];
+BZ_HEAD_STYLE.map(style => {
+    const e = document.createElement('style');
+    e.textContent = style;
+    document.head.appendChild(e);
+});
+document.body.classList.add("bz-city-hall");
+
+function docIcon(image, size, resize, ...style) {
+    // create an icon to fit size (with optional image resizing)
+    const icon = document.createElement("div");
+    icon.classList.value = "relative bg-contain bg-no-repeat shadow";
+    if (style.length) icon.classList.add(...style);
+    icon.style.height = size;
+    icon.style.width = size;
+    // note: this sets image width and auto height
+    if (resize && resize != size) icon.style.backgroundSize = resize;
+    icon.style.backgroundPosition = "center";
+    icon.style.backgroundImage =
+        image.startsWith("url(") ? image : UI.getIconCSS(image);
+    return icon;
+}
+function docText(text, style) {
+    const e = document.createElement("div");
+    if (style) e.classList.value = style;
+    e.setAttribute('data-l10n-id', text);
+    return e;
+}
+function docTimer(size, resize, ...style) {
+    if (!style.length) style = ["-mx-1"];
+    return docIcon(BZ_ICON_TIMER, size, resize, ...style);
+}
+function getFontMetrics() {
+    // TODO: remove unneeded stuff
+    const sizes = (rem, round=Math.round) => {
+        const css = `${rem.toFixed(10)}rem`;
+        const base = round(rem * BASE_FONT_SIZE);
+        const scale = round(rem * GlobalScaling.currentScalePx);
+        const px = `${scale}px`;
+        return { rem, css, base, scale, px, };
+    }
+    // global metrics
+    const padding = sizes(BZ_PADDING);
+    const margin = sizes(BZ_MARGIN);  // top & bottom of each block
+    padding.x = sizes(padding.rem);
+    padding.y = sizes(padding.rem - margin.rem);  // room for end block margins
+    padding.banner = sizes(padding.rem / 3);  // extra padding for banners
+    const border = sizes(BZ_BORDER);
+    // font metrics
+    const font = (name, ratio=BZ_FONT_SPACING, cratio=3/4) => {
+        const rem = typeof name === "string" ?
+            GlobalScaling.getFontSizePx(name) / BASE_FONT_SIZE : name;
+        const size = sizes(rem);  // font size
+        const cap = sizes(size.rem * cratio);  // cap height
+        const spacing = sizes(size.rem * ratio);  // line height
+        const leading = sizes(spacing.rem - size.rem);  // interline spacing
+        leading.half = sizes(leading.rem / 2);  // half-leading
+        leading.internal = sizes((spacing.rem - cap.rem) / 2);  // space above caps
+        const margin = sizes(BZ_MARGIN - leading.internal.rem);
+        const figure = sizes(0.6 * size.rem, Math.ceil);  // figure width
+        const digits = (n) => sizes(n * figure.rem, Math.ceil);
+        return { size, ratio, cap, spacing, leading, margin, figure, digits, };
+    }
+    const head = font('base', 1.25);
+    const body = font('base', 1.25);
+    const note = font('sm', 1);
+    const rules = font('base');
+    rules.width = sizes(BZ_RULES_WIDTH);
+    const table = font('base');
+    const yields = font(8/9);
+    const radius = sizes(2/3 * padding.rem);
+    radius.content = sizes(radius.rem);
+    radius.tooltip = sizes(radius.rem + border.rem);
+    // minimum end banner height to avoid radius glitches
+    const bumper = sizes(Math.max(table.spacing.rem, 2*radius.rem));
+    return {
+        sizes, font,
+        padding, margin, border,
+        head, body, note, rules, table, yields,
+        radius, bumper,
+    };
+}
+function getTownFocus(city) {
+    const ptype = city.Growth?.projectType ?? null;
+    const info = ptype && GameInfo.Projects.lookup(ptype);
+    const isGrowing = !info || city.Growth?.growthType == GrowthTypes.EXPAND;
+    const town = "LOC_CAPITAL_SELECT_PROMOTION_NONE";
+    const growth = "LOC_UI_FOOD_CHOOSER_FOCUS_GROWTH";
+    const name = info?.Name ?? town;
+    const note = isGrowing && name != growth ? growth : null;
+    const icon = isGrowing ? "PROJECT_GROWTH" : info.ProjectType;
+    return { isGrowing, name, note, icon, info, };
+}
+
 // PanelCityDetails decorator
 class bzPanelCityDetails {
     static panel_prototype;
@@ -131,33 +287,25 @@ class bzPanelCityDetails {
     onAttributeChanged(_name, _prev, _next) { }
     // attach new & replaced tabs to the panel
     afterAttach() {
+        metrics = getFontMetrics();
         this.panel.tabBar.addEventListener("tab-selected", this.onTabSelected);
         this.selectTab(bzPanelCityDetails.lastTab);
         window.addEventListener(bzUpdateCityDetailsEventName, this.updateOverviewListener);
         window.addEventListener(UpdateCityDetailsEventName, this.updateConstructiblesListener);
-        const root = this.panel.Root;
         // overview
-        this.overviewSlot = MustGetElement(`#${cityDetailTabID.overview}`);
-        this.popGrowingContainer = MustGetElement(".population-growing-container", root);
-        this.popGrowingCount = MustGetElement(".population-growing", root);
-        this.popRuralContainer = MustGetElement(".population-rural-container", root);
-        this.popRuralCount = MustGetElement(".population-rural", root);
-        this.popUrbanContainer = MustGetElement(".population-urban-container", root);
-        this.popUrbanCount = MustGetElement(".population-urban", root);
-        this.popSpecialistContainer = MustGetElement(".population-specialist-container", root);
-        this.popSpecialistCount = MustGetElement(".population-specialist", root);
-        this.popTotalContainer = MustGetElement(".population-total-container", root);
-        this.popTotalCount = MustGetElement(".population-total", root);
-        this.connectedCitiesContainer = MustGetElement(".connected-cities-container", root);
-        this.connectedTownsContainer = MustGetElement(".connected-towns-container", root);
+        const oslot = MustGetElement(`#${cityDetailTabID.overview}`);
+        this.overviewSlot = oslot;
+        this.growthContainer = MustGetElement(".growth-container", oslot);
+        this.connectionsContainer = MustGetElement(".connections-container", oslot);
         // constructibles
-        this.constructibleSlot = MustGetElement(`#${cityDetailTabID.constructibles}`);
-        this.buildingsCategory = MustGetElement(".bz-buildings-category", this.Root);
-        this.buildingsList = MustGetElement(".bz-buildings-list", this.Root);
-        this.improvementsCategory = MustGetElement(".bz-improvements-category", this.Root);
-        this.improvementsList = MustGetElement(".bz-improvements-list", this.Root);
-        this.wondersCategory = MustGetElement(".bz-wonders-category", this.Root);
-        this.wondersList = MustGetElement(".bz-wonders-list", this.Root);
+        const cslot = MustGetElement(`#${cityDetailTabID.constructibles}`);
+        this.constructibleSlot = cslot;
+        this.buildingsCategory = MustGetElement(".bz-buildings-category", cslot);
+        this.buildingsList = MustGetElement(".bz-buildings-list", cslot);
+        this.improvementsCategory = MustGetElement(".bz-improvements-category", cslot);
+        this.improvementsList = MustGetElement(".bz-improvements-list", cslot);
+        this.wondersCategory = MustGetElement(".bz-wonders-category", cslot);
+        this.wondersList = MustGetElement(".bz-wonders-list", cslot);
         this.update();
     }
     beforeDetach() {
@@ -179,37 +327,9 @@ class bzPanelCityDetails {
         slot.id = cityDetailTabID.overview;
         slot.innerHTML = `
         <fxs-scrollable class="w-128">
-            <div class="population-container flex flex-col ml-4">
-                <p class="font-title uppercase text-base leading-normal text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION"></p>
-                <div class="population-growing-container flex justify-between w-48">
-                    <div class="ml-4" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING"></div>
-                    <div class="population-growing mx-2"></div>
-                </div>
-                <div class="population-rural-container flex justify-between w-48">
-                    <div class="ml-4" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL"></div>
-                    <div class="population-rural mx-2"></div>
-                </div>
-                <div class="population-urban-container flex justify-between w-48">
-                    <div class="ml-4" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN"></div>
-                    <div class="population-urban mx-2"></div>
-                </div>
-                <div class="population-specialist-container flex justify-between w-48">
-                    <div class="ml-4" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST"></div>
-                    <div class="population-specialist mx-2"></div>
-                </div>
-                <div class="population-total-container flex justify-between w-48 uppercase text-gradient-secondary">
-                    <div class="font-title uppercase leading-normal" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL"></div>
-                    <div class="population-total mx-2"></div>
-                </div>
-            </div>
+            <div class="growth-container flex flex-col ml-6"></div>
             ${BZ_DIVIDER}
-            <div class="connections-container flex flex-col ml-4">
-                <p class="font-title uppercase text-base leading-normal text-gradient-secondary" data-l10n-id="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS"></p>
-                <div class="flex flex-col w-128">
-                    <div class="connected-cities-container flex flex-col"></div>
-                    <div class="connected-towns-container flex flex-col mt-1"></div>
-                </div>
-            </div>
+            <div class="connections-container flex flex-col ml-6"></div>
         </fxs-scrollable>
         `;
         this.panel.slotGroup.appendChild(slot);
@@ -267,45 +387,131 @@ class bzPanelCityDetails {
     updateOverview() {
         // Flag so we can give the overview back focus after updating
         const overviewHasFocus = this.overviewSlot.contains(FocusManager.getFocus());
-        // Overview
-        // population
-        this.popGrowingContainer.classList.toggle("hidden", !bzCityDetails.pendingCitizens);
-        this.popGrowingCount.textContent = Locale.compose(bzCityDetails.pendingCitizens.toString());
-        this.popRuralContainer.classList.toggle("hidden", !bzCityDetails.ruralCitizens);
-        this.popRuralCount.textContent = Locale.compose(bzCityDetails.ruralCitizens.toString());
-        this.popUrbanContainer.classList.toggle("hidden", !bzCityDetails.urbanCitizens);
-        this.popUrbanCount.textContent = Locale.compose(bzCityDetails.urbanCitizens.toString());
-        this.popSpecialistContainer.classList.toggle("hidden", !bzCityDetails.specialistCitizens);
-        this.popSpecialistCount.textContent = Locale.compose(bzCityDetails.specialistCitizens.toString());
-        this.popTotalContainer.classList.toggle("hidden", !bzCityDetails.totalCitizens);
-        this.popTotalCount.textContent = Locale.compose(bzCityDetails.totalCitizens.toString());
-        // connections
-        this.addConnectionsList(
-            this.connectedCitiesContainer,
-            'LOC_BZ_UI_CITY_DETAILS_CITIES',
-            bzCityDetails.connectedCities);
-        this.addConnectionsList(
-            this.connectedTownsContainer,
-            'LOC_BZ_UI_CITY_DETAILS_TOWNS',
-            bzCityDetails.connectedTowns);
-        if (overviewHasFocus) {
-            FocusManager.setFocus(this.overviewSlot);
-        }
+        this.renderGrowth(this.growthContainer);
+        this.renderConnections(this.connectionsContainer);
+        if (overviewHasFocus) FocusManager.setFocus(this.overviewSlot);
     }
-    addConnectionsList(container, head, list) {
-        container.innerHTML = "";
-        const eHead = document.createElement("div");
-        eHead.classList.value = "font-title uppercase leading-normal";
-        eHead.setAttribute("data-l10n-id", Locale.compose(head, list.length));
-        container.appendChild(eHead);
-        const names = list.map(i => Locale.compose(i.name));
-        names.sort((a, b) => a.localeCompare(b));
-        for (const name of names) {
-            const eName = document.createElement("div");
-            eName.classList.add("ml-4");
-            eName.textContent = name;
-            container.appendChild(eName);
+    renderGrowth(container) {
+        // TODO: remove unused localization
+        container.innerHTML = '';
+        this.renderTitleHeading(container, "LOC_UI_CITY_DETAILS_GROWTH_TAB");
+        if (!bzCityDetails.growth) return;
+        const { food, pop, religion, } = bzCityDetails.growth;
+        const layout = [
+            {
+                icon: pop.isTown ? "YIELD_TOWNS" : "YIELD_CITIES",
+                label: "LOC_UI_CITY_STATUS_POPULATION_TITLE",
+                value: pop.total.toFixed(),
+            },
+            {
+                icon: religion.urban?.icon ?? BZ_ICON_URBAN,
+                label: "LOC_UI_CITY_STATUS_URBAN_POPULATION",
+                value: pop.urban.toFixed(),
+            },
+            {
+                icon: religion.rural?.icon ?? BZ_ICON_RURAL,
+                label: "LOC_UI_CITY_STATUS_RURAL_POPULATION",
+                value: pop.rural.toFixed(),
+            },
+            {
+                icon: BZ_ICON_SPECIAL,
+                label: "LOC_UI_SPECIALISTS_SUBTITLE",
+                value: pop.specialists.toFixed(),
+            },
+        ];
+        const size = metrics.table.spacing.css;
+        const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
+        const table = document.createElement("div");
+        table.classList.value = "flex-table justify-start text-base -mx-1";
+        table.style.marginBottom = metrics.table.margin.px;
+        if (food.isGrowing) {
+            // TODO: center text vertically
+            const row = document.createElement("div");
+            row.classList.value = "self-start flex items-center px-1 rounded-2xl mb-1";
+            row.style.backgroundColor = `${BZ_COLOR.food}55`;
+            row.style.minHeight = size;
+            row.style.marginTop = metrics.body.leading.half.px;
+            row.appendChild(docIcon("YIELD_FOOD", size, small, "-mx-1"));
+            const current = Locale.compose("LOC_BZ_GROUPED_DIGITS", food.current);
+            const threshold = Locale.compose("LOC_BZ_GROUPED_DIGITS", food.threshold);
+            const progress = `${current} / ${threshold}`;
+            row.appendChild(docText(progress, "text-left flex-auto ml-2"));
+            row.appendChild(docText(BZ_DOT_DIVIDER, "mx-2"));
+            row.appendChild(docText(food.turns.toFixed(), "text-right mr-1"));
+            row.appendChild(docTimer(size, size));
+            table.appendChild(row);
         }
+        for (const item of layout) {
+            const row = document.createElement("div");
+            row.classList.value = "flex items-center px-1";
+            row.style.minHeight = size;
+            row.appendChild(docIcon(item.icon, size, small, "-mx-1"));
+            row.appendChild(docText(item.label, "text-left flex-auto mx-2"));
+            const value = docText(item.value, "ml-2 text-right");
+            row.appendChild(value);
+            table.appendChild(row);
+        }
+        // wrap table to keep it from expanding to full width
+        const wrap = document.createElement("div");
+        wrap.classList.value = "flex justify-start";
+        wrap.appendChild(table);
+        container.appendChild(wrap);
+    }
+    renderConnections(container) {
+        container.innerHTML = '';
+        this.renderTitleHeading(container, "LOC_BZ_SETTLEMENT_CONNECTIONS");
+        // TODO: handle empty list
+        if (!bzCityDetails.connections) return;
+        const size = metrics.table.spacing.css;
+        const small = metrics.sizes(2/3 * metrics.table.spacing.rem).css;
+        const table = document.createElement("div");
+        table.classList.value = "flex justify-start text-base -mx-1";
+        const rows = [];
+        const connections = [
+            ...bzCityDetails.connections.cities,
+            ...bzCityDetails.connections.growing,
+            ...bzCityDetails.connections.focused,
+        ];
+        for (const conn of connections) {
+            const row = document.createElement("div");
+            row.classList.value = "relative flex justify-start";
+            row.style.minHeight = row.style.lineHeight = size;
+            if (conn.isTown) {
+                const focus = getTownFocus(conn);
+                row.appendChild(docIcon(focus.icon, size, size));
+            } else {
+                row.appendChild(docIcon("YIELD_CITIES", size, small));
+            }
+            const name = document.createElement("div");
+            name.classList.value = "max-w-36 mx-1 text-left";
+            name.setAttribute('data-l10n-id', conn.name);
+            row.appendChild(name);
+            rows.push(row);
+        }
+        const columns = [];
+        const half = rows.length < 5 ? rows.length : Math.ceil(rows.length / 2);
+        columns.push(rows.slice(0, half));
+        if (half < rows.length) columns.push(rows.slice(half));
+        for (const [i, column] of columns.entries()) {
+            const col = document.createElement("div");
+            col.classList.value = "flex-col justify-start";
+            if (i) col.classList.add("ml-4");
+            for (const row of column) col.appendChild(row);
+            table.appendChild(col);
+        }
+        table.style.marginBottom = metrics.table.margin.px;
+        container.appendChild(table);
+    }
+    renderTitleHeading(container, text) {
+        if (!text) return;
+        const layout = document.createElement("div");
+        layout.classList.value = "text-secondary font-title-base uppercase";
+        layout.style.lineHeight = metrics.head.ratio;
+        layout.style.marginTop = metrics.head.margin.px;
+        const ttText = document.createElement("div");
+        ttText.setAttribute('data-l10n-id', text);
+        layout.appendChild(ttText);
+        container.appendChild(layout);
     }
     // update data model for alternate Constructibles tab slot
     updateConstructibles() {
@@ -408,8 +614,8 @@ class bzPanelCityDetails {
             // display warning in a yellow capsule
             // ml-1.5 sets the round end slightly over the margin
             damagedText.classList.value = "uppercase text-xs leading-tight mt-1 ml-1\\.5 px-2 rounded-full";
-            damagedText.style.setProperty("background-color", BZ_WARNING_AMBER);
-            damagedText.style.setProperty("color", BZ_WARNING_BLACK);
+            damagedText.style.setProperty("background-color", BZ_COLOR.caution);
+            damagedText.style.setProperty("color", BZ_COLOR.black);
             damagedText.setAttribute("data-l10n-id",
                 "LOC_UI_CITY_DETAILS_BUILDING_DAMAGED");
             yieldContainer.appendChild(damagedText);
