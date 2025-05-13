@@ -421,7 +421,7 @@ class bzPanelCityDetails {
     }
     renderGrowth(container) {
         container.innerHTML = '';
-        container.lineHeight = metrics.table.ratio;
+        container.style.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container, "LOC_UI_CITY_DETAILS_GROWTH_TAB");
         if (!bzCityDetails.growth) return;
         const { food, pop, religion, } = bzCityDetails.growth;
@@ -487,7 +487,7 @@ class bzPanelCityDetails {
     }
     renderConnections(container) {
         container.innerHTML = '';
-        container.lineHeight = metrics.table.ratio;
+        container.style.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container, "LOC_BZ_SETTLEMENT_CONNECTIONS");
         if (!bzCityDetails.connections?.settlements?.length) {
             container.appendChild(docText("LOC_TERM_NONE"));
@@ -535,7 +535,7 @@ class bzPanelCityDetails {
     }
     renderImprovements(container) {
         container.innerHTML = '';
-        container.lineHeight = metrics.table.ratio;
+        container.style.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container,
             "LOC_BUILDING_PLACEMENT_WAREHOUSE_YIELDS_HEADER");
         if (!bzCityDetails.improvements?.length) {
