@@ -13,9 +13,6 @@ const BZ_DIVIDER_LINE = `\
 `
 const BZ_DIVIDER = `<div class="${BZ_DIVIDER_STYLE}">${BZ_DIVIDER_LINE}</div>`
 
-// horizontal separator
-const BZ_DOT_DIVIDER = Locale.compose("LOC_PLOT_DIVIDER_DOT");
-
 var cityDetailTabID;
 (function (cityDetailTabID) {
     // only need to define the ones we're using in the decorator
@@ -116,6 +113,11 @@ const BZ_MARGIN = BZ_PADDING / 2;
 const BZ_BORDER = 0.1111111111;
 const BZ_RULES_WIDTH = 12;
 let metrics = getFontMetrics();
+
+// horizontal separator
+const BZ_DOT_DIVIDER = Locale.compose("LOC_PLOT_DIVIDER_DOT");
+const BZ_DOT_JOINER = metrics.isIdeographic ?
+    BZ_DOT_DIVIDER : `&nbsp;${BZ_DOT_DIVIDER} `;
 
 // additional CSS definitions
 const BZ_HEAD_STYLE = [
@@ -457,15 +459,15 @@ class bzPanelCityDetails {
             const current = Locale.compose("LOC_BZ_GROUPED_DIGITS", food.current);
             const threshold = Locale.compose("LOC_BZ_GROUPED_DIGITS", food.threshold);
             const progress = `${current} / ${threshold}`;
-            row.appendChild(docText(progress, "text-left flex-auto mx-2"));
-            row.appendChild(docText(BZ_DOT_DIVIDER, "self-center mr-1"));
-            row.appendChild(docText(food.turns.toFixed(), "mx-1 text-right"));
+            row.appendChild(docText(progress, "text-left flex-auto ml-2"));
+            row.appendChild(docText(BZ_DOT_JOINER, "self-center"));
+            row.appendChild(docText(food.turns.toFixed(), "mr-1 text-right"));
             row.appendChild(docTimer(size, size));
             container.appendChild(row);
         }
         const table = document.createElement("div");
         table.classList.value = "flex-col justify-start text-base -mx-1";
-        table.style.minWidthPERCENT = (metrics.isIdeographic ? 3/9 : 4/9) * 100;
+        table.style.minWidthPERCENT = metrics.isIdeographic ? 30 : 45;
         table.style.marginBottom = metrics.table.margin.px;
         for (const item of layout) {
             const row = document.createElement("div");
@@ -524,7 +526,7 @@ class bzPanelCityDetails {
         for (const [i, column] of columns.entries()) {
             const col = document.createElement("div");
             col.classList.value = "flex-col justify-start";
-            if (i) col.classList.add("ml-4");
+            if (i) col.classList.add("ml-3");  // aligns well in Chinese
             for (const row of column) col.appendChild(row);
             table.appendChild(col);
         }
@@ -544,7 +546,7 @@ class bzPanelCityDetails {
         const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
         const table = document.createElement("div");
         table.classList.value = "flex-col justify-start text-base -mx-1";
-        table.style.minWidthPERCENT = (metrics.isIdeographic ? 3/9 : 4/9) * 100;
+        table.style.minWidthPERCENT = metrics.isIdeographic ? 30 : 45;
         table.style.marginBottom = metrics.table.margin.px;
         for (const [i, item] of bzCityDetails.improvements.entries()) {
             const row = document.createElement("div");
