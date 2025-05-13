@@ -1,42 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Database>
     <EnglishText>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB">
-            <Text>Overview</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION">
-            <Text>Population</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING">
-            <Text>Growing</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL">
-            <Text>Rural</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN">
-            <Text>Urban</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST">
-            <Text>Specialist</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL">
-            <Text>Total</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS">
+        <Replace Tag="LOC_BZ_GROUPED_DIGITS">
+            <Text>{1_amount: number #,###;-#,###}</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_GROUPED_MODIFIER">
+            <Text>{1_amount: number +#,###;-#,###}</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_SETTLEMENT_CONNECTIONS">
             <Text>Connections</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES">
-            <Text>{1_number}[icon:YIELD_CITIES] {1_number: plural 1?City; other?Cities;}</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS">
-            <Text>{1_number}[icon:YIELD_TOWNS] {1_number: plural 1?Town; other?Towns;}</Text>
-        </Row>
-        <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS">
+        </Replace>
+        <Replace Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB">
+            <Text>Overview</Text>
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS">
             <Text>City Hall • one click repairs</Text>
-        </Row>
-        <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION">
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION">
             <Text>When there is only one possible location for a repair, skip the building placement interface.</Text>
-        </Row>
+        </Replace>
         <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS">
             <Text>trixie's mods</Text>
         </Replace>

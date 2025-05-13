@@ -1,42 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Database>
     <LocalizedText>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="it_IT">
+        <Replace Tag="LOC_BZ_GROUPED_DIGITS" Language="it_IT">
+            <Text>{1_amount: number #,###;-#,###}</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_GROUPED_MODIFIER" Language="it_IT">
+            <Text>{1_amount: number +#,###;-#,###}</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_SETTLEMENT_CONNECTIONS" Language="it_IT">
+            <Text>Connessioni</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="it_IT">
             <Text>Panoramica</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION" Language="it_IT">
-            <Text>Popolazione</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING" Language="it_IT">
-            <Text>In crescita</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL" Language="it_IT">
-            <Text>Rurale</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN" Language="it_IT">
-            <Text>Urbana</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST" Language="it_IT">
-            <Text>Specialista</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL" Language="it_IT">
-            <Text>Totale</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS" Language="it_IT">
-            <Text>Collegamenti</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES" Language="it_IT">
-            <Text>{1_number}[icon:YIELD_CITIES] {1_number: plural 1?Città; other?Città;}</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS" Language="it_IT">
-            <Text>{1_number}[icon:YIELD_TOWNS] {1_number: plural 1?Paese; other?Paesi;}</Text>
-        </Row>
-        <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS" Language="it_IT">
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS" Language="it_IT">
             <Text>City Hall • riparazioni in un clic</Text>
-        </Row>
-        <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="it_IT">
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="it_IT">
             <Text>Se è disponibile un'unica casella per la riparazione, salta la schermata di selezione edificio.</Text>
-        </Row>
+        </Replace>
         <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="it_IT">
             <Text>mod di Trixie</Text>
         </Replace>

@@ -78,7 +78,6 @@ class bzCityDetailsModel {
         this.improvements = this.modelImprovements(city);
     }
     modelGrowth(city) {
-        // TODO: total population
         // food
         const isGrowing = city.Growth?.growthType == GrowthTypes.EXPAND;
         const current = city.Growth?.currentFood ?? -1;
