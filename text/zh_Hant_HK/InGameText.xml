@@ -1,36 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Database>
     <LocalizedText>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="zh_Hant_HK">
+        <Replace Tag="LOC_BZ_GROUPED_DIGITS" Language="zh_Hant_HK">
+            <Text>{1_amount: number #,###;-#,###}</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_GROUPED_MODIFIER" Language="zh_Hant_HK">
+            <Text>{1_amount: number +#,###;-#,###}</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_SETTLEMENT_CONNECTIONS" Language="zh_Hant_HK">
+            <Text>連接定居點</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="zh_Hant_HK">
             <Text>總覽</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION" Language="zh_Hant_HK">
-            <Text>人口</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_GROWING" Language="zh_Hant_HK">
-            <Text>成長</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_RURAL" Language="zh_Hant_HK">
-            <Text>鄉村</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_URBAN" Language="zh_Hant_HK">
-            <Text>市區</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_SPECIALIST" Language="zh_Hant_HK">
-            <Text>專家</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_POPULATION_TOTAL" Language="zh_Hant_HK">
-            <Text>總計</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CONNECTIONS" Language="zh_Hant_HK">
-            <Text>聚落連接</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_CITIES" Language="zh_Hant_HK">
-            <Text>{1_number} [icon:YIELD_CITIES] 城市</Text>
-        </Row>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_TOWNS" Language="zh_Hant_HK">
-            <Text>{1_number} [icon:YIELD_TOWNS] 城鎮</Text>
-        </Row>
+        </Replace>
         <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="zh_Hant_HK">
             <Text>trixie 系列模組</Text>
         </Replace>

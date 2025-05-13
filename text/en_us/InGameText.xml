@@ -10,15 +10,15 @@
         <Replace Tag="LOC_BZ_SETTLEMENT_CONNECTIONS">
             <Text>Connections</Text>
         </Replace>
-        <Row Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB">
+        <Replace Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB">
             <Text>Overview</Text>
-        </Row>
-        <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS">
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS">
             <Text>City Hall • one click repairs</Text>
-        </Row>
-        <Row Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION">
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION">
             <Text>When there is only one possible location for a repair, skip the building placement interface.</Text>
-        </Row>
+        </Replace>
         <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS">
             <Text>trixie's mods</Text>
         </Replace>
