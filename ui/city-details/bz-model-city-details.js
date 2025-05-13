@@ -35,6 +35,7 @@ class bzCityDetailsModel {
         // overview
         this.growth = null;
         this.connections = null;
+        this.improvements = null;
         // update callback
         this.updateGate = new UpdateGate(() => {
             const cityID = UI.Player.getHeadSelectedCity();
@@ -66,6 +67,7 @@ class bzCityDetailsModel {
         // overview
         this.growth = null;
         this.connections = null;
+        this.improvements = null;
         // notifications
         this.onUpdate?.(this);
         window.dispatchEvent(new bzUpdateCityDetailsEvent());
@@ -73,6 +75,7 @@ class bzCityDetailsModel {
     updateOverview(city) {
         this.growth = this.modelGrowth(city);
         this.connections = this.modelConnections(city);
+        this.improvements = this.modelImprovements(city);
     }
     modelGrowth(city) {
         // TODO: total population
@@ -102,17 +105,17 @@ class bzCityDetailsModel {
     }
     modelConnections(city) {
         const ids = city.getConnectedCities() ?? [];
-        let settlements = [];
+        const settlements = [];
         for (const id of ids) {
             const conn = Cities.get(id);
             // ignore stale connections
             if (conn) settlements.push(conn);
         }
         settlements.sort((a, b) => bzNameSort(a.name, b.name));
-        let cities = [];
-        let towns = [];
-        let focused = [];
-        let growing = [];
+        const cities = [];
+        const towns = [];
+        const focused = [];
+        const growing = [];
         for (const conn of settlements) {
             if (conn.isTown) {
                 towns.push(conn);
@@ -126,6 +129,28 @@ class bzCityDetailsModel {
             }
         }
         return { settlements, cities, towns, focused, growing, };
+    }
+    modelImprovements(city) {
+        const imps = {};
+        const ids = city.Constructibles?.getIds() ?? [];
+        for (const id of ids) {
+            const item = Constructibles.getByComponentID(id);
+            const cinfo = item && GameInfo.Constructibles.lookup(item.type);
+            if (cinfo?.ConstructibleClass != "IMPROVEMENT") continue;
+            const loc = item.location;
+            const fcid = Districts.getFreeConstructible(loc, GameContext.localPlayerID);
+            const fcinfo = GameInfo.Constructibles.lookup(fcid);
+            const name = fcinfo.Name;
+            const icon = fcinfo.ConstructibleType;
+            // group all improvements with the same localized name
+            // (like IMPROVEMENT_EXPEDITION_BASE & IMPROVEMENT_MOUNTAIN)
+            const key = Locale.compose(fcinfo.Name);
+            imps[key] ??= { name, icon, count: 0, };
+            imps[key].count += 1;
+        }
+        const sorted = Object.values(imps);
+        sorted.sort((a, b) => bzNameSort(a.name, b.name));
+        return sorted;
     }
     sortConstructibles(buildings, improvements, wonders) {
         // sort buildings by population (walls last)

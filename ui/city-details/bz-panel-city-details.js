@@ -315,6 +315,7 @@ class bzPanelCityDetails {
         this.overviewSlot = oslot;
         this.growthContainer = MustGetElement(".growth-container", oslot);
         this.connectionsContainer = MustGetElement(".connections-container", oslot);
+        this.improvementsContainer = MustGetElement(".improvements-container", oslot);
         // constructibles
         const cslot = MustGetElement(`#${cityDetailTabID.constructibles}`);
         this.constructibleSlot = cslot;
@@ -348,6 +349,8 @@ class bzPanelCityDetails {
             <div class="growth-container flex flex-col ml-6"></div>
             ${BZ_DIVIDER}
             <div class="connections-container flex flex-col ml-6"></div>
+            ${BZ_DIVIDER}
+            <div class="improvements-container flex flex-col ml-6"></div>
         </fxs-scrollable>
         `;
         this.panel.slotGroup.appendChild(slot);
@@ -407,6 +410,7 @@ class bzPanelCityDetails {
         const overviewHasFocus = this.overviewSlot.contains(FocusManager.getFocus());
         this.renderGrowth(this.growthContainer);
         this.renderConnections(this.connectionsContainer);
+        this.renderImprovements(this.improvementsContainer);
         if (overviewHasFocus) FocusManager.setFocus(this.overviewSlot);
     }
     renderGrowth(container) {
@@ -479,7 +483,10 @@ class bzPanelCityDetails {
         container.innerHTML = '';
         this.renderTitleHeading(container, "LOC_BZ_SETTLEMENT_CONNECTIONS");
         // TODO: handle empty list
-        if (!bzCityDetails.connections) return;
+        if (!bzCityDetails.connections?.length) {
+            container.appendChild(docText("LOC_TERM_NONE"));
+            return;
+        }
         const size = metrics.table.spacing.css;
         const small = metrics.sizes(2/3 * metrics.table.spacing.rem).css;
         const table = document.createElement("div");
@@ -501,7 +508,7 @@ class bzPanelCityDetails {
                 row.appendChild(docIcon(BZ_ICON_CITY, size, small));
             }
             const name = document.createElement("div");
-            name.classList.value = "max-w-36 mx-1 text-left";
+            name.classList.value = "mx-1 text-left";
             name.setAttribute('data-l10n-id', conn.name);
             row.appendChild(name);
             rows.push(row);
@@ -519,6 +526,42 @@ class bzPanelCityDetails {
         }
         table.style.marginBottom = metrics.table.margin.px;
         container.appendChild(table);
+    }
+    renderImprovements(container) {
+        // TODO: remove unused localization
+        container.innerHTML = '';
+        this.renderTitleHeading(container,
+            "LOC_BUILDING_PLACEMENT_WAREHOUSE_YIELDS_HEADER");
+        // TODO: handle empty list
+        if (!bzCityDetails.improvements?.length) {
+            container.appendChild(docText("LOC_TERM_NONE"));
+            return;
+        }
+        const size = metrics.table.spacing.css;
+        const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
+        const table = document.createElement("div");
+        table.classList.value = "flex-table justify-start text-base -mx-1";
+        table.style.marginBottom = metrics.table.margin.px;
+        for (const [i, item] of bzCityDetails.improvements.entries()) {
+            const row = document.createElement("div");
+            row.classList.value = "flex items-center px-1";
+            if (!(i % 2)) {
+                row.classList.add("rounded-2xl");
+                row.style.backgroundColor = `${BZ_COLOR.bronze}33`;
+            }
+            row.style.minHeight = size;
+            row.appendChild(docIcon(item.icon, size, small, "-mx-1"));
+            row.appendChild(docText(item.name, "text-left flex-auto mx-2"));
+            const modifier = `+${item.count.toFixed()}`;
+            const value = docText(modifier, "mx-1 text-right");
+            row.appendChild(value);
+            table.appendChild(row);
+        }
+        // wrap table to keep it from expanding to full width
+        const wrap = document.createElement("div");
+        wrap.classList.value = "flex justify-start";
+        wrap.appendChild(table);
+        container.appendChild(wrap);
     }
     renderTitleHeading(container, text) {
         if (!text) return;
