@@ -124,6 +124,9 @@ const BZ_HEAD_STYLE = [
     fxs-font-gradient-color: ${BZ_COLOR.bronze1};
     color: ${BZ_COLOR.bronze2};
 }
+.bz-city-hall #${cityDetailTabID.overview} .shadow {
+    filter: drop-shadow(0 0.0555555556rem 0.0555555556rem black);
+}
 `,
 ];
 BZ_HEAD_STYLE.map(style => {
@@ -200,11 +203,12 @@ function getFontMetrics() {
     radius.tooltip = sizes(radius.rem + border.rem);
     // minimum end banner height to avoid radius glitches
     const bumper = sizes(Math.max(table.spacing.rem, 2*radius.rem));
+    const isIdeographic = Locale.getCurrentDisplayLocale().startsWith('zh_');
     return {
         sizes, font,
         padding, margin, border,
         head, body, note, rules, table, yields,
-        radius, bumper,
+        radius, bumper, isIdeographic,
     };
 }
 function getTownFocus(city) {
@@ -442,12 +446,9 @@ class bzPanelCityDetails {
         ];
         const size = metrics.table.spacing.css;
         const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
-        const table = document.createElement("div");
-        table.classList.value = "flex-table justify-start text-base -mx-1";
-        table.style.marginBottom = metrics.table.margin.px;
         if (food.isGrowing) {
             const row = document.createElement("div");
-            row.classList.value = "self-start flex items-center px-1 rounded-2xl mb-1";
+            row.classList.value = "self-start flex items-center px-1 rounded-2xl -mx-1";
             row.style.backgroundColor = `${BZ_COLOR.food}55`;
             row.style.minHeight = size;
             row.style.marginTop = metrics.body.leading.half.px;
@@ -455,19 +456,23 @@ class bzPanelCityDetails {
             const current = Locale.compose("LOC_BZ_GROUPED_DIGITS", food.current);
             const threshold = Locale.compose("LOC_BZ_GROUPED_DIGITS", food.threshold);
             const progress = `${current} / ${threshold}`;
-            row.appendChild(docText(progress, "text-left flex-auto ml-2"));
-            row.appendChild(docText(BZ_DOT_DIVIDER, "mx-2"));
-            row.appendChild(docText(food.turns.toFixed(), "text-right mr-1"));
+            row.appendChild(docText(progress, "text-left flex-auto mx-2"));
+            row.appendChild(docText(BZ_DOT_DIVIDER, "self-center mr-1"));
+            row.appendChild(docText(food.turns.toFixed(), "mx-1 text-right"));
             row.appendChild(docTimer(size, size));
-            table.appendChild(row);
+            container.appendChild(row);
         }
+        const table = document.createElement("div");
+        table.classList.value = "flex-col justify-start text-base -mx-1";
+        table.style.minWidthPERCENT = (metrics.isIdeographic ? 3/9 : 4/9) * 100;
+        table.style.marginBottom = metrics.table.margin.px;
         for (const item of layout) {
             const row = document.createElement("div");
             row.classList.value = "flex items-center px-1";
             row.style.minHeight = size;
             row.appendChild(docIcon(item.icon, size, small, "-mx-1"));
             row.appendChild(docText(item.label, "text-left flex-auto mx-2"));
-            const value = docText(item.value, "ml-2 text-right");
+            const value = docText(item.value, "mx-1 text-right");
             row.appendChild(value);
             table.appendChild(row);
         }
@@ -535,7 +540,8 @@ class bzPanelCityDetails {
         const size = metrics.table.spacing.css;
         const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
         const table = document.createElement("div");
-        table.classList.value = "flex-table justify-start text-base -mx-1";
+        table.classList.value = "flex-col justify-start text-base -mx-1";
+        table.style.minWidthPERCENT = (metrics.isIdeographic ? 3/9 : 4/9) * 100;
         table.style.marginBottom = metrics.table.margin.px;
         for (const [i, item] of bzCityDetails.improvements.entries()) {
             const row = document.createElement("div");

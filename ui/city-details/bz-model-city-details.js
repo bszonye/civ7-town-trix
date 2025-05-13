@@ -104,12 +104,8 @@ class bzCityDetailsModel {
     }
     modelConnections(city) {
         const ids = city.getConnectedCities() ?? [];
-        const settlements = [];
-        for (const id of ids) {
-            const conn = Cities.get(id);
-            // ignore stale connections
-            if (conn) settlements.push(conn);
-        }
+        // convert to city objects and weed out broken connections
+        const settlements = ids.map(id => Cities.get(id)).filter(e => e);
         settlements.sort((a, b) => bzNameSort(a.name, b.name));
         const cities = [];
         const towns = [];
