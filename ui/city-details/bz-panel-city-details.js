@@ -483,7 +483,7 @@ class bzPanelCityDetails {
         container.innerHTML = '';
         this.renderTitleHeading(container, "LOC_BZ_SETTLEMENT_CONNECTIONS");
         // TODO: handle empty list
-        if (!bzCityDetails.connections?.length) {
+        if (!bzCityDetails.connections?.settlements?.length) {
             container.appendChild(docText("LOC_TERM_NONE"));
             return;
         }
@@ -547,7 +547,7 @@ class bzPanelCityDetails {
             row.classList.value = "flex items-center px-1";
             if (!(i % 2)) {
                 row.classList.add("rounded-2xl");
-                row.style.backgroundColor = `${BZ_COLOR.bronze}33`;
+                row.style.backgroundColor = `${BZ_COLOR.bronze6}99`;
             }
             row.style.minHeight = size;
             row.appendChild(docIcon(item.icon, size, small, "-mx-1"));

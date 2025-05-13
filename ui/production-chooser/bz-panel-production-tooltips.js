@@ -78,21 +78,15 @@ class ProductionConstructibleTooltipType {
         }
         this.header.setAttribute('data-l10n-id', definition.Name);
         const isPurchase = this.target?.dataset.isPurchase === 'true';
-        if (isPurchase) {
-            this.productionCost.classList.add('hidden');
+        // FIX: Argument conversion failed: Wrong type - expected Boolean, got
+        // Undefined while converting argument 3 for getConstructibleProductionCost
+        // const productionCost = city.Production?.getConstructibleProductionCost(definition.ConstructibleType, FeatureTypes.NO_FEATURE, ResourceTypes.NO_RESOURCE);
+        console.warn(`TRIX BUG ${FeatureTypes.NO_FEATURE} ${ResourceTypes.NO_RESOURCE}`);
+        const productionCost = city.Production?.getConstructibleProductionCost(definition.ConstructibleType, FeatureTypes.NO_FEATURE, false);
+        if (productionCost) {
+            this.productionCost.innerHTML = Locale.stylize('LOC_UI_PRODUCTION_COST', productionCost);
         }
-        else {
-            // FIX: Argument conversion failed: Wrong type - expected Boolean, got
-            // Undefined while converting argument 3 for getConstructibleProductionCost
-            // const productionCost = city.Production?.getConstructibleProductionCost(definition.ConstructibleType, FeatureTypes.NO_FEATURE, ResourceTypes.NO_RESOURCE);
-            const productionCost = city.Production?.getConstructibleProductionCost(definition.ConstructibleType, FeatureTypes.NO_FEATURE, false);
-            if (productionCost === undefined) {
-                this.productionCost.classList.add('hidden');
-            }
-            else {
-                this.productionCost.innerHTML = Locale.stylize('LOC_UI_PRODUCTION_COST', productionCost);
-            }
-        }
+        this.productionCost.classList.toggle('hidden', isPurchase);
         const { baseYield, adjacencies, effects } = getConstructibleEffectStrings(definition.ConstructibleType, city);
         if (baseYield) {
             this.baseYield.innerHTML = Locale.stylize(baseYield);
