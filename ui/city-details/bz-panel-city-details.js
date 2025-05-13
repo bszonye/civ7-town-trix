@@ -467,7 +467,6 @@ class bzPanelCityDetails {
         }
         const table = document.createElement("div");
         table.classList.value = "flex-col justify-start text-base -mx-1";
-        table.style.minWidthPERCENT = metrics.isIdeographic ? 30 : 45;
         table.style.marginBottom = metrics.table.margin.px;
         for (const item of layout) {
             const row = document.createElement("div");
@@ -546,7 +545,6 @@ class bzPanelCityDetails {
         const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
         const table = document.createElement("div");
         table.classList.value = "flex-col justify-start text-base -mx-1";
-        table.style.minWidthPERCENT = metrics.isIdeographic ? 30 : 45;
         table.style.marginBottom = metrics.table.margin.px;
         for (const [i, item] of bzCityDetails.improvements.entries()) {
             const row = document.createElement("div");
