@@ -419,6 +419,7 @@ class bzPanelCityDetails {
     }
     renderGrowth(container) {
         container.innerHTML = '';
+        container.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container, "LOC_UI_CITY_DETAILS_GROWTH_TAB");
         if (!bzCityDetails.growth) return;
         const { food, pop, religion, } = bzCityDetails.growth;
@@ -448,7 +449,7 @@ class bzPanelCityDetails {
         const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
         if (food.isGrowing) {
             const row = document.createElement("div");
-            row.classList.value = "self-start flex items-center px-1 rounded-2xl -mx-1";
+            row.classList.value = "self-start flex px-1 rounded-2xl -mx-1";
             row.style.backgroundColor = `${BZ_COLOR.food}55`;
             row.style.minHeight = size;
             row.style.marginTop = metrics.body.leading.half.px;
@@ -468,7 +469,7 @@ class bzPanelCityDetails {
         table.style.marginBottom = metrics.table.margin.px;
         for (const item of layout) {
             const row = document.createElement("div");
-            row.classList.value = "flex items-center px-1";
+            row.classList.value = "flex px-1";
             row.style.minHeight = size;
             row.appendChild(docIcon(item.icon, size, small, "-mx-1"));
             row.appendChild(docText(item.label, "text-left flex-auto mx-2"));
@@ -484,6 +485,7 @@ class bzPanelCityDetails {
     }
     renderConnections(container) {
         container.innerHTML = '';
+        container.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container, "LOC_BZ_SETTLEMENT_CONNECTIONS");
         if (!bzCityDetails.connections?.settlements?.length) {
             container.appendChild(docText("LOC_TERM_NONE"));
@@ -502,7 +504,7 @@ class bzPanelCityDetails {
         for (const conn of connections) {
             const row = document.createElement("div");
             row.classList.value = "relative flex justify-start";
-            row.style.minHeight = row.style.lineHeight = size;
+            row.style.minHeight = size;
             if (conn.isTown) {
                 const focus = getTownFocus(conn);
                 row.appendChild(docIcon(focus.icon, size, size));
@@ -531,6 +533,7 @@ class bzPanelCityDetails {
     }
     renderImprovements(container) {
         container.innerHTML = '';
+        container.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container,
             "LOC_BUILDING_PLACEMENT_WAREHOUSE_YIELDS_HEADER");
         if (!bzCityDetails.improvements?.length) {
@@ -545,7 +548,7 @@ class bzPanelCityDetails {
         table.style.marginBottom = metrics.table.margin.px;
         for (const [i, item] of bzCityDetails.improvements.entries()) {
             const row = document.createElement("div");
-            row.classList.value = "flex items-center px-1";
+            row.classList.value = "flex px-1";
             if (!(i % 2)) {
                 row.classList.add("rounded-2xl");
                 row.style.backgroundColor = `${BZ_COLOR.bronze6}99`;
