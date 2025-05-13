@@ -608,7 +608,11 @@ class BuildingPlacementManagerClass {
             }
         }
         // check the finished buildings
-        const constructibles = city.Constructibles ?? [];
+        const constructibles = city.Constructibles;
+        if (!constructibles) {
+            console.error(`bpm: invalid constructibles for city id=${this.cityID}`);
+            return -1;
+        }
         for (const id of constructibles.getIds()) {
             const constructible = Constructibles.getByComponentID(id);  // instance
             if (!constructible) {

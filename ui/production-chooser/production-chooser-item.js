@@ -122,7 +122,6 @@ export class ProductionChooserItem extends FxsChooserItem {
         // statsContainer.style.setProperty(..._DEBUG_GRAY);
         this.secondaryDetailsElement.classList.value = 'invisible flex';
         statsContainer.appendChild(this.secondaryDetailsElement);
-        // TRIX TODO: add production cost (hammers) to cost container
         this.costContainer.classList.value = 'flex items-center';
         // this.costContainer.style.setProperty(..._DEBUG_GRAY);
         this.costAmountElement.classList.value = 'font-title text-base mr-1';

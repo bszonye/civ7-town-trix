@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Mod id="bz-city-hall" version="11103"
+<Mod id="bz-city-hall" version="11200"
     xmlns="ModInfo">
     <Properties>
         <Name>LOC_MOD_BZ_CITY_HALL_NAME</Name>
-        <Version>1.11.3</Version>
+        <Version>1.12.0</Version>
         <Description>LOC_MOD_BZ_CITY_HALL_DESCRIPTION</Description>
         <Authors>beezany</Authors>
         <URL>https://forums.civfanatics.com/resources/city-hall.31946/</URL>
@@ -60,6 +60,7 @@
                     <Item>ui/city-details/bz-model-city-details.js</Item>
                     <Item>ui/city-details/bz-panel-city-details.js</Item>
                     <Item>ui/production-chooser/bz-panel-production-chooser.js</Item>
+                    <Item>ui/production-chooser/bz-panel-production-tooltips.js</Item>
                 </UIScripts>
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>

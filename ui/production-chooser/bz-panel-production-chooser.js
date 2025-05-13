@@ -1,4 +1,3 @@
-import bzCityHallOptions from '/bz-city-hall/ui/options/bz-city-hall-options.js';
 import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
 import { Construct } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
 // decorate ProductionChooserScreen to:
@@ -23,6 +22,7 @@ export class bzProductionChooserScreen {
     static panel_prototype;
     static panel_doOrConfirmConstruction;
     static isPurchase = false;
+    static isCDPanelOpen = true;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -132,18 +132,22 @@ export class bzProductionChooserScreen {
 
     beforeAttach() { }
     afterAttach() {
-        if (bzCityHallOptions.oneClickRepairs &&
-            !this.panel.isPurchase &&
-            !this.panel.city.Happiness?.hasUnrest) {
-            // when repairs are needed, switch to Purchase (if possible)
-            const buildings = this.panel.items?.buildings;
-            const hasRepairs = buildings.some(b => b.isRepair);
-            this.panel.isPurchase = hasRepairs;
-        }
         engine.on('ConstructibleChanged', this.panel.onConstructibleAddedToMap, this.panel);
+        // restore the city details panel if it was open previously
+        if (bzProductionChooserScreen.isCDPanelOpen && !this.panel.isSmallScreen()) {
+            this.panel.showCityDetails();
+        }
     }
     onAttributeChanged(_name, _prev, _next) { }
-    beforeDetach() { }
+    beforeDetach() {
+        if (!this.panel.isSmallScreen()) {
+            // remember whether the city details panel is open
+            const cdSlot = this.panel.cityDetailsSlot;
+            const cdPanel = cdSlot?.querySelector(".panel-city-details");
+            bzProductionChooserScreen.isCDPanelOpen =
+                cdPanel && !cdPanel.classList.contains("hidden");
+        }
+    }
     afterDetach() {
         // clear Purchase tab memory when closing the panel.
         // this includes switches to the building-placement interface,

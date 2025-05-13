@@ -1,4 +1,4 @@
-# City Hall 1.11.3
+# City Hall 1.12.0
 better city & town tools for Civilization VII
 
 ## improved production list and city details
@@ -41,7 +41,6 @@ production queue, to help you plan both buildings at the same time.
 when your city needs repairs, you can buy them with just one click.
 
 - repairs always appear at the top of the production list, highlighted
-- the production list automatically switches to Purchase repairs
 - you don't need to select a tile unless there's more than one choice
 
 ## compatibility with other mods

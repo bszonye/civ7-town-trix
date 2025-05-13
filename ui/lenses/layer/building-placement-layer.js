@@ -1,6 +1,6 @@
 /**
  * @file building-placement-layer
- * @copyright 2023, Firaxis Games
+ * @copyright 2023-2025, Firaxis Games
  * @description Lens layer to show yield deltas and adjacencies from placing a building
  */
 import BuildingPlacementManager, { BuildingPlacementHoveredPlotChangedEventName } from '/base-standard/ui/building-placement/building-placement-manager.js';
@@ -39,7 +39,7 @@ export class WorkerYieldsLensLayer {
         this.YIELD_WRAPPED_ROW_OFFSET = 8;
         this.yieldSpriteGrid = WorldUI.createSpriteGrid("BuildingPlacementYields_SpriteGroup", true);
         this.adjacenciesSpriteGrid = WorldUI.createSpriteGrid("Adjacencies_SpriteGroup", true);
-        this.buildingPlacementPlotChangedListener = () => { this.onBuildingPlacementPlotChanged(); };
+        this.buildingPlacementPlotChangedListener = this.onBuildingPlacementPlotChanged.bind(this);
     }
     initLayer() {
         this.yieldSpriteGrid.setVisible(false);
@@ -149,6 +149,7 @@ export class WorkerYieldsLensLayer {
         }
         return offsets;
     }
+    /*Show building slots below each tile*/
     realizeBuildSlots(district, grid=null) {
         if (!grid) grid = this.yieldSpriteGrid;
         const districtDefinition = GameInfo.Districts.lookup(district.type);
@@ -174,7 +175,7 @@ export class WorkerYieldsLensLayer {
             //TODO: show turns remaining for in-progress buildings
             //TODO: show replaceable (obsolete) buildings
             // skip walls
-            if (building.Population == 0) continue;
+            if (building.ExistingDistrictOnly) continue;
             // large buildings take up an extra slot
             if (BZ_LARGE.has(building.ConstructibleType)) maxSlots -= 1;
             // building icon
@@ -183,14 +184,8 @@ export class WorkerYieldsLensLayer {
             const yields = adjacencyYield(building)
                 // .map(y => UI.getIconBLP(y + "_5", "YIELD"));
                 .map(y => BuildingPlacementManager.getYieldPillIcon(y, 1, true));
-            // building age
-            const chrono = (age) => GameInfo.Ages.lookup(age)?.ChronologyIndex ?? 0;
-            const currentAge = chrono(Game.age);
-            const age = building.Age ?  chrono(building.Age) : currentAge - 0.5;
-            buildingSlots.push({ iconURL, yields, age });
+            buildingSlots.push({ iconURL, yields, });
         }
-        // sort buildings by age, like Map Trix
-        buildingSlots.sort((a, b) => b.age - a.age);
         for (let i = 0; i < maxSlots; i++) {
             const groupWidth = (maxSlots - 1) * this.BUILD_SLOT_SPRITE_PADDING;
             const xPos = (i * this.BUILD_SLOT_SPRITE_PADDING) + (groupWidth / 2) - groupWidth;
@@ -210,6 +205,7 @@ export class WorkerYieldsLensLayer {
             }
         }
     }
+    /* Update displayed info when hovering a new plot */
     onBuildingPlacementPlotChanged() {
         this.adjacenciesSpriteGrid.clear();
         this.adjacenciesSpriteGrid.setVisible(false);
@@ -268,6 +264,7 @@ export class WorkerYieldsLensLayer {
         });
         this.adjacenciesSpriteGrid.setVisible(true);
     }
+    /* Determine where adjacency arrows should go based on adjacency location */
     calculateAdjacencyDirectionOffsetLocation(adjacencyDirection) {
         //TODO: Will need to be shifted once outgoing adjacencies are displayed
         switch (adjacencyDirection) {
