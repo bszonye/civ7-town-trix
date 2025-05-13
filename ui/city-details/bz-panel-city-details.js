@@ -414,7 +414,6 @@ class bzPanelCityDetails {
         if (overviewHasFocus) FocusManager.setFocus(this.overviewSlot);
     }
     renderGrowth(container) {
-        // TODO: remove unused localization
         container.innerHTML = '';
         this.renderTitleHeading(container, "LOC_UI_CITY_DETAILS_GROWTH_TAB");
         if (!bzCityDetails.growth) return;
@@ -447,7 +446,6 @@ class bzPanelCityDetails {
         table.classList.value = "flex-table justify-start text-base -mx-1";
         table.style.marginBottom = metrics.table.margin.px;
         if (food.isGrowing) {
-            // TODO: center text vertically
             const row = document.createElement("div");
             row.classList.value = "self-start flex items-center px-1 rounded-2xl mb-1";
             row.style.backgroundColor = `${BZ_COLOR.food}55`;
@@ -482,7 +480,6 @@ class bzPanelCityDetails {
     renderConnections(container) {
         container.innerHTML = '';
         this.renderTitleHeading(container, "LOC_BZ_SETTLEMENT_CONNECTIONS");
-        // TODO: handle empty list
         if (!bzCityDetails.connections?.settlements?.length) {
             container.appendChild(docText("LOC_TERM_NONE"));
             return;
@@ -528,11 +525,9 @@ class bzPanelCityDetails {
         container.appendChild(table);
     }
     renderImprovements(container) {
-        // TODO: remove unused localization
         container.innerHTML = '';
         this.renderTitleHeading(container,
             "LOC_BUILDING_PLACEMENT_WAREHOUSE_YIELDS_HEADER");
-        // TODO: handle empty list
         if (!bzCityDetails.improvements?.length) {
             container.appendChild(docText("LOC_TERM_NONE"));
             return;
