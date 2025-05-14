@@ -476,6 +476,7 @@ class bzPanelCityDetails {
             row.appendChild(docIcon(item.icon, size, small, "-mx-1"));
             row.appendChild(docText(item.label, "text-left flex-auto mx-2"));
             const value = docText(item.value, "mx-1 text-right");
+            // keep width stable when flipping through cities
             value.style.minWidth = metrics.table.digits(2).css;
             row.appendChild(value);
             table.appendChild(row);
