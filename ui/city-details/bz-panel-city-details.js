@@ -239,6 +239,7 @@ class bzPanelCityDetails {
     static panel_prototype;
     static panel_renderYieldsSlot;
     static lastTab = 0;
+    static tableWidth;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -475,6 +476,7 @@ class bzPanelCityDetails {
             row.appendChild(docIcon(item.icon, size, small, "-mx-1"));
             row.appendChild(docText(item.label, "text-left flex-auto mx-2"));
             const value = docText(item.value, "mx-1 text-right");
+            value.style.minWidth = metrics.table.digits(2).css;
             row.appendChild(value);
             table.appendChild(row);
         }
@@ -546,6 +548,7 @@ class bzPanelCityDetails {
         const table = document.createElement("div");
         table.classList.value = "flex-col justify-start text-base -mx-1";
         table.style.marginBottom = metrics.table.margin.px;
+        table.style.minWidth = bzPanelCityDetails.tableWidth;
         for (const [i, item] of bzCityDetails.improvements.entries()) {
             const row = document.createElement("div");
             row.classList.value = "flex px-1";
@@ -561,6 +564,12 @@ class bzPanelCityDetails {
             row.appendChild(value);
             table.appendChild(row);
         }
+        requestAnimationFrame(() => {
+            const gcol = this.growthContainer.querySelector('.flex-col');
+            const gwidth = gcol?.clientWidth;
+            if (!gwidth) return;
+            table.style.minWidth = bzPanelCityDetails.tableWidth = `${gwidth}px`;
+        });
         // wrap table to keep it from expanding to full width
         const wrap = document.createElement("div");
         wrap.classList.value = "flex justify-start";
