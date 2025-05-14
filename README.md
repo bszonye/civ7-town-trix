@@ -59,6 +59,7 @@ known interactions:
 ## localization
 supported languages:
 
+- French (translated by trixie)
 - German (translated by Chr1Z93)
 - Italian (translated by leonardfactory)
 - Korean (translated by Hotsolidinfill)

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Database>
+    <LocalizedText>
+        <Replace Tag="LOC_BZ_GROUPED_DIGITS" Language="fr_FR">
+            <Text>{1_amount: number #;-#}</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_GROUPED_MODIFIER" Language="fr_FR">
+            <Text>{1_amount: number +#;-#}</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_SETTLEMENT_CONNECTIONS" Language="fr_FR">
+            <Text>Liaisons</Text>
+        </Replace>
+        <Replace Tag="LOC_BZ_UI_CITY_DETAILS_OVERVIEW_TAB" Language="fr_FR">
+            <Text>Vue d'ensemble</Text>
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS" Language="fr_FR">
+            <Text>City Hall • réparations en un clic</Text>
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_BZ_ONE_CLICK_REPAIRS_DESCRIPTION" Language="fr_FR">
+            <Text>Lorsqu'il n'y a qu'un seul emplacement possible pour une réparation, ignorez l'interface de placement du bâtiment.</Text>
+        </Replace>
+        <Replace Tag="LOC_OPTIONS_GROUP_BZ_MODS" Language="fr_FR">
+            <Text>mods de Trixie</Text>
+        </Replace>
+    </LocalizedText>
+</Database>

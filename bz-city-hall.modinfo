@@ -31,6 +31,7 @@
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>
                     <Item locale="de_DE">text/de_DE/InGameText.xml</Item>
+                    <Item locale="fr_FR">text/fr_FR/InGameText.xml</Item>
                     <Item locale="it_IT">text/it_IT/InGameText.xml</Item>
                     <Item locale="ko_KR">text/ko_KR/InGameText.xml</Item>
                     <Item locale="pl_PL">text/pl_PL/InGameText.xml</Item>
@@ -65,6 +66,7 @@
                 <UpdateText>
                     <Item>text/en_us/InGameText.xml</Item>
                     <Item locale="de_DE">text/de_DE/InGameText.xml</Item>
+                    <Item locale="fr_FR">text/fr_FR/InGameText.xml</Item>
                     <Item locale="it_IT">text/it_IT/InGameText.xml</Item>
                     <Item locale="ko_KR">text/ko_KR/InGameText.xml</Item>
                     <Item locale="pl_PL">text/pl_PL/InGameText.xml</Item>
@@ -78,6 +80,7 @@
     <LocalizedText>
         <File>text/en_us/ModInfoText.xml</File>
         <File>text/de_DE/ModInfoText.xml</File>
+        <File>text/fr_FR/ModInfoText.xml</File>
         <File>text/it_IT/ModInfoText.xml</File>
         <File>text/ko_KR/ModInfoText.xml</File>
         <File>text/pl_PL/ModInfoText.xml</File>
