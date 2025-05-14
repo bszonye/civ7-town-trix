@@ -461,7 +461,7 @@ class bzPanelCityDetails {
             const threshold = Locale.compose("LOC_BZ_GROUPED_DIGITS", food.threshold);
             const progress = `${current} / ${threshold}`;
             row.appendChild(docText(progress, "text-left flex-auto ml-2"));
-            row.appendChild(docText(BZ_DOT_JOINER, "self-center"));
+            row.appendChild(docText(BZ_DOT_JOINER));
             row.appendChild(docText(food.turns.toFixed(), "mr-1 text-right"));
             row.appendChild(docTimer(size, size));
             container.appendChild(row);
