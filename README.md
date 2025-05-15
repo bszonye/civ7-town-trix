@@ -1,4 +1,4 @@
-# City Hall 1.12.0
+# City Hall 1.12.1
 better city & town tools for Civilization VII
 
 ## improved production list and city details
@@ -59,6 +59,7 @@ known interactions:
 ## localization
 supported languages:
 
+- French (translated by trixie)
 - German (translated by Chr1Z93)
 - Italian (translated by leonardfactory)
 - Korean (translated by Hotsolidinfill)

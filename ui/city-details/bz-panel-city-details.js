@@ -13,9 +13,6 @@ const BZ_DIVIDER_LINE = `\
 `
 const BZ_DIVIDER = `<div class="${BZ_DIVIDER_STYLE}">${BZ_DIVIDER_LINE}</div>`
 
-// horizontal separator
-const BZ_DOT_DIVIDER = Locale.compose("LOC_PLOT_DIVIDER_DOT");
-
 var cityDetailTabID;
 (function (cityDetailTabID) {
     // only need to define the ones we're using in the decorator
@@ -117,12 +114,20 @@ const BZ_BORDER = 0.1111111111;
 const BZ_RULES_WIDTH = 12;
 let metrics = getFontMetrics();
 
+// horizontal separator
+const BZ_DOT_DIVIDER = Locale.compose("LOC_PLOT_DIVIDER_DOT");
+const BZ_DOT_JOINER = metrics.isIdeographic ?
+    BZ_DOT_DIVIDER : `&nbsp;${BZ_DOT_DIVIDER} `;
+
 // additional CSS definitions
 const BZ_HEAD_STYLE = [
 `
 .bz-city-hall .text-gradient-secondary {
     fxs-font-gradient-color: ${BZ_COLOR.bronze1};
     color: ${BZ_COLOR.bronze2};
+}
+.bz-city-hall #${cityDetailTabID.overview} .shadow {
+    filter: drop-shadow(0 0.0555555556rem 0.0555555556rem black);
 }
 `,
 ];
@@ -200,11 +205,12 @@ function getFontMetrics() {
     radius.tooltip = sizes(radius.rem + border.rem);
     // minimum end banner height to avoid radius glitches
     const bumper = sizes(Math.max(table.spacing.rem, 2*radius.rem));
+    const isIdeographic = Locale.getCurrentDisplayLocale().startsWith('zh_');
     return {
         sizes, font,
         padding, margin, border,
         head, body, note, rules, table, yields,
-        radius, bumper,
+        radius, bumper, isIdeographic,
     };
 }
 function getTownFocus(city) {
@@ -233,6 +239,7 @@ class bzPanelCityDetails {
     static panel_prototype;
     static panel_renderYieldsSlot;
     static lastTab = 0;
+    static tableWidth;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -415,6 +422,7 @@ class bzPanelCityDetails {
     }
     renderGrowth(container) {
         container.innerHTML = '';
+        container.style.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container, "LOC_UI_CITY_DETAILS_GROWTH_TAB");
         if (!bzCityDetails.growth) return;
         const { food, pop, religion, } = bzCityDetails.growth;
@@ -442,12 +450,9 @@ class bzPanelCityDetails {
         ];
         const size = metrics.table.spacing.css;
         const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
-        const table = document.createElement("div");
-        table.classList.value = "flex-table justify-start text-base -mx-1";
-        table.style.marginBottom = metrics.table.margin.px;
         if (food.isGrowing) {
             const row = document.createElement("div");
-            row.classList.value = "self-start flex items-center px-1 rounded-2xl mb-1";
+            row.classList.value = "self-start flex px-1 rounded-2xl -mx-1";
             row.style.backgroundColor = `${BZ_COLOR.food}55`;
             row.style.minHeight = size;
             row.style.marginTop = metrics.body.leading.half.px;
@@ -456,18 +461,23 @@ class bzPanelCityDetails {
             const threshold = Locale.compose("LOC_BZ_GROUPED_DIGITS", food.threshold);
             const progress = `${current} / ${threshold}`;
             row.appendChild(docText(progress, "text-left flex-auto ml-2"));
-            row.appendChild(docText(BZ_DOT_DIVIDER, "mx-2"));
-            row.appendChild(docText(food.turns.toFixed(), "text-right mr-1"));
+            row.appendChild(docText(BZ_DOT_JOINER));
+            row.appendChild(docText(food.turns.toFixed(), "mr-1 text-right"));
             row.appendChild(docTimer(size, size));
-            table.appendChild(row);
+            container.appendChild(row);
         }
+        const table = document.createElement("div");
+        table.classList.value = "flex-col justify-start text-base -mx-1";
+        table.style.marginBottom = metrics.table.margin.px;
         for (const item of layout) {
             const row = document.createElement("div");
-            row.classList.value = "flex items-center px-1";
+            row.classList.value = "flex px-1";
             row.style.minHeight = size;
             row.appendChild(docIcon(item.icon, size, small, "-mx-1"));
             row.appendChild(docText(item.label, "text-left flex-auto mx-2"));
-            const value = docText(item.value, "ml-2 text-right");
+            const value = docText(item.value, "mx-1 text-right");
+            // keep width stable when flipping through cities
+            value.style.minWidth = metrics.table.digits(2).css;
             row.appendChild(value);
             table.appendChild(row);
         }
@@ -479,6 +489,7 @@ class bzPanelCityDetails {
     }
     renderConnections(container) {
         container.innerHTML = '';
+        container.style.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container, "LOC_BZ_SETTLEMENT_CONNECTIONS");
         if (!bzCityDetails.connections?.settlements?.length) {
             container.appendChild(docText("LOC_TERM_NONE"));
@@ -497,7 +508,7 @@ class bzPanelCityDetails {
         for (const conn of connections) {
             const row = document.createElement("div");
             row.classList.value = "relative flex justify-start";
-            row.style.minHeight = row.style.lineHeight = size;
+            row.style.minHeight = size;
             if (conn.isTown) {
                 const focus = getTownFocus(conn);
                 row.appendChild(docIcon(focus.icon, size, size));
@@ -517,7 +528,7 @@ class bzPanelCityDetails {
         for (const [i, column] of columns.entries()) {
             const col = document.createElement("div");
             col.classList.value = "flex-col justify-start";
-            if (i) col.classList.add("ml-4");
+            if (i) col.classList.add("ml-3");  // aligns well in Chinese
             for (const row of column) col.appendChild(row);
             table.appendChild(col);
         }
@@ -526,6 +537,7 @@ class bzPanelCityDetails {
     }
     renderImprovements(container) {
         container.innerHTML = '';
+        container.style.lineHeight = metrics.table.ratio;
         this.renderTitleHeading(container,
             "LOC_BUILDING_PLACEMENT_WAREHOUSE_YIELDS_HEADER");
         if (!bzCityDetails.improvements?.length) {
@@ -535,11 +547,12 @@ class bzPanelCityDetails {
         const size = metrics.table.spacing.css;
         const small = metrics.sizes(5/6 * metrics.table.spacing.rem).css;
         const table = document.createElement("div");
-        table.classList.value = "flex-table justify-start text-base -mx-1";
+        table.classList.value = "flex-col justify-start text-base -mx-1";
         table.style.marginBottom = metrics.table.margin.px;
+        table.style.minWidth = bzPanelCityDetails.tableWidth;
         for (const [i, item] of bzCityDetails.improvements.entries()) {
             const row = document.createElement("div");
-            row.classList.value = "flex items-center px-1";
+            row.classList.value = "flex px-1";
             if (!(i % 2)) {
                 row.classList.add("rounded-2xl");
                 row.style.backgroundColor = `${BZ_COLOR.bronze6}99`;
@@ -552,6 +565,12 @@ class bzPanelCityDetails {
             row.appendChild(value);
             table.appendChild(row);
         }
+        requestAnimationFrame(() => {
+            const gcol = this.growthContainer.querySelector('.flex-col');
+            const gwidth = gcol?.clientWidth;
+            if (!gwidth) return;
+            table.style.minWidth = bzPanelCityDetails.tableWidth = `${gwidth}px`;
+        });
         // wrap table to keep it from expanding to full width
         const wrap = document.createElement("div");
         wrap.classList.value = "flex justify-start";

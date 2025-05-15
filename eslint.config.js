@@ -67,6 +67,7 @@ export default [
                 document: "readonly",
                 engine: "readonly",
                 localStorage: "readonly",
+                requestAnimationFrame: "readonly",
                 waitForLayout: "readonly",
                 window: "readonly",
             }
