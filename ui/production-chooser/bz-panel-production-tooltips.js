@@ -78,15 +78,23 @@ class ProductionConstructibleTooltipType {
         }
         this.header.setAttribute('data-l10n-id', definition.Name);
         const isPurchase = this.target?.dataset.isPurchase === 'true';
-        // FIX: wrong argument type (ResourceTypes.NO_RESOURCE)
-        // the second & third arguments both look wrong, but the second
-        // one doesn't seem to break anything
-        const productionCost = city.Production?.getConstructibleProductionCost(definition.ConstructibleType, FeatureTypes.NO_FEATURE, false);
-        if (productionCost) {
-            this.productionCost.innerHTML = Locale.stylize('LOC_UI_PRODUCTION_COST', productionCost);
+        if (isPurchase) {
+            this.productionCost.classList.add('hidden');
         }
-        // FIX: toggle production cost instead of just hiding it
-        this.productionCost.classList.toggle('hidden', isPurchase);
+        else {
+            // FIX: wrong argument type (ResourceTypes.NO_RESOURCE)
+            // the second & third arguments both look wrong, but the second
+            // one doesn't seem to break anything
+            const productionCost = city.Production?.getConstructibleProductionCost(definition.ConstructibleType, FeatureTypes.NO_FEATURE, false);
+            if (productionCost === undefined) {
+                this.productionCost.classList.add('hidden');
+            }
+            else {
+                // FIX: unhide production cost when displaying it
+                this.productionCost.classList.remove('hidden');
+                this.productionCost.innerHTML = Locale.stylize('LOC_UI_PRODUCTION_COST', productionCost);
+            }
+        }
         const { baseYield, adjacencies, effects } = getConstructibleEffectStrings(definition.ConstructibleType, city);
         if (baseYield) {
             this.baseYield.innerHTML = Locale.stylize(baseYield);
@@ -225,6 +233,8 @@ class ProductionUnitTooltipType {
                 this.productionCost.classList.add('hidden');
             }
             else {
+                // FIX: unhide production cost when displaying it
+                this.productionCost.classList.remove('hidden');
                 this.productionCost.innerHTML = Locale.stylize('LOC_UI_PRODUCTION_COST', productionCost);
             }
         }
