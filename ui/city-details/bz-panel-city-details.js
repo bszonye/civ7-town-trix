@@ -162,6 +162,12 @@ function docTimer(size, resize, ...style) {
     if (!style.length) style = ["-mx-1"];
     return docIcon(BZ_ICON_TIMER, size, resize, ...style);
 }
+function dotJoin(list) {
+    return localeJoin(list, BZ_DOT_JOINER);
+}
+function localeJoin(list, divider=" ") {
+    return list.map(s => s && Locale.compose(s)).filter(e => e).join(divider);
+}
 function getFontMetrics() {
     // TODO: remove unneeded stuff
     const sizes = (rem, round=Math.round) => {
@@ -239,7 +245,7 @@ class bzPanelCityDetails {
     static panel_prototype;
     static panel_renderYieldsSlot;
     static lastTab = 0;
-    static tableWidth;
+    static tableWidth = 0;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
@@ -490,11 +496,11 @@ class bzPanelCityDetails {
     renderConnections(container) {
         container.innerHTML = '';
         container.style.lineHeight = metrics.table.ratio;
-        this.renderTitleHeading(container, "LOC_BZ_SETTLEMENT_CONNECTIONS");
-        if (!bzCityDetails.connections?.settlements?.length) {
-            container.appendChild(docText("LOC_TERM_NONE"));
-            return;
-        }
+        // show settlement count in the title
+        const total = bzCityDetails.connections?.settlements?.length ?? 0;
+        const title = dotJoin(["LOC_BZ_SETTLEMENT_CONNECTIONS", total.toFixed()]);
+        this.renderTitleHeading(container, title);
+        if (!total) return;
         const size = metrics.table.spacing.css;
         const small = metrics.sizes(2/3 * metrics.table.spacing.rem).css;
         const table = document.createElement("div");
