@@ -245,7 +245,7 @@ class bzPanelCityDetails {
     static panel_prototype;
     static panel_renderYieldsSlot;
     static lastTab = 0;
-    static tableWidth;
+    static tableWidth = 0;
     constructor(panel) {
         this.panel = panel;
         panel.bzPanel = this;
