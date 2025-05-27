@@ -1,4 +1,3 @@
-// TODO: move arrow buttons to the corners, so they don't move (if possible)
 import bzCityDetails, { bzUpdateCityDetailsEventName } from "/bz-city-hall/ui/city-details/bz-model-city-details.js";
 import CityDetails, { UpdateCityDetailsEventName } from "/base-standard/ui/city-details/model-city-details.js";
 import NavTray from "/core/ui/navigation-tray/model-navigation-tray.js";
@@ -358,7 +357,7 @@ class bzPanelCityDetails {
         slot.setAttribute("data-navrule-right", "stop");
         slot.id = cityDetailTabID.overview;
         slot.innerHTML = `
-        <fxs-scrollable class="w-128">
+        <fxs-scrollable class="w-full">
             <div class="growth-container flex flex-col ml-6"></div>
             ${BZ_DIVIDER}
             <div class="connections-container flex flex-col ml-6"></div>
@@ -376,7 +375,7 @@ class bzPanelCityDetails {
         slot.id = cityDetailTabID.constructibles;
         slot.innerHTML = `
         <fxs-scrollable>
-            <div class="flex flex-col w-128 mb-2">
+            <div class="flex flex-col w-full mb-2">
                 <div class="bz-buildings-category flex mt-2">
                     <fxs-icon class="size-12 ml-3 my-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
                     <div class="self-center font-title text-lg uppercase text-gradient-secondary ml-2" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
@@ -407,7 +406,7 @@ class bzPanelCityDetails {
         // bugfix: game code incorrectly closes this with </div>
         slot.innerHTML = `
             <fxs-scrollable class="yields-scrollable">
-                <div class="yields-container w-128"></div>
+                <div class="yields-container w-full"></div>
             </fxs-scrollable>
         `;
         this.panel.slotGroup.appendChild(slot);
@@ -646,8 +645,7 @@ class bzPanelCityDetails {
             uniqueQuarterIcon.setAttribute("data-icon-id", "CITY_UNIQUE_QUARTER");
             uniqueQuarterContainer.appendChild(uniqueQuarterIcon);
             const uniqueQuarterTextContainer = document.createElement("div");
-            uniqueQuarterTextContainer.classList.add("flex", "flex-col", "flex-auto", "ml-2");
-            uniqueQuarterTextContainer.style.setProperty("max-width", "23rem");
+            uniqueQuarterTextContainer.classList.add("flex", "flex-col", "flex-auto", "mx-2");
             uniqueQuarterContainer.appendChild(uniqueQuarterTextContainer);
             const districtName = document.createElement("div");
             districtName.classList.add("my-1", "font-title", "uppercase", "text-xs");
@@ -677,7 +675,7 @@ class bzPanelCityDetails {
         icon.setAttribute("data-icon-id", constructibleData.icon);
         topDiv.appendChild(icon);
         const rightContainer = document.createElement("div");
-        rightContainer.classList.add("flex", "flex-col", "ml-2");
+        rightContainer.classList.add("flex", "flex-col", "grow", "mx-2");
         const nameContainer = document.createElement("div");
         nameContainer.classList.add("flex", "center");
         rightContainer.appendChild(nameContainer);
@@ -687,7 +685,6 @@ class bzPanelCityDetails {
         nameContainer.appendChild(name);
         const yieldAdjustContainer = document.createElement("div");
         yieldAdjustContainer.classList.add("flex", "justify-between");
-        yieldAdjustContainer.style.setProperty("width", "24rem");  // w-108
         const yieldContainer = document.createElement("div");
         const maintenanceContainer = document.createElement("div");
         if (constructibleData.damaged) {
@@ -701,9 +698,10 @@ class bzPanelCityDetails {
                 "LOC_UI_CITY_DETAILS_BUILDING_DAMAGED");
             yieldContainer.appendChild(damagedText);
         }
+        console.warn(`TRIX YIELD-MAP?`);
         if (constructibleData.yieldMap) {
+            console.warn(`TRIX YIELD-MAP OK`);
             yieldContainer.classList.add("flex", "flex-wrap");
-            yieldAdjustContainer.style.setProperty("max-width", "24rem");  // max-w-108
             for (const [_yieldType, yieldData] of constructibleData.yieldMap) {
                 if (yieldData.icon && yieldData.iconContext) {
                     const yieldEntry = document.createElement("div");
