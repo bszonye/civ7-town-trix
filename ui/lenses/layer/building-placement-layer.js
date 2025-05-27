@@ -211,6 +211,7 @@ class WorkerYieldsLensLayer {
         if (yieldAdjacencies.length <= 0) {
             return;
         }
+        const yieldIcons = [];
         yieldAdjacencies.forEach(adjacency => {
             const yieldDef = GameInfo.Yields.lookup(adjacency.yieldType);
             if (!yieldDef) {
@@ -228,9 +229,12 @@ class WorkerYieldsLensLayer {
             const iconOffset = this.calculateAdjacencyDirectionOffsetLocation(adjacencyDirection);
             //scale -1 to flip the arrows to indicate incoming adjacencies
             this.adjacenciesSpriteGrid.addSprite(buildingLocation, adjacencyIcon, { x: iconOffset.x, y: iconOffset.y, z: 0 }, { scale: -1 });
-            this.adjacenciesSpriteGrid.addSprite(buildingLocation, UI.getIcon(yieldDef.YieldType + "_1", "YIELD"), { x: iconOffset.x, y: iconOffset.y, z: 1 }, { scale: 1 });
+            yieldIcons.push({ icon: UI.getIconBLP(yieldDef.YieldType + "_1", "YIELD"), location: buildingLocation, offset: { x: iconOffset.x, y: iconOffset.y, z: 1 } });
             //TODO: outgoing adjacencies once implemented in GameCore
         });
+        for (let i = 0; i < yieldIcons.length; i++) {
+            this.adjacenciesSpriteGrid.addSprite(yieldIcons[i].location, yieldIcons[i].icon, yieldIcons[i].offset, { scale: 1 });
+        }
         this.adjacenciesSpriteGrid.setVisible(true);
     }
     /* Determine where adjacency arrows should go based on adjacency location */

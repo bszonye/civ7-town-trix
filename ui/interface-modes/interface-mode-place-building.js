@@ -356,4 +356,5 @@ class PlaceBuildingInterfaceMode extends ChoosePlotInterfaceMode {
     }
 }
 InterfaceMode.addHandler('INTERFACEMODE_PLACE_BUILDING', new PlaceBuildingInterfaceMode());
+
 //# sourceMappingURL=file:///base-standard/ui/interface-modes/interface-mode-place-building.js.map

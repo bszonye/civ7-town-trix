@@ -393,9 +393,17 @@ class CityDetailsModel {
                 }
                 baseYield.children.push(yieldData);
                 //Are there any percentage based yield incomes (modifiers) applied to the base income that we need to show?
-                if (step.modifier && step.modifier.steps && step.modifier.steps.length > 0 && step.description == "Income") {
+                if (step.modifier && step.modifier.steps && step.modifier.steps.length > 0) {
                     this.addYieldSteps(yieldData, step.modifier.steps, yieldDefinition, true);
                 }
+            } // Leader abilities are nested, where the actual yeild value is in the base step, and its correct description is in the first step of the step
+            else if (step.steps && step.steps.length > 0 && step.steps[0] && step.steps[0].description) {
+                const yieldData = {
+                    name: step.steps[0].description,
+                    value: step.value,
+                    children: []
+                };
+                baseYield.children.push(yieldData);
             }
             else if (step.steps && step.steps.length > 0) {
                 this.addYieldSteps(baseYield, step.steps, yieldDefinition, false);

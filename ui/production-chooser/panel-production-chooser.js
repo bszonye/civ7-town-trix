@@ -172,7 +172,7 @@ export class ProductionChooserScreen extends Panel {
         // #endregion
         // #region Element References
         this.frame = document.createElement("fxs-subsystem-frame");
-        this.cityNameElement = document.createElement("fxs-editable-header");
+        this.cityNameElement = document.createElement(Network.hasAccessUGCPrivilege(false) ? "fxs-editable-header" : "fxs-header");
         this.cityStatusContainerElement = document.createElement("div");
         this.cityStatusIconElement = document.createElement("img");
         this.cityStatusTextElement = document.createElement("div");
@@ -280,16 +280,6 @@ export class ProductionChooserScreen extends Panel {
                 Audio.playSound('data-audio-city-production-purchase-mode', 'city-actions');
             }
         };
-        this.requestClose = () => {
-            // This is a fix for an edge case issue where
-            // interface-modes/views get mixed up when quickly switching between them
-            const selectedCityID = UI.Player.getHeadSelectedCity();
-            if (!selectedCityID && InterfaceMode.isInInterfaceMode('INTERFACEMODE_DEFAULT')) {
-                ViewManager.setCurrentByName('World');
-            }
-            UI.Player.deselectAllCities(); // If this is not called, no signaling picked up by production panel (and build queue?) and stays partially open.
-            super.close();
-        };
         this.updateItems = new UpdateGate(() => {
             if (!this.isInitialLoadComplete) {
                 return;
@@ -360,6 +350,7 @@ export class ProductionChooserScreen extends Panel {
         delayByFrame(() => {
             this.isInitialLoadComplete = true;
             engine.on('CityGovernmentLevelChanged', this.onCityGovernmentLevelChanged, this);
+            engine.on('CityNameChanged', this.onCityNameChanged, this);
             engine.on('CityMadePurchase', this.onCityMadePurchase, this);
             engine.on('CityGrowthModeChanged', this.onCityGrowthModeChanged, this);
             engine.on('CityProductionQueueChanged', this.onCityProductionQueueChanged, this);
@@ -396,6 +387,7 @@ export class ProductionChooserScreen extends Panel {
     }
     onDetach() {
         engine.off('CityGovernmentLevelChanged', this.onCityGovernmentLevelChanged, this);
+        engine.off('CityNameChanged', this.onCityNameChanged, this);
         engine.off('CityMadePurchase', this.onCityMadePurchase, this);
         engine.off('CityGrowthModeChanged', this.onCityGrowthModeChanged, this);
         engine.off('CityProductionQueueChanged', this.onCityProductionQueueChanged, this);
@@ -472,11 +464,18 @@ export class ProductionChooserScreen extends Panel {
             return;
         }
         const args = {
-            Name: event.detail.newStr
+            Name: Locale.toUpper(event.detail.newStr),
         };
         if (!this._cityID) {
             console.error(`panel-production-chooser: onSettlementNameChanged - cityID was null during name change operation!`);
             return;
+        }
+        // Stick with original name if a blank string is entered.  Command will either revert to original name or do nothing.
+        if (event.detail.newStr.length == 0) {
+            const city = Cities.get(this._cityID);
+            if (city) {
+                this.cityNameElement.setAttribute('title', city.name);
+            }
         }
         const result = Game.CityCommands.canStart(this._cityID, CityCommandTypes.NAME_CITY, args, false);
         if (result.Success) {
@@ -504,6 +503,12 @@ export class ProductionChooserScreen extends Panel {
             this.updateUpgradeToCityButton(city.Gold?.getTownUpgradeCost() ?? -1, isTown, this.cityID);
             // Unsure of how changing to a town may or may not affect production items, so update them just in case
             this.updateItems.call('onCityGovernmentLevelChanged');
+        }
+    }
+    onCityNameChanged(data) {
+        const city = Cities.get(data.cityID);
+        if (city) {
+            this.updateCityName(city);
         }
     }
     onCityMadePurchase({ cityID }) {
@@ -648,6 +653,7 @@ export class ProductionChooserScreen extends Panel {
             console.error(`panel-production-chooser: confirmSelection: Failed to get a valid item!`);
             return;
         }
+        const queueLengthBeforeAdd = BuildQueue.items.length;
         const bSuccess = Construct(city, item, this.isPurchase);
         /**  This is intentionally divergent behavior:
             -- 	If we had an empty queue, and successfully added something to it (which bSuccess already checked above)
@@ -658,6 +664,9 @@ export class ProductionChooserScreen extends Panel {
                 we should reinforce that choices are being queued up in the list. (Screen stays open and queue additions animate).
         */
         if (bSuccess) {
+            if (queueLengthBeforeAdd > 0) {
+                Audio.playSound("data-audio-queue-item", "audio-production-chooser");
+            }
             animationConfirmCallback?.();
             if (this.wasQueueInitiallyEmpty && !this.isPurchase) {
                 UI.Player.deselectAllCities();
@@ -665,6 +674,16 @@ export class ProductionChooserScreen extends Panel {
                 this.requestPlaceBuildingClose();
             }
         }
+    }
+    requestClose() {
+        // This is a fix for an edge case issue where
+        // interface-modes/views get mixed up when quickly switching between them
+        const selectedCityID = UI.Player.getHeadSelectedCity();
+        if (!selectedCityID && InterfaceMode.isInInterfaceMode('INTERFACEMODE_DEFAULT')) {
+            ViewManager.setCurrentByName('World');
+        }
+        UI.Player.deselectAllCities(); // If this is not called, no signaling picked up by production panel (and build queue?) and stays partially open.
+        super.close();
     }
     updateItemElementMap(items) {
         for (let i = 0; i < items.length; i++) {
@@ -892,10 +911,16 @@ export class ProductionChooserScreen extends Panel {
         this.productionPurchaseTabBar.classList.toggle('hidden', isTown);
         this.townPurchaseLabel.classList.toggle('hidden', !isTown);
     }
-    onAttributeChanged(name, _oldValue, newValue) {
+    onAttributeChanged(name, oldValue, newValue) {
         switch (name) {
             case 'data-show-town-focus':
                 this.townFocusPanel.classList.toggle('hidden', newValue !== 'true');
+                if (oldValue === "false" && newValue === "true") {
+                    Audio.playSound("data-audio-showing", "town-specialization-panel");
+                }
+                else if (oldValue === "true" && newValue === "false") {
+                    Audio.playSound("data-audio-hiding", "town-specialization-panel");
+                }
                 FocusManager.setFocus(this.townFocusPanel);
                 this.updateNavTray();
                 break;
@@ -931,7 +956,7 @@ export class ProductionChooserScreen extends Panel {
         return [upgradeToCityButton, costElement];
     }
     render() {
-        this.Root.classList.add('panel-production-chooser', 'relative', 'z-0', 'flex', 'flex-col');
+        this.Root.classList.add('panel-production-chooser', 'relative', 'z-0', 'flex', 'flex-col', 'flex-auto');
         this.Root.setAttribute('data-tooltip-anchor', 'right');
         this.cityStatusContainerElement.classList.add('hidden', 'min-h-6', 'flex', 'items-center', 'justify-center', 'mb-1');
         this.cityStatusContainerElement.dataset.slot = 'header';
@@ -942,9 +967,10 @@ export class ProductionChooserScreen extends Panel {
         this.cityStatusContainerElement.appendChild(this.cityStatusTextElement);
         this.frame.appendChild(this.cityStatusContainerElement);
         const cityNameWrapper = document.createElement('div');
-        cityNameWrapper.classList.add('flex', 'items-start', 'justify-center');
-        Databind.classToggle(cityNameWrapper, "mx-10", "!{{g_NavTray.isTrayRequired}}");
+        cityNameWrapper.classList.add('flex', 'items-start', 'justify-between');
+        Databind.classToggle(cityNameWrapper, "mx-14", "!{{g_NavTray.isTrayRequired}}");
         Databind.classToggle(cityNameWrapper, "mx-2", "{{g_NavTray.isTrayRequired}}");
+        cityNameWrapper.classList.toggle("px-6", UI.getViewExperience() == UIViewExperience.Mobile);
         cityNameWrapper.dataset.slot = 'header';
         this.prevCityButton.classList.add('flex', 'flex-row', 'items-center');
         this.prevCityButton.setAttribute('action-key', 'inline-prev-city');
@@ -953,11 +979,16 @@ export class ProductionChooserScreen extends Panel {
         Databind.classToggle(prevCityButtonArrow, "hidden", "{{g_NavTray.isTrayRequired}}");
         this.prevCityButton.appendChild(prevCityButtonArrow);
         cityNameWrapper.appendChild(this.prevCityButton);
+        const cityNameContainer = document.createElement('div');
+        cityNameContainer.classList.add('flex', 'flex-col', 'max-w-full', "flex-auto", 'px-6');
+        cityNameContainer.appendChild(this.cityStatusContainerElement);
         this.cityNameElement.classList.add('flex-auto', 'px-4', 'text-lg', 'text-center', 'font-title', 'uppercase', 'tracking-100');
+        this.cityNameElement.classList.toggle("mx-8", UI.getViewExperience() == UIViewExperience.Mobile);
         this.cityNameElement.setAttribute('font-fit-mode', 'shrink');
         this.cityNameElement.setAttribute('wrap', 'nowrap');
         this.cityNameElement.setAttribute('tab-for', 'panel-production-chooser');
-        cityNameWrapper.appendChild(this.cityNameElement);
+        cityNameContainer.appendChild(this.cityNameElement);
+        cityNameWrapper.appendChild(cityNameContainer);
         this.nextCityButton.classList.add('flex', 'flex-row-reverse', 'items-center');
         this.nextCityButton.setAttribute('action-key', 'inline-next-city');
         const nextCityButtonArrow = document.createElement('div');
@@ -966,7 +997,7 @@ export class ProductionChooserScreen extends Panel {
         this.nextCityButton.appendChild(nextCityButtonArrow);
         cityNameWrapper.appendChild(this.nextCityButton);
         this.frame.appendChild(cityNameWrapper);
-        this.frame.classList.add('flex-auto', 'pointer-events-auto', 'panel-production__frame');
+        this.frame.classList.add('shrink', 'pointer-events-auto', 'panel-production__frame');
         Databind.classToggle(this.frame, "mb-16", "{{g_NavTray.isTrayRequired}}");
         // TODO: Adding margin bottom to compensate for height miscalculation. Remove when gameface updates YOGA.
         this.frame.dataset.headerClass = 'flex flex-col flex-initial px-3 mx-0\\.5';
@@ -1045,7 +1076,7 @@ export class ProductionChooserScreen extends Panel {
             this.productionAccordion.appendChild(section.root);
         }
         this.frame.appendChild(this.productionAccordion);
-        this.subPanelContainer.classList.add('-z-1', 'absolute', 'top-32', 'bottom-12', 'left-full', '-ml-10');
+        this.subPanelContainer.classList.add('-z-1', 'mt-32', 'mb-12', '-ml-10', 'relative', 'shrink');
         this.buildQueue.classList.add('absolute', 'left-3');
         this.subPanelContainer.appendChild(this.buildQueue);
         this.townFocusPanelCloseButton.classList.add('absolute', 'top-0', 'right-0');
@@ -1068,4 +1099,5 @@ Controls.define('panel-production-chooser', {
     ],
     styles: ["fs://game/base-standard/ui/production-chooser/panel-production-chooser.css"],
 });
+
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/panel-production-chooser.js.map

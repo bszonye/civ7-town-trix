@@ -8,6 +8,7 @@ import { AdvisorUtilities } from '/base-standard/ui/tutorial/tutorial-support.js
 import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
 import { ComponentID } from '/core/ui/utilities/utilities-component-id.js';
 import { Icon } from '/core/ui/utilities/utilities-image.js';
+import { Audio } from '/core/ui/audio-base/audio-support.js';
 import CityDetails from "/base-standard/ui/city-details/model-city-details.js";
 // #region Types
 export var ProductionPanelCategory;
@@ -31,6 +32,17 @@ function getAgelessItemTypes() {
             }
         }
         return agelessItemTypes;
+    }
+}
+window.addEventListener("hotkey-cycle-next-city", () => cycleCity(true));
+window.addEventListener("hotkey-cycle-prev-city", () => cycleCity(false));
+function cycleCity(isNext) {
+    const currentCity = UI.Player.getHeadSelectedCity();
+    if (currentCity) {
+        const newCity = getAdjacentCityID(currentCity, isNext);
+        if (ComponentID.isValid(newCity)) {
+            UI.Player.selectCity(newCity);
+        }
     }
 }
 export const GetNextCityID = (cityID) => getAdjacentCityID(cityID, true);
@@ -501,7 +513,7 @@ const getUnits = (city, playerGoldBalance, isPurchase, recommendations, viewHidd
         results = Game.CityOperations.canStartQuery(city.id, CityOperationTypes.BUILD, CityQueryType.Unit);
     }
     for (const { index, result } of results) {
-        if (!viewHidden && !result.Success) {
+        if (!viewHidden && !result.Success && !(result.InsufficientFunds && result.FailureReasons?.length == 1)) {
             continue;
         }
         if (result.Requirements?.FullFailure || result.Requirements?.Obsolete) {
@@ -732,6 +744,7 @@ export const SetTownFocus = (cityID, sType, projectType) => {
     const result = Game.CityCommands.canStart(cityID, CityCommandTypes.CHANGE_GROWTH_MODE, args, false);
     if (result.Success) {
         Game.CityCommands.sendRequest(cityID, CityCommandTypes.CHANGE_GROWTH_MODE, args);
+        Audio.playSound("data-audio-activate", projectType);
         return null;
     }
     else {
@@ -836,4 +849,5 @@ export const GetLastProductionData = (cityID) => {
     console.error(`production-chooser-helper: GetLastProductionData failed to return valid last production data for city ID ${cityID}`);
     return;
 };
+
 //# sourceMappingURL=file:///base-standard/ui/production-chooser/production-chooser-helpers.js.map

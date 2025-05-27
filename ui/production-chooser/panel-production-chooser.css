@@ -4,8 +4,20 @@
 Based on Robert Penner's easing equations
 @url http://robertpenner.com/easing/
 **/
-panel-production-chooser {
-	width: 37.3333333333rem;
+.panel-production__frame {
+	min-width: 37.3333333333rem;
+	max-width: 37.3333333333rem;
+}
+
+.panel-city-details {
+	min-width: 28.4444444444rem;
+	max-width: 28.4444444444rem;
+}
+@media (experience: mobile) {
+	.panel-city-details {
+		min-width: 39.1111111111rem;
+		max-width: 39.1111111111rem;
+	}
 }
 
 panel-production-chooser .subsystem-frame__content {

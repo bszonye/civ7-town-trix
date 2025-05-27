@@ -246,7 +246,7 @@ export class PanelCityDetails extends Panel {
     render() {
         this.Root.classList.add("flex-col");
         const headerWrapper = document.createElement("div");
-        headerWrapper.classList.add("flex", "items-center", "justify-center");
+        headerWrapper.classList.add("flex", "items-center", "justify-center", "px-10");
         headerWrapper.dataset.slot = "header";
         this.prevCityButton.classList.add('flex', 'flex-row', 'items-center');
         this.prevCityButton.setAttribute('action-key', 'inline-prev-city');
@@ -271,10 +271,10 @@ export class PanelCityDetails extends Panel {
         this.frame.appendChild(tabHeaderWrapper);
         this.tabHeaderElement.classList.add("px-3", "uppercase", "tracking-100");
         this.tabHeaderElement.setAttribute("filigree-style", "none");
+        this.tabHeaderElement.setAttribute("font-fit-mode", "shrink");
         tabHeaderWrapper.appendChild(this.tabHeaderElement);
         this.tabBar.classList.add("px-2");
         this.tabBar.setAttribute("tab-for", "fxs-subsystem-frame");
-        this.tabBar.setAttribute("tab-item-class", "w-32");
         this.tabBar.setAttribute("rect-render", "true");
         this.tabBar.setAttribute("data-audio-group-ref", "city-actions");
         this.tabBar.setAttribute('nav-help-left-class', 'pl-2');
@@ -307,8 +307,8 @@ export class PanelCityDetails extends Panel {
         slot.setAttribute("data-navrule-right", "stop");
         slot.id = cityDetailTabID.growth;
         slot.innerHTML = `
-		<fxs-scrollable class="w-128">
-			<div class="being-razed-container flex flex-col m-1 w-128">
+		<fxs-scrollable class="flex-auto">
+			<div class="being-razed-container flex flex-col m-1 w-full">
 				<div class="font-title uppercase self-center text-negative text-xl" data-l10n-id="LOC_UI_CITY_DETAILS_CITY_BEING_RAZED"></div>
 				<div class="razed-turns-text self-center text-negative text-large" data-l10n-id="LOC_UI_CITY_DETAILS_CITY_BEING_RAZED"></div>
 				<div class="flex w-96 self-center">
@@ -331,7 +331,7 @@ export class PanelCityDetails extends Panel {
 						<div class="font-title text-gradient-secondary uppercase" data-l10n-id="LOC_UI_CITY_DETAILS_CITIZENS"></div>
 					</div>
 				</div>
-				<p class="new-citizen-text self-end mr-4 max-w-64"></p>
+				<p class="new-citizen-text self-end mr-4 max-w-48"></p>
 			</div>
 			<div class="flex w-96 self-center">
 				<div class="w-1\\/2 h-5 bg-cover bg-no-repeat city-details-half-divider"></div>
@@ -390,7 +390,7 @@ export class PanelCityDetails extends Panel {
         slot.id = cityDetailTabID.buildings;
         slot.innerHTML = `
 		<fxs-scrollable>
-			<div class="flex flex-col w-128">
+			<div class="flex flex-col w-full">
 				<div class="buildings-category flex m-1">
 					<fxs-icon class="size-16 m-1" data-icon-id="CITY_BUILDINGS_LIST"></fxs-icon>
 					<div class="self-center font-title text-lg uppercase ml-2 text-gradient-secondary" data-l10n-id="LOC_UI_CITY_DETAILS_BUILDINGS"></div>
@@ -419,7 +419,7 @@ export class PanelCityDetails extends Panel {
         slot.id = cityDetailTabID.yields;
         slot.innerHTML = `
 			<fxs-scrollable class="yields-scrollable">
-				<div class="yields-container w-128"></div>
+				<div class="yields-container w-full"></div>
 			</div>
 		`;
         this.slotGroup.appendChild(slot);
@@ -824,4 +824,5 @@ Controls.define("panel-city-details", {
     styles: ["fs://game/base-standard/ui/city-details/panel-city-details.css"],
     tabIndex: -1
 });
+
 //# sourceMappingURL=file:///base-standard/ui/city-details/panel-city-details.js.map
