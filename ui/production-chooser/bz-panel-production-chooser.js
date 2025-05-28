@@ -1,5 +1,7 @@
-import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
 import { Construct } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
+import { Audio } from '/core/ui/audio-base/audio-support.js';
+import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
+import { BuildQueue } from '/base-standard/ui/build-queue/model-build-queue.js';
 // decorate ProductionChooserScreen to:
 // - update the list after selecting repairs (fixes "sticky" repairs)
 // - always leave the list open when building repairs
