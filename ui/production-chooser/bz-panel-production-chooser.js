@@ -1,5 +1,7 @@
-import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
 import { Construct } from '/base-standard/ui/production-chooser/production-chooser-helpers.js';
+import { Audio } from '/core/ui/audio-base/audio-support.js';
+import { InterfaceMode } from '/core/ui/interface-modes/interface-modes.js';
+import { BuildQueue } from '/base-standard/ui/build-queue/model-build-queue.js';
 // decorate ProductionChooserScreen to:
 // - update the list after selecting repairs (fixes "sticky" repairs)
 // - always leave the list open when building repairs
@@ -111,6 +113,7 @@ export class bzProductionChooserScreen {
             console.error(`panel-production-chooser: confirmSelection: Failed to get a valid item!`);
             return;
         }
+        const queueLengthBeforeAdd = BuildQueue.items.length;
         const bSuccess = Construct(city, item, this.panel.isPurchase);
         // close the production panel after selection, unless:
         // - there were already items queued
@@ -120,6 +123,9 @@ export class bzProductionChooserScreen {
         // screen explicitly to manage the queue or build multiple
         // items, so it should remain open.
         if (bSuccess) {
+            if (queueLengthBeforeAdd > 0) {
+                Audio.playSound("data-audio-queue-item", "audio-production-chooser");
+            }
             animationConfirmCallback?.();
             if (this.panel.wasQueueInitiallyEmpty &&
                 !this.panel.isPurchase && !item.isRepair) {

@@ -1,3 +1,4 @@
+import CityDetails from '/base-standard/ui/city-details/model-city-details.js';
 import { ComponentID } from '/core/ui/utilities/utilities-component-id.js';
 import UpdateGate from '/core/ui/utilities/utilities-update-gate.js';
 export const bzUpdateCityDetailsEventName = 'bz-update-city-details';
@@ -175,3 +176,45 @@ engine.whenReady.then(() => {
     bzCityDetails.updateCallback = updateModel;
 });
 export { bzCityDetails as default };
+
+// patch CityDetailsModel.addYieldSteps
+const CDproto = Object.getPrototypeOf(CityDetails);
+CDproto.addYieldSteps = function(baseYield, steps, yieldDefinition, isModifier) {
+    for (const step of steps) {
+        if (step.description) {
+            const yieldData = {
+                name: step.description,
+                value: isModifier ? (0.01 * step.value * this.baseYieldValue) : step.value,
+                children: []
+            };
+            if (this.baseYieldValue == 0 && step.base) {
+                this.baseYieldValue = step.base.value;
+            }
+            this.setYieldAndGetIcon(yieldData, step, yieldDefinition);
+            if (step.base && step.base.steps && step.base.steps.length > 0) {
+                this.addYieldSteps(yieldData, step.base.steps, yieldDefinition, false);
+            }
+            baseYield.children.push(yieldData);
+            // Are there any percentage based yield incomes (modifiers)
+            // applied to the base income that we need to show?
+            if (step.modifier && step.modifier.steps && step.modifier.steps.length > 0) {
+                this.addYieldSteps(yieldData, step.modifier.steps, yieldDefinition, true);
+            }
+        }
+        else if (step.steps && step.steps.length > 0) {
+            if (step.steps[0].description && step.steps.every(s => s.id == step.id)) {
+                // Leader abilities are nested, where the actual yield value
+                // is in the base step, and its correct description is in
+                // the first step of the step
+                const yieldData = {
+                    name: step.steps[0].description,
+                    value: step.value,
+                    children: []
+                };
+                baseYield.children.push(yieldData);
+            } else {
+                this.addYieldSteps(baseYield, step.steps, yieldDefinition, false);
+            }
+        }
+    }
+}
