@@ -211,7 +211,6 @@ CDproto.addYieldSteps = function(baseYield, steps, yieldDefinition, isModifier) 
                     value: step.value,
                     children: []
                 };
-                console.warn(`TRIX STEP ID=${step.id} ${JSON.stringify(step)}`);
                 baseYield.children.push(yieldData);
             } else {
                 this.addYieldSteps(baseYield, step.steps, yieldDefinition, false);
