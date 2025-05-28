@@ -16,6 +16,8 @@ export default [
         languageOptions: {
             globals: {
                 AdvisorySubjectTypes: "readonly",
+                Audio: "readonly",
+                BuildQueue: "readonly",
                 Camera: "readonly",
                 Cities: "readonly",
                 CityCommandTypes: "readonly",
