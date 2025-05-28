@@ -686,22 +686,20 @@ class bzPanelCityDetails {
         const yieldAdjustContainer = document.createElement("div");
         yieldAdjustContainer.classList.add("flex", "justify-between");
         const yieldContainer = document.createElement("div");
+        yieldContainer.classList.add("flex", "flex-wrap", "items-center", "-ml-1");
         const maintenanceContainer = document.createElement("div");
         if (constructibleData.damaged) {
             const damagedText = document.createElement("div");
             // display warning in a yellow capsule
-            // ml-1.5 sets the round end slightly over the margin
-            damagedText.classList.value = "uppercase text-xs leading-tight mt-1 ml-1\\.5 px-2 rounded-full";
-            damagedText.style.setProperty("background-color", BZ_COLOR.caution);
-            damagedText.style.setProperty("color", BZ_COLOR.black);
+            damagedText.classList.value = "uppercase text-xs px-2 mr-1 rounded-full";
+            damagedText.style.lineHeight = 1.25;
+            damagedText.style.backgroundColor = BZ_COLOR.caution;
+            damagedText.style.color = BZ_COLOR.black;
             damagedText.setAttribute("data-l10n-id",
                 "LOC_UI_CITY_DETAILS_BUILDING_DAMAGED");
             yieldContainer.appendChild(damagedText);
         }
-        console.warn(`TRIX YIELD-MAP?`);
         if (constructibleData.yieldMap) {
-            console.warn(`TRIX YIELD-MAP OK`);
-            yieldContainer.classList.add("flex", "flex-wrap");
             for (const [_yieldType, yieldData] of constructibleData.yieldMap) {
                 if (yieldData.icon && yieldData.iconContext) {
                     const yieldEntry = document.createElement("div");
