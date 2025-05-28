@@ -675,7 +675,7 @@ class bzPanelCityDetails {
         icon.setAttribute("data-icon-id", constructibleData.icon);
         topDiv.appendChild(icon);
         const rightContainer = document.createElement("div");
-        rightContainer.classList.add("flex", "flex-col", "grow", "mx-2");
+        rightContainer.classList.add("flex-auto", "flex", "flex-col", "relative", "mx-2");
         const nameContainer = document.createElement("div");
         nameContainer.classList.add("flex", "center");
         rightContainer.appendChild(nameContainer);
@@ -686,7 +686,7 @@ class bzPanelCityDetails {
         const yieldAdjustContainer = document.createElement("div");
         yieldAdjustContainer.classList.add("flex", "justify-between");
         const yieldContainer = document.createElement("div");
-        yieldContainer.classList.add("flex", "flex-wrap", "items-center", "-ml-1");
+        yieldContainer.classList.add("max-w-full", "flex", "flex-wrap", "items-center", "-ml-1");
         const maintenanceContainer = document.createElement("div");
         if (constructibleData.damaged) {
             const damagedText = document.createElement("div");
