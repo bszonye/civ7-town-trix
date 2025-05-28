@@ -686,8 +686,9 @@ class bzPanelCityDetails {
         const yieldAdjustContainer = document.createElement("div");
         yieldAdjustContainer.classList.add("flex", "justify-between");
         const yieldContainer = document.createElement("div");
-        yieldContainer.classList.add("max-w-full", "flex", "flex-wrap", "items-center", "-ml-1");
+        yieldContainer.classList.add("flex-auto", "flex", "flex-wrap", "items-center", "-ml-1");
         const maintenanceContainer = document.createElement("div");
+        maintenanceContainer.classList.add("flex", "justify-end", "items-center");
         if (constructibleData.damaged) {
             const damagedText = document.createElement("div");
             // display warning in a yellow capsule
@@ -719,7 +720,6 @@ class bzPanelCityDetails {
         }
         yieldAdjustContainer.appendChild(yieldContainer);
         if (constructibleData.maintenanceMap) {
-            maintenanceContainer.classList.add("flex");
             // const maintenanceText = document.createElement("div");
             // maintenanceText.classList.add("text-xs");
             // maintenanceText.textContent = Locale.compose("LOC_UI_PRODUCTION_BUILDING_MAINTENANCE");
