@@ -202,7 +202,7 @@ CDproto.addYieldSteps = function(baseYield, steps, yieldDefinition, isModifier) 
             }
         }
         else if (step.steps && step.steps.length > 0) {
-            if (step.steps[0].description && step.steps[0].id == step.id) {
+            if (step.steps[0].description && step.steps.every(s => s.id == step.id)) {
                 // Leader abilities are nested, where the actual yield value
                 // is in the base step, and its correct description is in
                 // the first step of the step
