@@ -396,17 +396,22 @@ class CityDetailsModel {
                 if (step.modifier && step.modifier.steps && step.modifier.steps.length > 0) {
                     this.addYieldSteps(yieldData, step.modifier.steps, yieldDefinition, true);
                 }
-            } // Leader abilities are nested, where the actual yeild value is in the base step, and its correct description is in the first step of the step
-            else if (step.steps && step.steps.length > 0 && step.steps[0] && step.steps[0].description) {
-                const yieldData = {
-                    name: step.steps[0].description,
-                    value: step.value,
-                    children: []
-                };
-                baseYield.children.push(yieldData);
             }
             else if (step.steps && step.steps.length > 0) {
-                this.addYieldSteps(baseYield, step.steps, yieldDefinition, false);
+                // Leader abilities are nested, where the yield value is in the base step
+                // Description is in the first sub-step of the step.
+                const idsMatch = step.steps.every(subStep => subStep.id == step.id);
+                if (step.steps[0]?.description && idsMatch) {
+                    const yieldData = {
+                        name: step.steps[0].description,
+                        value: step.value,
+                        children: []
+                    };
+                    baseYield.children.push(yieldData);
+                }
+                else {
+                    this.addYieldSteps(baseYield, step.steps, yieldDefinition, false);
+                }
             }
         }
     }
